@@ -122,6 +122,7 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .awning.low{ background:repeating-linear-gradient(115deg, var(--sale) 0 14px, #E1704A 14px 28px); }
 .arch{ position:relative; overflow:hidden; display:grid; place-items:center; }
 .arch .icon{ color:rgba(255,255,255,.92); }
+.arch img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .badge-out{ position:absolute; inset:0; background:rgba(36,25,52,.62); backdrop-filter:blur(1px); display:grid; place-items:center; color:#fff; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
 
 /* ── category tiles (home) ─────────────────────────────────── */
@@ -198,6 +199,7 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .line{ display:grid; grid-template-columns:52px 1fr auto; gap:11px; align-items:center; padding:13px 0; border-bottom:1px solid var(--line-soft); }
 .line .thumb{ width:52px; height:52px; border-radius:999px 999px 8px 8px; overflow:hidden; display:grid; place-items:center; color:#fff; }
 .line .thumb svg{ width:44%; height:44%; }
+.line .thumb img{ width:100%; height:100%; object-fit:cover; }
 .line .nm{ font-weight:700; font-size:.86rem; }
 .line .cat{ font-size:.62rem; color:var(--ink-faint); margin-top:2px; }
 .line .rgt{ text-align:end; }
@@ -377,7 +379,7 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
   <div class="ov-top"><div class="shell"><button class="ov-back" id="cvBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg><span data-i18n="backToShop">Back to the souk</span></button></div></div>
   <div class="shell cv-body">
     <div class="cv-head">
-      <div class="arch cv-arch" id="cvArch"><div class="icon" id="cvIcon"></div></div>
+      <div class="arch cv-arch" id="cvArch"><div class="icon"></div></div>
       <div><h1 id="cvName"></h1><p id="cvNote"></p></div>
     </div>
     <div class="grid" id="cvGrid"></div>
@@ -408,6 +410,13 @@ const ICONS = {
   heart:'<path d="M20 8.5c0-2.5-2-4.5-4.5-4.5-1.6 0-3 .8-3.5 2-.5-1.2-1.9-2-3.5-2C6 4 4 6 4 8.5c0 5 8 10.5 8 10.5s8-5.5 8-10.5z"/>'
 };
 function iconSvg(key){ return '<svg data-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(ICONS[key]||'')+'</svg>'; }
+/* Real photo when one's set (uploaded via the admin panel), the icon
+   placeholder otherwise — same arch frame either way. */
+function archMedia(p){
+  return p.img
+    ? `<img src="${p.img}" alt="${(p.name && p.name[LANG]) || ''}" loading="lazy" />`
+    : `<div class="icon">${iconSvg(p.icon)}</div>`;
+}
 const GRADS = {
   projector:'linear-gradient(150deg,#4C2E73,#8A4FA8)', fan:'linear-gradient(150deg,#1E7268,#3FA89A)',
   posture:'linear-gradient(150deg,#8A4B22,#D08A3F)', earbuds:'linear-gradient(150deg,#2E1B42,#5A3A80)',
@@ -417,14 +426,14 @@ const GRADS = {
 
 /* ═══════════════════════════════════════════════════════════════
    2. Catalogue — categories, each holding a few products.
-   Demo data for launch. The admin panel writes an updated copy of
-   this same shape to localStorage under CAT_KEY; if that's present
-   we use it instead, so edits made in the admin preview instantly
-   here on the same device. Swap for a real synced database (see
-   the admin panel's notes) once you're ready to go live for real
-   customers on their own phones.
+   Lives in Firebase Realtime Database (public read). This block is
+   only the fallback used the first time the page ever loads with
+   no network and no cache — the moment a real fetch succeeds, the
+   live catalogue takes over and gets cached for the next visit.
    ═══════════════════════════════════════════════════════════════ */
 const CAT_KEY = 'souqlik_categories';
+const FIREBASE_DB = 'https://souqlik-1008f-default-rtdb.europe-west1.firebasedatabase.app';
+const CAT_TTL = 5 * 60 * 1000; /* 5 minutes — a reload within this window skips the network */
 
 const DEFAULT_CATEGORIES = [
   {
@@ -517,15 +526,53 @@ const DEFAULT_CATEGORIES = [
 ];
 
 let CATEGORIES = DEFAULT_CATEGORIES;
-function loadCatalogue(){
+
+/* Firebase stores keyed collections as objects, not arrays — {catId: {...}}.
+   This turns that (or a real array, if it's ever shaped that way) into the
+   plain array of categories-with-items the rest of this file expects. */
+function normaliseCatalogue(raw){
+  if(!raw || typeof raw !== 'object') return null;
+  const cats = Object.values(raw).map(c => {
+    if(!c || typeof c !== 'object') return null;
+    const items = Object.values(c.items || {}).filter(it => it && it.id && it.name);
+    if(!items.length) return null;
+    return { ...c, items };
+  }).filter(Boolean);
+  return cats.length ? cats : null;
+}
+function readCatalogueCache(){
   try{
-    const raw = localStorage.getItem(CAT_KEY);
-    if(!raw) return;
-    const parsed = JSON.parse(raw);
-    if(Array.isArray(parsed) && parsed.length && parsed.every(c => c && c.id && Array.isArray(c.items))){
-      CATEGORIES = parsed;
+    const rec = JSON.parse(localStorage.getItem(CAT_KEY) || 'null');
+    return (rec && typeof rec.at === 'number' && Array.isArray(rec.data) && rec.data.length) ? rec : null;
+  }catch(e){ return null; }
+}
+function writeCatalogueCache(data){
+  try{ localStorage.setItem(CAT_KEY, JSON.stringify({ at:Date.now(), data })); }catch(e){}
+}
+async function loadCatalogue(){
+  const cached = readCatalogueCache();
+  if(cached && (Date.now() - cached.at) < CAT_TTL){
+    CATEGORIES = cached.data;
+    return; /* fresh enough — skip the network entirely */
+  }
+  if(cached) CATEGORIES = cached.data; /* show something immediately while we check for updates */
+  try{
+    const res = await fetch(FIREBASE_DB + '/categories.json', { cache:'no-store' });
+    if(res.ok){
+      const json = await res.json();
+      const cats = normaliseCatalogue(json);
+      if(cats){ CATEGORIES = cats; writeCatalogueCache(cats); }
     }
-  }catch(e){ /* keep the built-in demo catalogue */ }
+  }catch(e){ /* offline — the cache (or the built-in fallback) carries the page */ }
+}
+async function loadSettings(){
+  try{
+    const res = await fetch(FIREBASE_DB + '/settings.json', { cache:'no-store' });
+    if(res.ok){
+      const json = await res.json();
+      if(json && json.whatsapp) CONFIG.whatsapp = String(json.whatsapp);
+    }
+  }catch(e){ /* keep the built-in number */ }
 }
 function allItems(){ return CATEGORIES.flatMap(c => c.items.map(it => ({...it, catId:c.id}))); }
 function findItem(id){ return allItems().find(it => it.id === id) || null; }
@@ -667,7 +714,7 @@ function renderCategories(){
   document.getElementById('cats').innerHTML = CATEGORIES.map(c => `
     <button class="cat-tile" data-open-cat="${c.id}">
       <div class="awning teal">${c.name[LANG]}</div>
-      <div class="arch" style="background:${GRADS[c.icon]}"><div class="icon">${iconSvg(c.icon)}</div></div>
+      <div class="arch" style="background:${GRADS[c.icon]}">${archMedia(c)}</div>
       <div class="cat-body">
         <div class="cat-name">${c.name[LANG]}</div>
         <div class="cat-count">${t('itemCount',{n:c.items.length})}</div>
@@ -687,7 +734,7 @@ function stallCard(p){
       <button class="stall-btn" data-open-item="${p.id}">
         <div class="awning ${low ? 'low' : ''}">${p.tag[LANG]}</div>
         <div class="arch" style="background:${GRADS[p.icon]}">
-          <div class="icon">${iconSvg(p.icon)}</div>
+          ${archMedia(p)}
           ${out ? `<div class="badge-out">${t('outOfStock')}</div>` : ''}
         </div>
         <div class="stall-body">
@@ -712,8 +759,9 @@ function stallCard(p){
 let currentCat = null;
 function renderCategoryGrid(catId){
   const c = findCategory(catId); if(!c) return;
-  document.getElementById('cvArch').style.background = GRADS[c.icon];
-  document.getElementById('cvIcon').innerHTML = iconSvg(c.icon);
+  const cvArch = document.getElementById('cvArch');
+  cvArch.style.background = GRADS[c.icon];
+  cvArch.innerHTML = archMedia(c);
   document.getElementById('cvName').textContent = c.name[LANG];
   document.getElementById('cvNote').textContent = c.note ? c.note[LANG] : '';
   const grid = document.getElementById('cvGrid');
@@ -735,7 +783,7 @@ function renderProductView(id){
 
   document.getElementById('pvBackLabel').textContent = cat ? t('backToCat',{cat:cat.name[LANG]}) : t('backToShop');
   document.getElementById('pvGrid').innerHTML = `
-    <div class="pv-arch arch" style="background:${GRADS[p.icon]}"><div class="icon">${iconSvg(p.icon)}</div></div>
+    <div class="pv-arch arch" style="background:${GRADS[p.icon]}">${archMedia(p)}</div>
     <div>
       <span class="pv-tag">${p.tag[LANG]}</span>
       <h1 class="pv-name">${p.name[LANG]}</h1>
@@ -807,7 +855,7 @@ function renderCart(){
     const p = findItem(id); if(!p) return ''; const q = cart[id]; const cat = categoryOf(id);
     return `
     <div class="line">
-      <div class="thumb" style="background:${GRADS[p.icon]}">${iconSvg(p.icon)}</div>
+      <div class="thumb" style="background:${GRADS[p.icon]}">${archMedia(p)}</div>
       <div>
         <div class="nm">${p.name[LANG]}</div>
         <div class="cat">${cat ? cat.name[LANG] : ''}</div>
@@ -832,19 +880,20 @@ document.getElementById('closeCart').addEventListener('click', closeCartDrawer);
 document.getElementById('scrim').addEventListener('click', closeCartDrawer);
 
 /* ═══════════════════════════════════════════════════════════════
-   12. WhatsApp order — also logs the order for the admin panel
-   (shared localStorage key, same-device only — see ORDERS_KEY note)
+   12. WhatsApp order — also written to Firebase so it shows up in
+   the admin panel's Orders tab, from any customer's own phone.
+   The WhatsApp message is the one thing that must never fail, so
+   it's sent regardless of whether the database write succeeds.
    ═══════════════════════════════════════════════════════════════ */
-const ORDERS_KEY = 'souqlik_orders';
-function logOrder(record){
-  try{
-    const list = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
-    list.unshift(record);
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(list));
-  }catch(e){ /* storage full or blocked — the WhatsApp message is still sent */ }
-}
 function makeRef(){
   return 'SK' + Date.now().toString(36).toUpperCase().slice(-5) + Math.random().toString(36).toUpperCase().slice(2,4);
+}
+function logOrder(record){
+  fetch(FIREBASE_DB + '/orders.json', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify(record)
+  }).catch(e => { /* the customer already has the WhatsApp message — the shop won't lose the order */ });
 }
 function sendOrder(){
   const name = document.getElementById('cName').value.trim();
@@ -885,9 +934,8 @@ function toast(msg){
 /* ═══════════════════════════════════════════════════════════════
    14. Boot
    ═══════════════════════════════════════════════════════════════ */
-(function boot(){
+(async function boot(){
   LANG = detectLang();
-  loadCatalogue();
   loadCart();
   applyStatic();
   renderPeek();
@@ -896,6 +944,18 @@ function toast(msg){
   paintWaLinks();
   document.getElementById('yr').textContent = new Date().getFullYear();
   route();
+
+  await Promise.all([loadCatalogue(), loadSettings()]);
+  /* the catalogue (and possibly the WhatsApp number) may have just
+     changed from the built-in fallback to the live database — repaint
+     whatever depends on it, without disturbing where the visitor is */
+  applyStatic();
+  renderPeek();
+  renderCategories();
+  renderCart();
+  paintWaLinks();
+  if(currentCat) renderCategoryGrid(currentCat);
+  if(currentProduct) renderProductView(currentProduct);
 })();
 </script>
 </body>
