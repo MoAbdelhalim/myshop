@@ -1,0 +1,24 @@
+{
+  "rules": {
+    "categories": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'KR9JPV6I4GRudQtvSxKe7IJYsIB2'"
+    },
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'KR9JPV6I4GRudQtvSxKe7IJYsIB2'"
+    },
+    "orders": {
+      ".read": "auth != null && auth.uid === 'KR9JPV6I4GRudQtvSxKe7IJYsIB2'",
+      ".write": true
+    },
+    "suppliers": {
+      ".read": "auth != null && auth.uid === 'KR9JPV6I4GRudQtvSxKe7IJYsIB2'",
+      ".write": "auth != null && auth.uid === 'KR9JPV6I4GRudQtvSxKe7IJYsIB2'"
+    },
+    "votes": {
+      ".read": "auth != null && auth.uid === 'KR9JPV6I4GRudQtvSxKe7IJYsIB2'",
+      ".write": "auth != null && auth.uid === 'KR9JPV6I4GRudQtvSxKe7IJYsIB2'"
+    }
+  }
+}

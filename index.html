@@ -3,12 +3,71 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Souqlik · سوق ليك — A small souk, curated</title>
-<meta name="description" content="A few good categories, a few good finds in each. Pick what you like, we bring it to your door. Cash on delivery." />
+<title>Souqlik — A Small Souk, Curated | Shop Morocco, Cash on Delivery</title>
+<meta name="description" content="Souqlik — a small souk of a few good finds, sorted into categories, delivered anywhere in Morocco. Order in Arabic, French or English. Cash on delivery, no account needed." />
+<meta name="keywords" content="Souqlik, souk, online shopping Morocco, cash on delivery Morocco, achat en ligne Maroc, paiement à la livraison, تسوق اونلاين المغرب, الدفع عند الاستلام" />
 <meta name="theme-color" content="#2E1B42" />
+<meta name="robots" content="index, follow" />
+<meta name="author" content="Souqlik" />
+
+<!-- canonical + language -->
+<link rel="canonical" href="https://souqlik.store/" />
+<meta name="content-language" content="ar, fr, en" />
+
+<!-- geo / local targeting — Morocco -->
+<meta name="geo.region" content="MA" />
+<meta name="geo.placename" content="Morocco" />
+<meta name="distribution" content="Morocco" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Souqlik" />
+<meta property="og:title" content="Souqlik — A Small Souk, Curated" />
+<meta property="og:description" content="A few good categories, a few good finds in each. Cash on delivery, anywhere in Morocco." />
+<meta property="og:url" content="https://souqlik.store/" />
+<meta property="og:image" content="https://souqlik.store/assets/og-image.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="fr_MA" />
+<meta property="og:locale:alternate" content="ar_MA" />
+<meta property="og:locale:alternate" content="en_US" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Souqlik — A Small Souk, Curated" />
+<meta name="twitter:description" content="A few good categories, a few good finds in each. Cash on delivery, anywhere in Morocco." />
+<meta name="twitter:image" content="https://souqlik.store/assets/og-image.jpg" />
+
+<!-- icons -->
+<link rel="icon" href="/assets/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Work+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+<!-- structured data — the business itself; product-level data isn't
+     included since the catalogue loads dynamically from Firebase and
+     static JSON-LD would drift out of sync with real stock/prices -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "OnlineStore",
+  "name": "Souqlik",
+  "alternateName": "سوق ليك",
+  "url": "https://souqlik.store/",
+  "logo": "https://souqlik.store/assets/icon-512.png",
+  "image": "https://souqlik.store/assets/og-image.jpg",
+  "description": "A small souk of a few good finds, sorted into categories. Cash on delivery, anywhere in Morocco.",
+  "areaServed": { "@type": "Country", "name": "Morocco" },
+  "priceRange": "$$",
+  "paymentAccepted": "Cash on delivery",
+  "availableLanguage": ["ar", "fr", "en"]
+}
+</script>
 <style>
 /* ═══════════════════════════════════════════════════════════════
    SOUQLIK — a small digital souk.
@@ -529,14 +588,41 @@ let CATEGORIES = DEFAULT_CATEGORIES;
 
 /* Firebase stores keyed collections as objects, not arrays — {catId: {...}}.
    This turns that (or a real array, if it's ever shaped that way) into the
-   plain array of categories-with-items the rest of this file expects. */
+   plain array of categories-with-items the rest of this file expects —
+   and fills in any missing field, so a partial or hand-edited database
+   entry never breaks a customer's page instead of just looking plain. */
+function normI18n(obj){ obj = obj || {}; return { en: obj.en || '', fr: obj.fr || '', ar: obj.ar || '' }; }
+function normBenefits(obj){
+  obj = obj || {};
+  const arr = (v) => Array.isArray(v) ? v.filter(s => typeof s === 'string') : [];
+  return { en: arr(obj.en), fr: arr(obj.fr), ar: arr(obj.ar) };
+}
+function normItem(it){
+  it = it || {};
+  return {
+    id: it.id || ('item-' + Math.random().toString(36).slice(2,8)),
+    icon: ICONS[it.icon] ? it.icon : 'projector',
+    img: it.img || '',
+    tag: normI18n(it.tag), name: normI18n(it.name), hook: normI18n(it.hook), desc: normI18n(it.desc),
+    price: Number(it.price) || 0, was: it.was ? Number(it.was) : 0,
+    stock: (it.stock === undefined || it.stock === null) ? 0 : it.stock,
+    benefits: normBenefits(it.benefits)
+  };
+}
 function normaliseCatalogue(raw){
   if(!raw || typeof raw !== 'object') return null;
   const cats = Object.values(raw).map(c => {
     if(!c || typeof c !== 'object') return null;
-    const items = Object.values(c.items || {}).filter(it => it && it.id && it.name);
+    const rawItems = Array.isArray(c.items) ? c.items : Object.values(c.items || {});
+    const items = rawItems.filter(it => it && it.id).map(normItem);
     if(!items.length) return null;
-    return { ...c, items };
+    return {
+      id: c.id || ('cat-' + Math.random().toString(36).slice(2,8)),
+      icon: ICONS[c.icon] ? c.icon : 'home',
+      img: c.img || '',
+      name: normI18n(c.name), note: normI18n(c.note),
+      items
+    };
   }).filter(Boolean);
   return cats.length ? cats : null;
 }

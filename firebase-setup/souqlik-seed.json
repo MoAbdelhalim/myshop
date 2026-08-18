@@ -1,0 +1,455 @@
+{
+  "categories": {
+    "souq": {
+      "id": "souq",
+      "icon": "home",
+      "name": {
+        "en": "Souq picks",
+        "fr": "Sélection du souq",
+        "ar": "مختارات السوق"
+      },
+      "note": {
+        "en": "Fresh in from Cloudinary — rename this category and sort these 13 into your own groups from the admin panel.",
+        "fr": "Fraîchement arrivés de Cloudinary — renommez cette catégorie et répartissez ces 13 pièces depuis le panneau admin.",
+        "ar": "وصلت حديثًا من Cloudinary — أعد تسمية هذه الفئة ووزّع القطع الثلاث عشرة من لوحة التحكم."
+      },
+      "items": {
+        "item-01": {
+          "id": "item-01",
+          "icon": "home",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-01.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 01 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-02": {
+          "id": "item-02",
+          "icon": "fan",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-02.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 02 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-03": {
+          "id": "item-03",
+          "icon": "posture",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-03.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 03 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-04": {
+          "id": "item-04",
+          "icon": "earbuds",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-04.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 04 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-05": {
+          "id": "item-05",
+          "icon": "mount",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-05.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 05 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-06": {
+          "id": "item-06",
+          "icon": "blender",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-06.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 06 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-07": {
+          "id": "item-07",
+          "icon": "projector",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-07.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 07 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-08": {
+          "id": "item-08",
+          "icon": "luggage",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-08.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 08 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-09": {
+          "id": "item-09",
+          "icon": "heart",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-09.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 09 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-10": {
+          "id": "item-10",
+          "icon": "home",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-10.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 10 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-11": {
+          "id": "item-11",
+          "icon": "fan",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-11.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 11 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-12": {
+          "id": "item-12",
+          "icon": "posture",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-12.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 12 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        },
+        "item-13": {
+          "id": "item-13",
+          "icon": "earbuds",
+          "img": "https://res.cloudinary.com/tlq6wzsg/image/upload/v1786901426/item-13.jpg",
+          "tag": {
+            "en": "New",
+            "fr": "Nouveau",
+            "ar": "جديد"
+          },
+          "name": {
+            "en": "Item 13 — rename me",
+            "fr": "",
+            "ar": ""
+          },
+          "hook": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          },
+          "price": 0,
+          "was": 0,
+          "stock": 0,
+          "benefits": {
+            "en": [],
+            "fr": [],
+            "ar": []
+          },
+          "desc": {
+            "en": "",
+            "fr": "",
+            "ar": ""
+          }
+        }
+      }
+    }
+  },
+  "orders": {},
+  "suppliers": {},
+  "votes": {},
+  "settings": {
+    "whatsapp": "212600000000"
+  }
+}
