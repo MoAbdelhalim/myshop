@@ -136,6 +136,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
 .img-edit{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
 .img-prev{ width:64px; height:64px; border-radius:14px 14px 6px 6px; overflow:hidden; background:var(--page); border:1px solid var(--line); display:grid; place-items:center; color:var(--ink-faint); flex:none; }
 .img-prev img{ width:100%; height:100%; object-fit:cover; }
+.img-prev svg{ width:60%; height:60%; }
 .img-acts{ flex:1; min-width:180px; display:flex; flex-direction:column; gap:6px; }
 .img-acts .btn{ align-self:flex-start; }
 
@@ -168,7 +169,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
     <input id="gPass" type="password" autocomplete="current-password" />
     <button class="gate-btn" id="gateBtn">Sign in</button>
     <p class="gate-err hide" id="gateErr"></p>
-    <p class="gate-hint">This account needs to exist already under Firebase → Authentication → Users, with Email/Password sign-in enabled.</p>
+    <p class="gate-hint">This account needs to already exist, with email/password sign-in enabled for it.</p>
   </div>
 </div>
 
@@ -252,7 +253,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
   <!-- ═══ CATALOGUE ═══ -->
   <section class="card hide" id="tab-catalogue">
     <h2>Catalogue</h2>
-    <p class="note">Categories hold a few products each. Upload a real photo per product (or paste one you already have on Cloudinary) — it replaces the icon placeholder everywhere on the storefront.</p>
+    <p class="note">Categories hold a few products each. Upload a real photo per product (or paste a link to one you already have) — it replaces the icon placeholder everywhere on the storefront.</p>
     <div class="row" style="margin-top:12px">
       <button class="btn accent" id="addCatBtn">+ Add category</button>
     </div>
@@ -279,7 +280,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
     </div>
     <div class="note" style="margin-top:18px; padding-top:14px; border-top:1px solid var(--line)">
       <b style="color:var(--ink)">About this admin panel</b><br><br>
-      This panel and the storefront both read and write the same Firebase Realtime Database — so anything you save here (catalogue, settings) goes live for every visitor immediately, and every order a customer places, from their own phone, shows up in Orders here. Product photos go through Cloudinary; uploading one here stores it there and saves the link into the catalogue.
+      This panel and the storefront both read and write the same database — so anything you save here (catalogue, settings) goes live for every visitor immediately, and every order a customer places, from their own phone, shows up in Orders here. Product photos go through a separate photo storage service; uploading one here stores it there and saves the link into the catalogue.
     </div>
   </section>
 
@@ -441,7 +442,7 @@ function showGateErr(msg){ gateErr.textContent = msg; gateErr.classList.remove('
 function friendlyAuthError(err){
   const c = err && err.code || '';
   if(c.includes('wrong-password') || c.includes('invalid-credential') || c.includes('invalid-login')) return 'Wrong email or password.';
-  if(c.includes('user-not-found')) return 'No account with that email — create it under Firebase → Authentication → Users.';
+  if(c.includes('user-not-found')) return 'No account with that email — it needs to be created first.';
   if(c.includes('too-many-requests')) return 'Too many attempts — wait a moment and try again.';
   return err && err.message ? err.message : 'Could not sign in.';
 }
