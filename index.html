@@ -72,9 +72,11 @@
 /* ═══════════════════════════════════════════════════════════════
    SOUQLIK — a small digital souk.
    Signature device: the "stall arch" — every product and every
-   category sits inside a rounded doorway, topped by a striped
-   awning tab. Home shows a row of stalls (categories); step inside
-   one and you're in its own little alley of a few good things.
+   category sits inside a rounded doorway, filled with a real photo
+   wherever one exists. Home shows a row of stalls (categories);
+   step inside one and you're in its own little alley of a few good
+   things. Kept deliberately plain otherwise — one accent colour,
+   no decorative motion, nothing that isn't carrying information.
    ═══════════════════════════════════════════════════════════════ */
 :root{
   --ink:        #241934;
@@ -119,7 +121,7 @@ a{ color:inherit; text-decoration:none; }
 :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 .shell{ width:min(100% - 28px, var(--shell)); margin-inline:auto; }
 .hide{ display:none !important; }
-[data-icon] svg{ width:100%; height:100%; }
+svg[data-icon]{ width:100%; height:100%; }
 
 html[lang="ar"] body{ font-family:var(--f-ar); }
 html[lang="ar"] *{ letter-spacing:normal !important; }
@@ -128,14 +130,10 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
   direction:ltr; unicode-bidi:isolate; display:inline-block;
 }
 
-/* ── ticker ─────────────────────────────────────────────────── */
-.ticker{ background:var(--brand); color:var(--on-brand); overflow:hidden; white-space:nowrap; padding:8px 0; font-size:.8rem; font-weight:500; }
-.ticker-track{ display:inline-block; padding-inline-start:100%; animation:slide 26s linear infinite; }
-.ticker-track b{ font-weight:700; color:var(--accent-lit); }
-.ticker-track span{ margin:0 24px; opacity:.5; }
-@keyframes slide{ from{ transform:translateX(0);} to{ transform:translateX(-100%);} }
-[dir="rtl"] .ticker-track{ animation-name:slideR; }
-@keyframes slideR{ from{ transform:translateX(0);} to{ transform:translateX(100%);} }
+/* ── trust line ─────────────────────────────────────────────── */
+.ticker{ background:var(--brand); color:var(--on-brand); padding:10px 0; font-size:.76rem; font-weight:500; text-align:center; }
+.ticker span{ margin:0 14px; opacity:.45; }
+.ticker b{ font-weight:700; }
 
 /* ── header ─────────────────────────────────────────────────── */
 .masthead{ position:sticky; top:0; z-index:60; background:rgba(245,240,230,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
@@ -152,43 +150,44 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .cartbtn .count{ min-width:20px; height:20px; padding:0 6px; display:grid; place-items:center; background:var(--accent); color:var(--on-accent); border-radius:var(--r-pill); font-size:.68rem; font-weight:800; font-variant-numeric:tabular-nums; }
 
 /* ── hero ───────────────────────────────────────────────────── */
-.hero{ background:radial-gradient(120% 160% at 85% -10%, rgba(224,137,28,.30), transparent 55%), linear-gradient(160deg, #2E1B42 0%, #3A2352 60%, #422A5C 100%); color:var(--on-brand); overflow:hidden; position:relative; }
+.hero{ background:var(--brand); color:var(--on-brand); overflow:hidden; position:relative; }
 .hero-in{ padding:clamp(46px,8vw,84px) 0 0; text-align:center; }
-.eyebrow{ display:inline-flex; align-items:center; gap:8px; font-size:.68rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-lit); background:rgba(224,137,28,.14); border:1px solid rgba(224,137,28,.32); border-radius:var(--r-pill); padding:6px 14px; }
-.hero h1{ font-family:var(--f-disp); font-weight:800; margin:18px auto 0; max-width:22ch; font-size:clamp(2rem, 6.4vw, 3.4rem); line-height:1.08; letter-spacing:-.01em; }
+.eyebrow{ font-size:.7rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-lit); }
+.hero h1{ font-family:var(--f-disp); font-weight:800; margin:16px auto 0; max-width:22ch; font-size:clamp(2rem, 6.4vw, 3.4rem); line-height:1.08; letter-spacing:-.01em; }
 .hero h1 em{ font-style:normal; color:var(--accent-lit); }
 .hero p{ margin:14px auto 0; max-width:46ch; color:#D8CEE6; font-size:1.02rem; }
-.hero .cta{ display:inline-flex; align-items:center; gap:8px; margin-top:24px; background:var(--accent); color:var(--on-accent); border:0; border-radius:var(--r-pill); padding:14px 28px; font-size:.84rem; font-weight:800; transition:filter .3s var(--ease), transform .3s var(--ease); }
-.hero .cta:hover{ filter:brightness(1.1); transform:translateY(-1px); }
+.hero .cta{ display:inline-flex; align-items:center; gap:8px; margin-top:24px; background:var(--accent); color:var(--on-accent); border:0; border-radius:var(--r-pill); padding:14px 28px; font-size:.84rem; font-weight:800; transition:filter .2s; }
+.hero .cta:hover{ filter:brightness(1.1); }
 .hero .cta svg{ width:15px; height:15px; }
 .peek{ display:flex; justify-content:center; gap:12px; margin-top:clamp(30px,6vw,52px); }
-.peek-arch{ width:clamp(42px,8vw,72px); aspect-ratio:3/4; border-radius:999px 999px 8px 8px; background:linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.18); display:grid; place-items:center; color:rgba(255,255,255,.55); animation:bob 5s var(--ease) infinite; }
+.peek-arch{ position:relative; overflow:hidden; width:clamp(42px,8vw,72px); aspect-ratio:3/4; border-radius:999px 999px 8px 8px; background:linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.18); display:grid; place-items:center; color:rgba(255,255,255,.55); }
 .peek-arch svg{ width:38%; height:38%; }
-.peek-arch:nth-child(2n){ animation-delay:.6s; } .peek-arch:nth-child(3n){ animation-delay:1.2s; }
-@keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-7px);} }
+.peek-arch img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .hero-fade{ height:clamp(30px,6vw,54px); background:linear-gradient(180deg, transparent, var(--page)); margin-top:-2px; }
 @media (max-width:640px){ .peek :nth-child(n+5){ display:none; } }
 
 /* ── section heads ──────────────────────────────────────────── */
 .sec-head{ text-align:center; margin:8px 0 26px; }
-.sec-head .eyebrow{ color:var(--teal); background:var(--teal-pale); border-color:transparent; }
-.sec-head h2{ font-family:var(--f-disp); font-weight:800; margin:14px 0 0; font-size:clamp(1.5rem, 4.4vw, 2.1rem); color:var(--brand); }
+.sec-head .eyebrow{ color:var(--ink-faint); }
+.sec-head h2{ font-family:var(--f-disp); font-weight:800; margin:10px 0 0; font-size:clamp(1.5rem, 4.4vw, 2.1rem); color:var(--brand); }
 .sec-head p{ margin:8px auto 0; max-width:44ch; color:var(--ink-soft); font-size:.92rem; }
 
-/* ── awning + arch (shared by category tiles and product stalls) ── */
-.awning{ display:flex; align-items:center; justify-content:center; gap:6px; background:repeating-linear-gradient(115deg, var(--accent) 0 14px, var(--accent-lit) 14px 28px); color:var(--on-accent); font-size:.64rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:6px 10px; }
-.awning.teal{ background:repeating-linear-gradient(115deg, var(--teal) 0 14px, #2C9184 14px 28px); }
-.awning.low{ background:repeating-linear-gradient(115deg, var(--sale) 0 14px, #E1704A 14px 28px); }
+/* ── arch (shared by category tiles and product stalls) + a small
+   corner badge for a real stock count or an editorial tag — no
+   striped ribbons, just a plain label when there's something worth
+   saying ── */
 .arch{ position:relative; overflow:hidden; display:grid; place-items:center; }
 .arch .icon{ color:rgba(255,255,255,.92); }
 .arch img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.badge-out{ position:absolute; inset:0; background:rgba(36,25,52,.62); backdrop-filter:blur(1px); display:grid; place-items:center; color:#fff; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.badge{ position:absolute; top:10px; inset-inline-start:10px; z-index:2; background:rgba(255,255,255,.95); color:var(--ink); font-size:.64rem; font-weight:700; padding:5px 10px; border-radius:var(--r-pill); border:1px solid var(--line); }
+.badge.low{ color:var(--sale); }
+.badge-out{ position:absolute; inset:0; background:rgba(36,25,52,.55); display:grid; place-items:center; color:#fff; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
 
 /* ── category tiles (home) ─────────────────────────────────── */
 .shop{ padding:56px 0 8px; }
 .cats{ display:grid; gap:20px; grid-template-columns:repeat(3, 1fr); }
-.cat-tile{ all:unset; cursor:pointer; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; display:block; transition:transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s; }
-.cat-tile:hover{ transform:translateY(-4px); box-shadow:0 18px 34px -20px rgba(46,27,66,.35); border-color:var(--accent-pale); }
+.cat-tile{ all:unset; cursor:pointer; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; display:block; transition:border-color .2s; }
+.cat-tile:hover{ border-color:var(--accent-pale); }
 .cat-tile .arch{ aspect-ratio:16/10; margin:0; border-radius:0; }
 .cat-tile .arch .icon{ width:20%; height:20%; }
 .cat-body{ padding:16px 18px 18px; text-align:center; }
@@ -199,8 +198,8 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 
 /* ── product grid (inside a category) ─────────────────────── */
 .grid{ display:grid; gap:20px; grid-template-columns:repeat(3, 1fr); }
-.stall{ background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; text-align:start; display:flex; flex-direction:column; transition:transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s; }
-.stall:hover{ transform:translateY(-4px); box-shadow:0 18px 34px -20px rgba(46,27,66,.35); border-color:var(--accent-pale); }
+.stall{ background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; text-align:start; display:flex; flex-direction:column; transition:border-color .2s; }
+.stall:hover{ border-color:var(--accent-pale); }
 .stall-btn{ all:unset; display:block; cursor:pointer; }
 .stall .arch{ aspect-ratio:4/5; margin:14px 14px 0; border-radius:999px 999px 10px 10px; }
 .stall .arch .icon{ width:34%; height:34%; }
@@ -216,6 +215,9 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .add:hover{ filter:brightness(1.2); }
 .add.in{ background:var(--teal-pale); color:var(--teal); }
 .add:disabled{ background:var(--line); color:var(--ink-faint); cursor:not-allowed; }
+.share-btn{ flex:none; width:38px; height:38px; border-radius:var(--r-pill); border:1px solid var(--line); background:var(--panel); color:var(--brand); display:grid; place-items:center; transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease); }
+.share-btn:hover{ background:var(--page); border-color:var(--accent-pale); transform:translateY(-1px); }
+.share-btn svg{ width:16px; height:16px; }
 @media (max-width:900px){ .grid{ grid-template-columns:repeat(2,1fr); } }
 @media (max-width:520px){ .grid{ gap:14px; } .stall-name{ font-size:.92rem; } }
 
@@ -248,7 +250,10 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 /* ── cart drawer ────────────────────────────────────────────── */
 .scrim{ position:fixed; inset:0; z-index:80; background:rgba(36,25,52,.44); backdrop-filter:blur(3px); opacity:0; pointer-events:none; transition:opacity .4s var(--ease); }
 .scrim.on{ opacity:1; pointer-events:auto; }
-.drawer{ position:fixed; z-index:90; inset-block:0; inset-inline-end:0; width:min(430px,100%); background:var(--panel); border-inline-start:1px solid var(--line); box-shadow:-18px 0 44px -24px rgba(0,0,0,.4); transform:translateX(103%); transition:transform .5s var(--ease); display:flex; flex-direction:column; }
+/* the cart can be opened from a product's own page too (.ov, z-index
+   100) — needs to sit above it, not just above the base page */
+#scrim{ z-index:105; }
+.drawer{ position:fixed; z-index:110; inset-block:0; inset-inline-end:0; width:min(430px,100%); background:var(--panel); border-inline-start:1px solid var(--line); box-shadow:-18px 0 44px -24px rgba(0,0,0,.4); transform:translateX(103%); transition:transform .5s var(--ease); display:flex; flex-direction:column; }
 [dir="rtl"] .drawer{ transform:translateX(-103%); }
 .drawer.on{ transform:none !important; }
 .drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 14px; border-bottom:1px solid var(--line); }
@@ -283,7 +288,43 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .field textarea{ resize:vertical; min-height:52px; }
 .send{ width:100%; border:0; border-radius:var(--r-pill); padding:14px; background:#25D366; color:#fff; font-size:.78rem; font-weight:800; display:flex; align-items:center; justify-content:center; gap:9px; transition:filter .25s var(--ease); }
 .send:hover{ filter:brightness(1.06); }
+.send svg{ width:17px; height:17px; flex:none; }
 .mini-note{ font-size:.68rem; color:var(--ink-faint); text-align:center; margin:9px 0 0; line-height:1.5; }
+
+/* ── share sheet: bottom sheet, distinct from the side-drawer cart.
+   Needs to sit above .ov (z-index 100) too, since it opens from a
+   product's own page, not just from the base grid. ── */
+#shareScrim{ z-index:105; }
+.share-sheet{
+  position:fixed; z-index:110; inset-inline:0; inset-block-end:0; margin-inline:auto;
+  width:min(480px, 100%); max-height:min(78vh, 560px);
+  background:var(--panel); border-radius:22px 22px 0 0;
+  border:1px solid var(--line); border-bottom:0;
+  box-shadow:0 -18px 44px -24px rgba(0,0,0,.35);
+  transform:translateY(103%); transition:transform .5s var(--ease);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.share-sheet.on{ transform:none; }
+.share-sheet::before{
+  content:''; display:block; width:36px; height:4px; border-radius:var(--r-pill);
+  background:var(--line); margin:10px auto 0;
+}
+.share-head{ display:flex; align-items:center; gap:12px; padding:14px 18px 12px; border-bottom:1px solid var(--line); }
+.share-preview{ display:flex; align-items:center; gap:11px; flex:1; min-width:0; }
+.share-thumb{ width:44px; height:44px; border-radius:999px 999px 8px 8px; overflow:hidden; display:grid; place-items:center; flex:none; }
+.share-thumb .icon{ width:44%; height:44%; color:#fff; }
+.share-thumb img{ width:100%; height:100%; object-fit:cover; }
+.share-pname{ font-weight:700; font-size:.86rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.share-pprice{ font-size:.76rem; color:var(--accent); font-weight:800; margin-top:1px; }
+.share-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; padding:16px 14px calc(18px + env(safe-area-inset-bottom)); overflow-y:auto; }
+.share-tile{ all:unset; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:7px; padding:10px 4px; border-radius:var(--r-sm); text-align:center; }
+.share-tile:hover{ background:var(--page); }
+.share-tile span:last-child{ font-size:.66rem; color:var(--ink-soft); font-weight:600; }
+.share-tile.done span:last-child{ color:var(--teal); font-weight:800; }
+.share-ico{ width:48px; height:48px; border-radius:var(--r-pill); display:grid; place-items:center; }
+.share-ico svg{ width:22px; height:22px; }
+@media (max-width:380px){ .share-grid{ grid-template-columns:repeat(3,1fr); } }
+
 
 /* ── full-screen overlays (category view, product view) ──────── */
 .ov{ position:fixed; inset:0; z-index:100; background:var(--page); overflow-y:auto; transform:translateY(100%); transition:transform .45s var(--ease); }
@@ -306,7 +347,7 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .pv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:start; }
 .pv-arch{ aspect-ratio:1/1.05; border-radius:999px 999px 22px 22px; position:sticky; top:76px; }
 .pv-arch .icon{ width:32%; height:32%; }
-.pv-tag{ display:inline-flex; align-items:center; gap:6px; font-size:.66rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); background:var(--teal-pale); border-radius:var(--r-pill); padding:6px 12px; }
+.pv-tag{ font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); }
 .pv-name{ font-family:var(--f-disp); font-weight:800; font-size:clamp(1.5rem,3.6vw,2.1rem); margin:14px 0 0; color:var(--brand); line-height:1.15; }
 .pv-hook{ font-size:.98rem; color:var(--ink-soft); margin:10px 0 0; max-width:46ch; }
 .pv-price-row{ display:flex; align-items:baseline; gap:10px; margin:18px 0 0; }
@@ -320,6 +361,9 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .pv-buy{ display:flex; gap:10px; margin-top:26px; align-items:center; }
 .pv-add{ flex:1; border:0; border-radius:var(--r-pill); padding:15px; background:var(--brand); color:#fff; font-size:.86rem; font-weight:800; transition:filter .25s var(--ease); }
 .pv-add:hover{ filter:brightness(1.2); } .pv-add:disabled{ background:var(--line); color:var(--ink-faint); }
+.pv-share{ flex:none; display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--panel); color:var(--brand); border-radius:var(--r-pill); padding:0 18px; height:50px; font-size:.82rem; font-weight:800; transition:background .25s var(--ease), border-color .25s var(--ease), transform .25s var(--ease); }
+.pv-share:hover{ background:var(--page); border-color:var(--accent-pale); transform:translateY(-1px); }
+.pv-share svg{ width:17px; height:17px; }
 .pv-desc{ margin-top:30px; padding-top:26px; border-top:1px solid var(--line); font-size:.92rem; color:var(--ink-soft); max-width:60ch; }
 .pv-desc h3{ font-family:var(--f-disp); color:var(--brand); font-size:1rem; margin:0 0 8px; }
 .pv-stock{ font-size:.76rem; font-weight:700; margin-top:14px; }
@@ -335,15 +379,10 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 </head>
 <body>
 
-<div class="ticker" aria-hidden="true">
-  <div class="ticker-track">
-    <b data-i18n="tick1">Cash on delivery</b><span>◆</span>
-    <b data-i18n="tick2">Delivered nationwide</b><span>◆</span>
-    <b data-i18n="tick3">A few finds, chosen on purpose</b><span>◆</span>
-    <b data-i18n="tick1">Cash on delivery</b><span>◆</span>
-    <b data-i18n="tick2">Delivered nationwide</b><span>◆</span>
-    <b data-i18n="tick3">A few finds, chosen on purpose</b><span>◆</span>
-  </div>
+<div class="ticker">
+  <b data-i18n="tick1">Cash on delivery</b><span>·</span>
+  <b data-i18n="tick2">Delivered nationwide</b><span>·</span>
+  <b data-i18n="tick3">A few finds, chosen on purpose</b>
 </div>
 
 <header class="masthead">
@@ -433,6 +472,22 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
   </div>
 </aside>
 
+<!-- ── share sheet: one product, a preview, a choice of platforms ── -->
+<div class="scrim" id="shareScrim"></div>
+<div class="share-sheet" id="shareSheet" aria-label="Share">
+  <div class="share-head">
+    <div class="share-preview">
+      <div class="share-thumb" id="shareThumb"></div>
+      <div>
+        <div class="share-pname" id="sharePName"></div>
+        <div class="share-pprice" id="sharePPrice"></div>
+      </div>
+    </div>
+    <button class="x" id="shareClose" aria-label="Close">×</button>
+  </div>
+  <div class="share-grid" id="shareGrid"></div>
+</div>
+
 <!-- ── category view: the alley of products inside one category ── -->
 <section class="ov" id="cview" aria-label="Category">
   <div class="ov-top"><div class="shell"><button class="ov-back" id="cvBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg><span data-i18n="backToShop">Back to the souk</span></button></div></div>
@@ -476,6 +531,7 @@ function archMedia(p){
     ? `<img src="${p.img}" alt="${(p.name && p.name[LANG]) || ''}" loading="lazy" />`
     : `<div class="icon">${iconSvg(p.icon)}</div>`;
 }
+const SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
 const GRADS = {
   projector:'linear-gradient(150deg,#4C2E73,#8A4FA8)', fan:'linear-gradient(150deg,#1E7268,#3FA89A)',
   posture:'linear-gradient(150deg,#8A4B22,#D08A3F)', earbuds:'linear-gradient(150deg,#2E1B42,#5A3A80)',
@@ -665,6 +721,92 @@ function findItem(id){ return allItems().find(it => it.id === id) || null; }
 function findCategory(id){ return CATEGORIES.find(c => c.id === id) || null; }
 function categoryOf(itemId){ return CATEGORIES.find(c => c.items.some(it => it.id === itemId)) || null; }
 
+/* Shareable link straight to one product's own page — works from
+   anywhere (WhatsApp, notes, another site) since it's just this same
+   page with a hash the router already knows how to open. */
+function productShareUrl(id){
+  return location.origin + location.pathname + '#p-' + id;
+}
+
+/* ── platform icons — brand-coloured so the sheet reads at a glance,
+   the way every share sheet works, rather than matching the site's
+   own line-icon style for these specific eight marks ── */
+const PLATFORM_ICONS = {
+  whatsapp: { bg:'#25D366', svg:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.3 0-.5-.1-.1-.6-1.5-.8-2-.2-.5-.4-.4-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-1 .9-1 2.3s1 2.6 1.1 2.8c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.5-.3z"/><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2z"/></svg>' },
+  facebook: { bg:'#1877F2', svg:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M24 12.07C24 5.66 18.63.29 12.07.29S.14 5.66.14 12.07c0 5.6 4.16 10.24 9.56 11.14v-7.88H6.9v-3.26h2.8V9.53c0-2.76 1.64-4.29 4.16-4.29 1.2 0 2.46.22 2.46.22v2.7h-1.39c-1.37 0-1.8.85-1.8 1.72v2.06h3.06l-.49 3.26h-2.57v7.88c5.4-.9 9.56-5.54 9.56-11.14z"/></svg>' },
+  x:        { bg:'#0F1419', svg:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.83l-5.21-6.82-5.97 6.82H1.5l7.73-8.84L1.06 2.25h7l4.71 6.23zm-1.16 17.52h1.83L6.9 4.13H4.94z"/></svg>' },
+  telegram: { bg:'#26A5E4', svg:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M5.5 12.2 20.9 6.3c.7-.3 1.4.2 1.1 1.1l-2.6 12.3c-.2.8-.7 1-1.3.6l-3.7-2.7-1.8 1.7c-.2.2-.4.3-.7.3l.3-3.9 7.1-6.4c.3-.3 0-.4-.4-.2L10 13.9l-3.8-1.2c-.8-.3-.9-.9.1-1.2z"/></svg>' },
+  email:    { bg:'#6E6180', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>' },
+  sms:      { bg:'#6E6180', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h16v12H8l-4 3.5z"/></svg>' },
+  copy:     { bg:'#2E1B42', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5 14.5 9.5"/><path d="M11 7l1-1a3 3 0 0 1 4.24 4.24l-1 1"/><path d="M13 17l-1 1a3 3 0 0 1-4.24-4.24l1-1"/></svg>' },
+  more:     { bg:'#E0891C', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>' }
+};
+function platformTile(key, label){
+  const ic = PLATFORM_ICONS[key];
+  return `<button class="share-tile" data-platform="${key}"><span class="share-ico" style="background:${ic.bg}">${ic.svg}</span><span>${label}</span></button>`;
+}
+
+let shareItem = null;
+function openShareSheet(id, evt){
+  if(evt) evt.stopPropagation();
+  const p = findItem(id); if(!p) return;
+  shareItem = id;
+  const url = productShareUrl(id);
+  const msg = t('shareVia') + ': ' + p.name[LANG] + ' — ' + p.price + ' DH';
+
+  document.getElementById('shareThumb').style.background = GRADS[p.icon];
+  document.getElementById('shareThumb').innerHTML = archMedia(p);
+  document.getElementById('sharePName').textContent = p.name[LANG];
+  document.getElementById('sharePPrice').textContent = p.price + ' DH';
+
+  const tiles = [
+    platformTile('whatsapp', 'WhatsApp'),
+    platformTile('facebook', 'Facebook'),
+    platformTile('x', 'X'),
+    platformTile('telegram', 'Telegram'),
+    platformTile('sms', t('sms')),
+    platformTile('email', t('email')),
+    platformTile('copy', t('copyLink'))
+  ];
+  if(navigator.share) tiles.push(platformTile('more', t('moreApps')));
+  const grid = document.getElementById('shareGrid');
+  grid.innerHTML = tiles.join('');
+
+  grid.querySelectorAll('[data-platform]').forEach(btn => btn.addEventListener('click', () => runShare(btn.dataset.platform, p, url, msg, btn)));
+
+  document.getElementById('shareScrim').classList.add('on');
+  document.getElementById('shareSheet').classList.add('on');
+}
+function closeShareSheet(){
+  document.getElementById('shareScrim').classList.remove('on');
+  document.getElementById('shareSheet').classList.remove('on');
+}
+async function runShare(platform, p, url, msg, btn){
+  const enc = encodeURIComponent;
+  switch(platform){
+    case 'whatsapp': window.open('https://wa.me/?text=' + enc(msg + ' ' + url), '_blank', 'noopener'); closeShareSheet(); break;
+    case 'facebook': window.open('https://www.facebook.com/sharer/sharer.php?u=' + enc(url), '_blank', 'noopener'); closeShareSheet(); break;
+    case 'x': window.open('https://twitter.com/intent/tweet?text=' + enc(msg) + '&url=' + enc(url), '_blank', 'noopener'); closeShareSheet(); break;
+    case 'telegram': window.open('https://t.me/share/url?url=' + enc(url) + '&text=' + enc(msg), '_blank', 'noopener'); closeShareSheet(); break;
+    case 'email': window.location.href = 'mailto:?subject=' + enc(p.name[LANG] + ' — Souqlik') + '&body=' + enc(msg + '\\n\\n' + url); closeShareSheet(); break;
+    case 'sms': window.location.href = (/iPhone|iPad|iPod/.test(navigator.userAgent) ? 'sms:&body=' : 'sms:?body=') + enc(msg + ' ' + url); closeShareSheet(); break;
+    case 'more':
+      try{ await navigator.share({ title: p.name[LANG] + ' — Souqlik', text: msg, url }); }catch(e){}
+      closeShareSheet();
+      break;
+    case 'copy':
+      try{
+        await navigator.clipboard.writeText(url);
+        const label = btn.querySelector('span:last-child'); const prev = label.textContent;
+        label.textContent = t('copied'); btn.classList.add('done');
+        setTimeout(() => { label.textContent = prev; btn.classList.remove('done'); }, 1800);
+      }catch(e){ window.prompt(t('shareLinkCopied'), url); }
+      break;
+  }
+}
+document.getElementById('shareClose').addEventListener('click', closeShareSheet);
+document.getElementById('shareScrim').addEventListener('click', closeShareSheet);
+
 /* ═══════════════════════════════════════════════════════════════
    3. Config
    ═══════════════════════════════════════════════════════════════ */
@@ -697,7 +839,8 @@ const I18N = {
     sendOrder:'Send order on WhatsApp', cartNote:"We'll confirm your order on WhatsApp before it ships. No payment needed now.",
     remove:'Remove', pvBenefitsTitle:"Why it's here", pvDescTitle:'The short version',
     toastAdded:'Added to your order', toastNeedInfo:'Add your name and phone first', toastSent:'Order ready — sending on WhatsApp',
-    save:'Save {n}%'
+    save:'Save {n}%', share:'Share', shareLinkCopied:'Link copied — paste it anywhere', shareVia:'Check this out on Souqlik',
+    sms:'Messages', email:'Email', copyLink:'Copy link', copied:'Copied ✓', moreApps:'More'
   },
   fr:{ dir:'ltr',
     tick1:'Paiement à la livraison', tick2:'Livraison partout au Maroc', tick3:'Quelques trouvailles, choisies avec soin',
@@ -722,7 +865,8 @@ const I18N = {
     sendOrder:'Envoyer sur WhatsApp', cartNote:"Nous confirmons votre commande sur WhatsApp avant l'envoi. Rien à payer maintenant.",
     remove:'Retirer', pvBenefitsTitle:'Pourquoi elle est là', pvDescTitle:'En bref',
     toastAdded:'Ajouté à votre commande', toastNeedInfo:"Ajoutez d'abord votre nom et téléphone", toastSent:'Commande prête — envoi sur WhatsApp',
-    save:'Économisez {n}%'
+    save:'Économisez {n}%', share:'Partager', shareLinkCopied:'Lien copié — collez-le où vous voulez', shareVia:'Regarde ça sur Souqlik',
+    sms:'Messages', email:'E-mail', copyLink:'Copier le lien', copied:'Copié ✓', moreApps:'Plus'
   },
   ar:{ dir:'rtl',
     tick1:'الدفع عند الاستلام', tick2:'توصيل لكل المدن', tick3:'قطع قليلة، مختارة عن قصد',
@@ -747,7 +891,8 @@ const I18N = {
     sendOrder:'أرسل الطلب عبر واتساب', cartNote:'سنؤكد طلبك عبر واتساب قبل الإرسال. لا حاجة للدفع الآن.',
     remove:'إزالة', pvBenefitsTitle:'لماذا هي هنا', pvDescTitle:'باختصار',
     toastAdded:'أُضيف إلى طلبك', toastNeedInfo:'أدخل الاسم والهاتف أولاً', toastSent:'الطلب جاهز — يُرسل عبر واتساب',
-    save:'وفّر {n}%'
+    save:'وفّر {n}%', share:'مشاركة', shareLinkCopied:'تم نسخ الرابط — الصقه في أي مكان', shareVia:'شاهد هذا في سوق ليك',
+    sms:'رسائل', email:'البريد الإلكتروني', copyLink:'نسخ الرابط', copied:'تم النسخ ✓', moreApps:'المزيد'
   }
 };
 let LANG = 'en';
@@ -796,11 +941,18 @@ function setQty(id, qty){
 /* ═══════════════════════════════════════════════════════════════
    6. Category tiles (home)
    ═══════════════════════════════════════════════════════════════ */
+/* A category shows its own cover photo if set, otherwise the first
+   real product photo inside it — so customers see actual pieces
+   before they even tap in, not just an abstract icon. */
+function categoryCoverImg(c){
+  if(c.img) return c.img;
+  const withPhoto = c.items.find(it => it.img);
+  return withPhoto ? withPhoto.img : null;
+}
 function renderCategories(){
   document.getElementById('cats').innerHTML = CATEGORIES.map(c => `
     <button class="cat-tile" data-open-cat="${c.id}">
-      <div class="awning teal">${c.name[LANG]}</div>
-      <div class="arch" style="background:${GRADS[c.icon]}">${archMedia(c)}</div>
+      <div class="arch" style="background:${GRADS[c.icon]}">${archMedia({...c, img:categoryCoverImg(c)})}</div>
       <div class="cat-body">
         <div class="cat-name">${c.name[LANG]}</div>
         <div class="cat-count">${t('itemCount',{n:c.items.length})}</div>
@@ -809,18 +961,19 @@ function renderCategories(){
   document.querySelectorAll('[data-open-cat]').forEach(b => b.addEventListener('click', () => { location.hash = 'c-' + b.dataset.openCat; }));
 }
 function renderPeek(){
-  document.getElementById('peekRow').innerHTML = allItems().map(p => `<div class="peek-arch">${iconSvg(p.icon)}</div>`).join('');
+  document.getElementById('peekRow').innerHTML = allItems().map(p => `<div class="peek-arch">${archMedia(p)}</div>`).join('');
 }
 
 /* ── shared stall card builder (used by category view) ───────── */
 function stallCard(p){
   const inCart = cart[p.id] > 0, out = p.stock === 0, low = p.stock != null && p.stock > 0 && p.stock <= 8;
+  const badgeText = low ? t('lowStock',{n:p.stock}) : (p.tag && p.tag[LANG] ? p.tag[LANG] : '');
   return `
     <article class="stall">
       <button class="stall-btn" data-open-item="${p.id}">
-        <div class="awning ${low ? 'low' : ''}">${p.tag[LANG]}</div>
         <div class="arch" style="background:${GRADS[p.icon]}">
           ${archMedia(p)}
+          ${badgeText && !out ? `<span class="badge${low ? ' low' : ''}">${badgeText}</span>` : ''}
           ${out ? `<div class="badge-out">${t('outOfStock')}</div>` : ''}
         </div>
         <div class="stall-body">
@@ -834,6 +987,7 @@ function stallCard(p){
           <button class="add ${inCart ? 'in' : ''}" data-add-item="${p.id}" ${out ? 'disabled' : ''}>
             ${out ? t('outOfStock') : (inCart ? t('added')+' ('+cart[p.id]+')' : t('add'))}
           </button>
+          <button class="share-btn" data-share-item="${p.id}" aria-label="${t('share')}" title="${t('share')}">${SHARE_ICON}</button>
         </div>
       </div>
     </article>`;
@@ -854,6 +1008,7 @@ function renderCategoryGrid(catId){
   grid.innerHTML = c.items.map(stallCard).join('');
   grid.querySelectorAll('[data-open-item]').forEach(b => b.addEventListener('click', () => { location.hash = 'p-' + b.dataset.openItem; }));
   grid.querySelectorAll('[data-add-item]').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); addToCart(b.dataset.addItem, 1); }));
+  grid.querySelectorAll('[data-share-item]').forEach(b => b.addEventListener('click', (e) => openShareSheet(b.dataset.shareItem, e)));
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -881,12 +1036,16 @@ function renderProductView(id){
       </div>
       <h3 style="font-family:var(--f-disp);color:var(--brand);font-size:.86rem;margin:22px 0 0">${t('pvBenefitsTitle')}</h3>
       <ul class="pv-benefits">${p.benefits[LANG].map(b => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>${b}</span></li>`).join('')}</ul>
-      <div class="pv-buy"><button class="pv-add" id="pvAddBtn" ${out ? 'disabled' : ''}>${out ? t('outOfStock') : t('add')}</button></div>
+      <div class="pv-buy">
+        <button class="pv-add" id="pvAddBtn" ${out ? 'disabled' : ''}>${out ? t('outOfStock') : t('add')}</button>
+        <button class="pv-share" id="pvShareBtn">${SHARE_ICON}<span>${t('share')}</span></button>
+      </div>
       ${stockLine}
       <div class="pv-desc"><h3>${t('pvDescTitle')}</h3><p>${p.desc[LANG]}</p></div>
     </div>`;
   const addBtn = document.getElementById('pvAddBtn');
   if(addBtn && !out) addBtn.addEventListener('click', () => { addToCart(p.id, 1); openCartDrawer(); });
+  document.getElementById('pvShareBtn').addEventListener('click', () => openShareSheet(p.id));
 }
 
 /* ═══════════════════════════════════════════════════════════════
