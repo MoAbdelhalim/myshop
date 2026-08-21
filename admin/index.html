@@ -172,6 +172,41 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
 .state.dirty{ color:var(--accent); font-weight:700; }
 .toast{ position:fixed; left:50%; bottom:20px; transform:translate(-50%,10px); background:var(--ink); color:#fff; border-radius:var(--r-pill); padding:10px 18px; font-size:.8rem; opacity:0; pointer-events:none; transition:.3s; z-index:80; max-width:88vw; text-align:center; }
 .toast.on{ opacity:1; transform:translate(-50%,0); }
+
+/* ── delivery slip: printed straight off this same page, never a
+   popup — a hidden sheet revealed only inside the print dialog via
+   @media print. Popups opened with window.open()+document.write()
+   are unreliable on mobile Safari/Chrome (blank window, no content);
+   this avoids the failure mode entirely rather than working around it. ── */
+#paper{ display:none; }
+@media print{
+  @page{ size:A4; margin:11mm; }
+  body > *{ display:none !important; }
+  #paper{ display:block !important; font-family:'Segoe UI', Tahoma, Arial, sans-serif; color:#000; }
+}
+#paper .pg{ page-break-after:always; }
+#paper .ph{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:14px; }
+#paper .ph .b{ font-family:var(--f-disp); font-size:19px; font-weight:800; }
+#paper .ph .b span{ color:var(--accent); }
+#paper .ph .b small{ display:block; font-family:inherit; font-size:10px; font-weight:600; letter-spacing:1px; color:#555; }
+#paper .ph .doc{ text-align:end; }
+#paper .ph .doc h1{ font-size:14px; margin:0 0 4px; text-transform:none; }
+#paper .ph .doc .ref{ font-family:var(--f-disp); font-size:17px; font-weight:800; }
+#paper .ph .doc .dt{ font-size:11px; color:#555; }
+#paper .cols{ display:flex; gap:14px; margin-bottom:14px; }
+#paper .bx{ flex:1; border:1px solid #000; border-radius:6px; padding:10px 12px; font-size:12px; line-height:1.7; }
+#paper .bx h4{ margin:0 0 6px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid #ddd; padding-bottom:5px; }
+#paper table{ width:100%; border-collapse:collapse; margin-bottom:12px; }
+#paper th, #paper td{ border:1px solid #ccc; padding:7px 8px; font-size:12px; text-align:center; }
+#paper th:last-child, #paper td:last-child{ text-align:right; }
+#paper th{ background:#f5f0e6; font-weight:700; }
+#paper .sum{ width:260px; margin-inline-start:auto; margin-bottom:16px; }
+#paper .sum div{ display:flex; justify-content:space-between; padding:4px 0; font-size:12.5px; }
+#paper .sum .big{ font-weight:800; font-size:14px; border-top:1px solid #999; margin-top:4px; padding-top:8px; }
+#paper .cod{ border:2px solid #000; border-radius:6px; padding:12px; text-align:center; font-weight:800; font-size:14.5px; margin-bottom:22px; }
+#paper .sig{ display:flex; justify-content:space-between; margin-top:36px; }
+#paper .sig div{ width:44%; border-top:1px solid #999; padding-top:6px; font-size:11px; color:#555; text-align:center; }
+#paper .pf{ margin-top:26px; text-align:center; font-size:10.5px; color:#888; line-height:1.7; }
 </style>
 </head>
 <body>
@@ -308,6 +343,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="paper"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
@@ -325,6 +361,11 @@ const FIREBASE_CONFIG = {
 firebase.initializeApp(FIREBASE_CONFIG);
 const auth = firebase.auth();
 const db = firebase.database();
+
+/* The shop owner's account — items created here are stamped with this
+   uid. A second, cut-down admin (team/index.html) lets a collaborator
+   sign in and manage only the items stamped with *their* uid. */
+const OWNER_UID = 'KR9JPV6I4GRudQtvSxKe7IJYsIB2';
 
 const CLOUDINARY = { cloud: 'tlq6wzsg', preset: 'Packetss' };
 const VIDEO_MAX_BYTES = 5 * 1024 * 1024; /* 5MB — keeps product clips short and pages fast */
@@ -387,6 +428,7 @@ let openItemEdits = new Set(); /* which "ci:ii" edit panels are expanded, kept a
 function allItems(){ return CATEGORIES.flatMap(c => c.items.map(it => ({...it, catId:c.id, catName:c.name}))); }
 function blankItem(){
   return { id:'item-'+Math.random().toString(36).slice(2,8), icon:'projector', img:'', gallery:[], video:'', options:[],
+    ownerUid: OWNER_UID,
     tag:{en:'New',fr:'Nouveau',ar:'جديد'}, name:{en:'',fr:'',ar:''}, hook:{en:'',fr:'',ar:''},
     price:0, was:0, stock:0, benefits:{en:[],fr:[],ar:[]}, desc:{en:'',fr:'',ar:''} };
 }
@@ -422,6 +464,7 @@ function normItem(it){
     gallery: normStringArray(it.gallery),
     video: it.video || '',
     options: normOptions(it.options),
+    ownerUid: it.ownerUid || OWNER_UID, /* items created before multi-seller default to the shop owner */
     tag: normI18n(it.tag),
     name: normI18n(it.name),
     hook: normI18n(it.hook),
@@ -565,9 +608,10 @@ document.getElementById('langSel').addEventListener('change', (e) => { LANG = e.
 function statusPillHtml(s){ return `<span class="pill ${s}">${s}</span>`; }
 
 /* ═══════════════════════════════════════════════════════════════
-   Delivery slip — a print-formatted view, opened in its own window
-   and handed straight to the browser's own print/"Save as PDF"
-   dialog. No PDF library, same mechanism as any print-to-PDF flow.
+   Delivery slip — printed straight from this page via the hidden
+   #paper sheet + @media print rule above. No popup window, no
+   window.open()/document.write() — that combination is what was
+   producing a blank window on mobile.
    ═══════════════════════════════════════════════════════════════ */
 const STATUS_BILINGUAL = {
   new: 'جديد / Nouvelle', confirmed: 'مؤكد / Confirmée',
@@ -587,108 +631,49 @@ function deliverySlipHtml(o){
       <td>${esc(it.name)}${it.variant ? ' ('+esc(it.variant.join(', '))+')' : ''}</td>
     </tr>`).join('');
   const wa = (SETTINGS.whatsapp || '').replace(/[^0-9]/g,'');
-  return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8" />
-<title>${esc(o.ref)} — Souqlik</title>
-<style>
-  * { box-sizing:border-box; }
-  body{ font-family:'Segoe UI', Tahoma, Arial, sans-serif; color:#241934; margin:0; padding:28px; font-size:13px; }
-  .top{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #241934; padding-bottom:14px; margin-bottom:18px; }
-  .title{ font-size:17px; font-weight:800; }
-  .ref{ font-size:14px; font-weight:700; margin-top:4px; }
-  .when{ font-size:11px; color:#666; margin-top:2px; }
-  .brand{ text-align:left; }
-  .brand b{ font-size:20px; }
-  .brand b span{ color:#E0891C; }
-  .brand div{ font-size:11px; color:#666; margin-top:2px; }
-  .boxes{ display:flex; gap:16px; margin-bottom:16px; }
-  .box{ flex:1; border:1px solid #ccc; border-radius:6px; padding:12px 14px; }
-  .box h3{ margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid #eee; padding-bottom:6px; }
-  .box p{ margin:4px 0; font-size:12.5px; }
-  .box b{ font-size:13px; }
-  table{ width:100%; border-collapse:collapse; margin-bottom:12px; }
-  th, td{ border:1px solid #ddd; padding:7px 8px; font-size:12.5px; text-align:center; }
-  th:last-child, td:last-child{ text-align:right; }
-  th{ background:#f5f0e6; font-weight:700; }
-  .totals{ width:260px; margin-inline-start:auto; margin-bottom:16px; }
-  .totals div{ display:flex; justify-content:space-between; padding:4px 0; font-size:12.5px; }
-  .totals .grand{ font-weight:800; font-size:14px; border-top:1px solid #999; margin-top:4px; padding-top:8px; }
-  .due{ border:2px solid #241934; border-radius:6px; padding:12px; text-align:center; font-weight:800; font-size:14.5px; margin-bottom:22px; }
-  .sigs{ display:flex; justify-content:space-between; margin-top:36px; }
-  .sigs div{ width:44%; border-top:1px solid #999; padding-top:6px; font-size:11.5px; color:#666; text-align:center; }
-  .foot{ margin-top:28px; text-align:center; font-size:10.5px; color:#888; line-height:1.7; }
-  @media print{ body{ padding:8mm; } }
-</style>
-</head>
-<body>
-  <div class="top">
-    <div>
-      <div class="title">سند التسليم / BON DE LIVRAISON</div>
-      <div class="ref">${esc(o.ref)}</div>
-      <div class="when">${timeStr} — ${dateStr}</div>
+  return `<div class="pg">
+    <div class="ph">
+      <div class="b">Souq<span>lik</span><small>${wa ? 'واتساب '+wa : ''}</small></div>
+      <div class="doc"><h1>سند التسليم / Bon de livraison</h1><div class="ref">${esc(o.ref)}</div><div class="dt">${timeStr} — ${dateStr}</div></div>
     </div>
-    <div class="brand">
-      <b>Souq<span>lik</span></b>
-      ${wa ? `<div>${wa}</div>` : ''}
+
+    <div class="cols">
+      <div class="bx"><h4>الزبون / Client</h4>
+        <b>${esc(o.customer.name)}</b><br>${esc(o.customer.phone)}${o.customer.city ? '<br>'+esc(o.customer.city) : ''}${o.customer.address ? '<br>'+esc(o.customer.address) : ''}</div>
+      <div class="bx"><h4>الطلب / Commande</h4>
+        المرجع: <b>${esc(o.ref)}</b><br>
+        التاريخ: ${timeStr} — ${dateStr}<br>
+        الحالة: ${STATUS_BILINGUAL[o.status] || esc(o.status)}<br>
+        الخلاص: عند الاستلام / À la livraison</div>
     </div>
-  </div>
 
-  <div class="boxes">
-    <div class="box">
-      <h3>الطلب / COMMANDE</h3>
-      <p>المرجع: <b>${esc(o.ref)}</b></p>
-      <p>التاريخ: ${timeStr} — ${dateStr}</p>
-      <p>الحالة: ${STATUS_BILINGUAL[o.status] || esc(o.status)}</p>
-      <p>الخلاص: عند الاستلام / À la livraison</p>
+    <table>
+      <thead><tr><th>المجموع</th><th>الثمن</th><th>الكمية</th><th>البضاعة / Article</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <div class="sum">
+      <div><span>المجموع الفرعي</span><span>${o.subtotal} درهم</span></div>
+      <div><span>التوصيل</span><span>${deliveryDH}</span></div>
+      <div class="big"><span>الإجمالي</span><span>${o.total} درهم</span></div>
     </div>
-    <div class="box">
-      <h3>الزبون / CLIENT</h3>
-      <p><b>${esc(o.customer.name)}</b></p>
-      <p>${esc(o.customer.phone)}</p>
-      ${o.customer.city ? `<p>${esc(o.customer.city)}</p>` : ''}
-      ${o.customer.address ? `<p>${esc(o.customer.address)}</p>` : ''}
+
+    <div class="cod">المبلغ المطلوب عند التسليم : ${o.total} درهم</div>
+
+    <div class="sig">
+      <div>الموصّل / Livreur</div>
+      <div>توقيع المستلم / Signature client</div>
     </div>
-  </div>
 
-  <table>
-    <thead><tr><th>المجموع</th><th>الثمن</th><th>الكمية</th><th>البضاعة / ARTICLE</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
-
-  <div class="totals">
-    <div><span>المجموع الفرعي</span><span>${o.subtotal} درهم</span></div>
-    <div><span>التوصيل</span><span>${deliveryDH}</span></div>
-    <div class="grand"><span>الإجمالي</span><span>${o.total} درهم</span></div>
-  </div>
-
-  <div class="due">المبلغ المطلوب عند التسليم : ${o.total} درهم</div>
-
-  <div class="sigs">
-    <div>Livreur / الموصل</div>
-    <div>Signature client / توقيع المستلم</div>
-  </div>
-
-  <div class="foot">
-    شكرًا على الثقة — الاستبدال ممكن خلال 48 ساعة من الاستلام مع الوصل الأصلي<br>
-    ${wa ? wa + ' · ' : ''}souqlik.store
-  </div>
-</body>
-</html>`;
+    <div class="pf">
+      شكرًا على الثقة — الاستبدال ممكن خلال 48 ساعة من الاستلام مع الوصل الأصلي<br>
+      ${wa ? 'واتساب '+wa+' · ' : ''}souqlik.store
+    </div>
+  </div>`;
 }
 function printDeliverySlip(o){
-  const win = window.open('', '_blank');
-  if(!win){ toast('Allow pop-ups to print the delivery slip'); return; }
-  win.document.open();
-  win.document.write(deliverySlipHtml(o));
-  win.document.close();
-  win.onload = () => { win.focus(); win.print(); };
-  /* onload can be unreliable for a document.write()'d window in some
-     browsers — a short fallback timer covers that without double-firing
-     print in browsers where onload does work (print dialogs are modal,
-     a second .print() call while one is already open is a no-op) */
-  setTimeout(() => { try{ win.focus(); win.print(); }catch(e){} }, 400);
+  document.getElementById('paper').innerHTML = deliverySlipHtml(o);
+  window.print();
 }
 function renderOrders(){
   const q = (document.getElementById('orderSearch').value || '').toLowerCase();
