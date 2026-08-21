@@ -799,11 +799,15 @@ function findItem(id){ return allItems().find(it => it.id === id) || null; }
 function findCategory(id){ return CATEGORIES.find(c => c.id === id) || null; }
 function categoryOf(itemId){ return CATEGORIES.find(c => c.items.some(it => it.id === itemId)) || null; }
 
-/* Shareable link straight to one product's own page — works from
-   anywhere (WhatsApp, notes, another site) since it's just this same
-   page with a hash the router already knows how to open. */
+/* Shareable link straight to one product's own page. Uses a real
+   path (/p/<id>) rather than a hash — a hash never reaches the
+   server, so WhatsApp/Instagram/etc. could never show more than the
+   generic homepage card. A tiny Vercel middleware (see /middleware.js)
+   intercepts this exact path server-side and swaps in that product's
+   own title/price/photo before any link-preview bot ever sees it;
+   the router below still understands it perfectly for real visitors. */
 function productShareUrl(id){
-  return location.origin + location.pathname + '#p-' + id;
+  return location.origin + '/p/' + encodeURIComponent(id);
 }
 
 /* ── platform icons — brand-coloured so the sheet reads at a glance,
@@ -1301,8 +1305,18 @@ function showProduct(id){
   document.body.style.overflow = 'hidden'; window.scrollTo(0,0);
 }
 function route(){
+  /* a real path (/p/<id>, /c/<id>) only matters for how the visitor
+     *arrived* — a shared link. Once seen, fold it into the normal
+     hash-based URL and never consult pathname again, or clicking
+     "back" later would keep re-opening whatever the entry link was. */
+  const path = decodeURIComponent(location.pathname);
+  let m = path.match(/^\/p\/([^/]+)\/?$/);
+  if(m && findItem(m[1])){ history.replaceState(null, '', '/#p-' + m[1]); showProduct(m[1]); return; }
+  m = path.match(/^\/c\/([^/]+)\/?$/);
+  if(m && findCategory(m[1])){ history.replaceState(null, '', '/#c-' + m[1]); showCategory(m[1]); return; }
+
   const h = location.hash;
-  let m = h.match(/^#c-(.+)$/);
+  m = h.match(/^#c-(.+)$/);
   if(m && findCategory(m[1])){ showCategory(m[1]); return; }
   m = h.match(/^#p-(.+)$/);
   if(m && findItem(m[1])){ showProduct(m[1]); return; }
