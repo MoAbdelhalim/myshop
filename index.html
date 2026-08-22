@@ -372,6 +372,74 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .send svg{ width:17px; height:17px; flex:none; }
 .mini-note{ font-size:.68rem; color:var(--ink-faint); text-align:center; margin:9px 0 0; line-height:1.5; }
 
+/* ── El Guffa ─────────────────────────────────────────────────── */
+.guffa-tile{ all:unset; cursor:pointer; display:flex; align-items:center; gap:16px; width:100%; margin-top:22px;
+  padding:20px 22px; border-radius:var(--r); border:1px solid var(--accent-pale);
+  background:linear-gradient(150deg, var(--brand), #3C2555); color:#fff; transition:border-color .2s, transform .2s; }
+.guffa-tile:hover{ border-color:var(--accent); transform:translateY(-2px); }
+.guffa-mark{ width:46px; height:46px; flex:none; border-radius:12px 12px 6px 6px; background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22); position:relative; }
+.guffa-mark::before{ content:''; position:absolute; inset:9px 8px auto 8px; height:3px; border-radius:2px; background:var(--accent-lit); }
+.guffa-mark::after{ content:''; position:absolute; inset:auto 12px 9px 12px; height:12px; border-radius:3px; background:rgba(255,255,255,.35); }
+.guffa-copy{ flex:1; min-width:0; }
+.guffa-name{ display:block; font-family:var(--f-disp); font-weight:600; font-size:1.36rem; }
+.guffa-sub{ display:block; font-size:.84rem; color:#D8CEE6; margin-top:2px; }
+.guffa-go{ font-size:1.1rem; color:var(--accent-lit); }
+[dir="rtl"] .guffa-go{ transform:scaleX(-1); }
+
+.g-body{ padding:26px 0 120px; }
+.g-intro h1{ font-family:var(--f-disp); font-weight:600; font-size:clamp(1.7rem,4.2vw,2.3rem); color:var(--brand); margin:8px 0 0; }
+.g-intro p{ color:var(--ink-soft); font-size:.94rem; margin:8px 0 0; max-width:52ch; }
+.g-back{ all:unset; cursor:pointer; font-size:.78rem; font-weight:700; color:var(--ink-soft); }
+.g-back:hover{ color:var(--brand); }
+
+.g-boxes{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:26px; }
+.g-box{ all:unset; cursor:pointer; display:flex; flex-direction:column; gap:4px; padding:22px; border-radius:var(--r);
+  background:var(--panel); border:1px solid var(--line); transition:border-color .2s, transform .2s; }
+.g-box:hover{ border-color:var(--accent); transform:translateY(-2px); }
+.g-box-name{ font-family:var(--f-disp); font-weight:600; font-size:1.3rem; color:var(--brand); }
+.g-box-price{ font-weight:700; font-size:1.6rem; color:var(--accent); }
+.g-box-price .cur{ font-size:.5em; margin-inline-start:3px; opacity:.75; }
+.g-box-picks{ font-size:.82rem; color:var(--ink-soft); }
+.g-box-note{ font-size:.76rem; color:var(--ink-faint); margin-top:4px; }
+
+.g-trays{ margin-top:24px; display:grid; gap:16px; }
+.g-tray{ border:1px solid var(--line); border-radius:var(--r); padding:14px 0 14px 14px; background:var(--panel); transition:border-color .2s; }
+.g-tray.on{ border-color:var(--accent-pale); }
+.g-tray-head{ display:flex; align-items:center; gap:8px; padding-inline-end:14px; margin-bottom:10px; }
+.g-tray-cat{ font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); flex:1; }
+.g-tray-count{ background:var(--accent); color:var(--on-accent); border-radius:var(--r-pill); padding:2px 9px; font-size:.68rem; font-weight:800; }
+/* one swipeable strip per category — no paging, thumb-friendly */
+.g-strip{ display:flex; gap:10px; overflow-x:auto; padding:2px 14px 6px 0; scrollbar-width:none; overscroll-behavior-x:contain; }
+.g-strip::-webkit-scrollbar{ display:none; }
+.g-thumb{ all:unset; cursor:pointer; flex:none; width:104px; position:relative; }
+.g-thumb-media{ display:block; position:relative; width:104px; height:118px; border-radius:12px; overflow:hidden;
+  clip-path:url(#souq-arch); border:1px solid var(--line); }
+.g-thumb-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.g-thumb-media .icon{ width:34%; height:34%; color:rgba(255,255,255,.9); }
+.g-thumb-name{ display:block; font-size:.7rem; color:var(--ink-soft); margin-top:6px; line-height:1.3;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.g-tick{ position:absolute; top:8px; inset-inline-end:8px; width:24px; height:24px; border-radius:50%;
+  background:var(--accent); color:var(--on-accent); font-size:.76rem; font-weight:800; display:grid; place-items:center;
+  opacity:0; transform:scale(.5); transition:.2s; }
+.g-thumb.on .g-tick{ opacity:1; transform:none; }
+.g-thumb.on .g-thumb-media{ border-color:var(--accent); box-shadow:0 0 0 2px var(--accent); }
+.g-thumb.on .g-thumb-name{ color:var(--ink); font-weight:600; }
+
+/* the running total follows you down the page — it's the whole decision */
+.g-bar{ position:fixed; inset-inline:0; bottom:0; z-index:5; display:flex; align-items:center; justify-content:space-between;
+  gap:14px; padding:14px calc(14px + env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) 14px;
+  background:rgba(255,255,255,.96); backdrop-filter:blur(10px); border-top:1px solid var(--line); }
+.g-progress b{ font-family:var(--f-disp); font-size:1.3rem; color:var(--brand); }
+.g-progress span{ display:block; font-size:.74rem; color:var(--ink-soft); }
+.g-bar-right{ display:flex; align-items:center; gap:12px; }
+.g-bar-price{ font-weight:700; font-size:1.2rem; color:var(--accent); }
+.g-bar-price .cur{ font-size:.55em; margin-inline-start:2px; opacity:.75; }
+.g-add{ border:0; border-radius:var(--r-pill); padding:13px 22px; background:var(--brand); color:#fff; font-size:.82rem; font-weight:800; }
+.g-add:disabled{ background:var(--line); color:var(--ink-faint); cursor:not-allowed; }
+.g-line .g-thumb-mini{ display:grid; place-items:center; background:var(--brand); color:var(--accent-lit); }
+.g-line .g-thumb-mini svg{ width:24px; height:24px; }
+
 /* ── share sheet: bottom sheet, distinct from the side-drawer cart.
    Needs to sit above .ov (z-index 100) too, since it opens from a
    product's own page, not just from the base grid. ── */
@@ -580,6 +648,14 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 
     <div id="searchResults" class="hide"></div>
     <div class="cats" id="cats"></div>
+    <button class="guffa-tile hide" id="guffaTile">
+      <span class="guffa-mark" aria-hidden="true"></span>
+      <span class="guffa-copy">
+        <span class="guffa-name" id="guffaTileName">El Guffa</span>
+        <span class="guffa-sub" id="guffaTileSub">Build your own basket</span>
+      </span>
+      <span class="guffa-go" aria-hidden="true">→</span>
+    </button>
   </section>
 
   <div class="zellige-band" aria-hidden="true"></div>
@@ -646,6 +722,12 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 </div>
 
 <!-- ── category view: the alley of products inside one category ── -->
+<!-- ── El Guffa: the custom-box builder ─────────────────────── -->
+<section class="ov" id="gview" aria-label="Build your basket">
+  <div class="ov-top"><div class="shell"><button class="ov-back" id="gBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg><span data-i18n="backToShop">Back to the souk</span></button></div></div>
+  <div class="shell g-body" id="gBody"></div>
+</section>
+
 <section class="ov" id="cview" aria-label="Category">
   <div class="ov-top"><div class="shell"><button class="ov-back" id="cvBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg><span data-i18n="backToShop">Back to the souk</span></button></div></div>
   <div class="shell cv-body">
@@ -728,6 +810,7 @@ function descHtml(text){
   return `<ul class="pv-speclist">${parts.map(x => `<li>${escHtml(x)}</li>`).join('')}</ul>`;
 }
 const PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
+const GUFFA_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16l-1.4 11.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8z"/><path d="M8.5 8V6a3.5 3.5 0 0 1 7 0v2"/></svg>';
 const ZOOM_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>';
 const SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
 const GRADS = {
@@ -925,6 +1008,38 @@ async function loadCatalogue(){
     }
   }catch(e){ /* offline — the cache (or the built-in fallback) carries the page */ }
 }
+/* El Guffa (الݣفة, "the basket") — the custom-box builder. Config lives in
+   its own Firebase node so it can be switched on, priced and re-scoped
+   without touching the catalogue. Shape:
+     guffa: { enabled, name{}, note{}, boxes:{ <id>:{ id, order, price,
+              picks, name{}, note{}, cats:[categoryId,…] } } }
+   A box names existing categories — it never duplicates products, so a
+   price or photo edited in the catalogue is instantly right here too. */
+let GUFFA = null;
+function normGuffa(raw){
+  if(!raw || typeof raw !== 'object' || raw.enabled === false) return null;
+  const boxes = Object.values(raw.boxes || {})
+    .filter(b => b && b.id && Array.isArray(b.cats) && b.cats.length)
+    .map(b => ({
+      id: b.id,
+      order: Number(b.order) || 0,
+      price: Number(b.price) || 0,
+      picks: Math.max(1, Number(b.picks) || 3),
+      name: normI18n(b.name),
+      note: normI18n(b.note),
+      cats: b.cats.filter(c => typeof c === 'string')
+    }))
+    .sort((a,x) => a.order - x.order || a.price - x.price);
+  if(!boxes.length) return null;
+  return { name: normI18n(raw.name), note: normI18n(raw.note), boxes };
+}
+async function loadGuffa(){
+  try{
+    const res = await fetch(FIREBASE_DB + '/guffa.json', { cache:'no-store' });
+    if(res.ok) GUFFA = normGuffa(await res.json());
+  }catch(e){ GUFFA = null; }   /* silently absent = feature simply off */
+}
+
 async function loadSettings(){
   try{
     const res = await fetch(FIREBASE_DB + '/settings.json', { cache:'no-store' });
@@ -1049,6 +1164,10 @@ const I18N = {
     searchNoneNote:"It may still be on its way in — tell us what you're after and we'll look for it.",
     searchAskWa:'Ask us on WhatsApp', searchWaMsg:'Hello! Do you have: {q}?',
     editLine:'Open to change your choice', updateLine:'Update my choice', lineUpdated:'Your choice was updated',
+    guffaTitle:'El Guffa', guffaSub:'Build your own basket', guffaNote:'Pick a basket, then fill it with whatever you like from the trays. One price, whatever you choose.',
+    guffaPickN:'Choose any {n}', guffaFill:'Choose {n} pieces from the trays below', guffaMore:'{n} more to go',
+    guffaFullMsg:'Your basket is full', guffaFullWarn:'This basket holds {n} — remove one first', guffaAdd:'Add basket to order',
+    guffaAdded:'Basket added to your order', guffaChangeBox:'Change basket', guffaBoxContents:'{n} pieces', guffaOff:'The basket is not open yet',
     shopEyebrow:'Step inside', shopTitle:'A few chosen pieces for what you need', shopSub:"Each category is its own small alley — a handful of things, picked on purpose.", browseCat:'Browse',
     trust1t:'Cash on delivery', trust1s:"Pay when it's in your hands",
     trust2t:'Nationwide delivery', trust2s:'To your door, city or village',
@@ -1081,6 +1200,10 @@ const I18N = {
     searchNoneNote:"C'est peut-être en route — dites-nous ce que vous cherchez et on ira le trouver.",
     searchAskWa:'Demandez-nous sur WhatsApp', searchWaMsg:'Bonjour ! Avez-vous : {q} ?',
     editLine:'Ouvrir pour changer votre choix', updateLine:'Mettre à jour mon choix', lineUpdated:'Votre choix a été mis à jour',
+    guffaTitle:'El Guffa', guffaSub:'Composez votre panier', guffaNote:"Choisissez un panier, puis remplissez-le comme vous voulez. Un seul prix, quel que soit votre choix.",
+    guffaPickN:'Choisissez {n} pièces', guffaFill:'Choisissez {n} pièces parmi les plateaux', guffaMore:'encore {n}',
+    guffaFullMsg:'Votre panier est complet', guffaFullWarn:'Ce panier contient {n} pièces — retirez-en une', guffaAdd:'Ajouter le panier',
+    guffaAdded:'Panier ajouté à votre commande', guffaChangeBox:'Changer de panier', guffaBoxContents:'{n} pièces', guffaOff:"Le panier n'est pas encore ouvert",
     shopEyebrow:'Entrez', shopTitle:'Quelques pièces choisies pour ce qu\'il vous faut', shopSub:"Chaque catégorie est sa propre petite allée — quelques pièces, choisies avec soin.", browseCat:'Parcourir',
     trust1t:'Paiement à la livraison', trust1s:'Payez en recevant',
     trust2t:'Livraison partout', trust2s:'Chez vous, ville ou village',
@@ -1113,6 +1236,10 @@ const I18N = {
     searchNoneNote:'قد يكون في طريقه إلينا — أخبرنا بما تبحث عنه وسنبحث عنه لك.',
     searchAskWa:'اسألنا عبر واتساب', searchWaMsg:'مرحبًا! هل لديكم: {q}؟',
     editLine:'افتح لتغيير اختيارك', updateLine:'حدّث اختياري', lineUpdated:'تم تحديث اختيارك',
+    guffaTitle:'الݣفة', guffaSub:'كوّن ݣفتك بنفسك', guffaNote:'اختر ݣفة، ثم املأها بما يعجبك من الصواني. ثمن واحد مهما اخترت.',
+    guffaPickN:'اختر {n} قطع', guffaFill:'اختر {n} قطع من الصواني أسفله', guffaMore:'بقيت {n}',
+    guffaFullMsg:'ݣفتك ممتلئة', guffaFullWarn:'هذه الݣفة تسع {n} قطع — أزل واحدة أولاً', guffaAdd:'أضف الݣفة للطلب',
+    guffaAdded:'أُضيفت الݣفة إلى طلبك', guffaChangeBox:'غيّر الݣفة', guffaBoxContents:'{n} قطع', guffaOff:'الݣفة غير متاحة بعد',
     shopEyebrow:'ادخل', shopTitle:'قطع مختارة لما تحتاجه', shopSub:'كل فئة هي زقاقها الصغير الخاص — قطع قليلة، اختيرت بعناية.', browseCat:'تصفح',
     trust1t:'الدفع عند الاستلام', trust1s:'تدفع عندما تصلك السلعة',
     trust2t:'توصيل لكل المدن', trust2s:'إلى باب منزلك، مدينة أو قرية',
@@ -1154,7 +1281,7 @@ document.querySelectorAll('.langs button').forEach(b => {
   b.addEventListener('click', () => {
     LANG = b.dataset.lang;
     try{ localStorage.setItem('souqlik_lang', LANG); }catch(e){}
-    applyStatic(); renderPeek(); renderCategories(); renderCart();
+    applyStatic(); renderPeek(); renderCategories(); renderGuffaTile(); renderCart();
     route();
   });
 });
@@ -1173,16 +1300,31 @@ function parseCartKey(key){
   return i === -1 ? { id:key, variant:null } : { id:key.slice(0,i), variant:key.slice(i+2).split('|') };
 }
 let cart = {};
-function loadCart(){ try{ cart = JSON.parse(localStorage.getItem('souqlik_cart') || '{}'); }catch(e){ cart = {}; } }
-function saveCart(){ try{ localStorage.setItem('souqlik_cart', JSON.stringify(cart)); }catch(e){} }
+/* A built Guffa is NOT a catalogue product — it's a fixed-price box holding
+   several products — so it can't live in `cart`, whose every helper assumes
+   the key resolves to an item. Boxes get their own list; each place that
+   totals, renders or sends the cart accounts for both. */
+let guffaCart = [];   // [{ lineId, boxId, price, items:[itemId,…], at }]
+function loadCart(){
+  try{ cart = JSON.parse(localStorage.getItem('souqlik_cart') || '{}'); }catch(e){ cart = {}; }
+  try{ guffaCart = JSON.parse(localStorage.getItem('souqlik_guffa_cart') || '[]'); }catch(e){ guffaCart = []; }
+  if(!Array.isArray(guffaCart)) guffaCart = [];
+}
+function saveCart(){
+  try{ localStorage.setItem('souqlik_cart', JSON.stringify(cart)); }catch(e){}
+  try{ localStorage.setItem('souqlik_guffa_cart', JSON.stringify(guffaCart)); }catch(e){}
+}
+function guffaBoxById(id){ return GUFFA ? GUFFA.boxes.find(b => b.id === id) : null; }
+function guffaTotal(){ return guffaCart.reduce((s,l) => s + (Number(l.price) || 0), 0); }
 function cartCount(){
-  return Object.entries(cart).reduce((s,[key,q]) => s + (findItem(parseCartKey(key).id) ? q : 0), 0);
+  return Object.entries(cart).reduce((s,[key,q]) => s + (findItem(parseCartKey(key).id) ? q : 0), 0)
+       + guffaCart.length;
 }
 function cartTotal(){
   return Object.entries(cart).reduce((s,[key,q]) => {
     const p = findItem(parseCartKey(key).id);
     return s + (p ? p.price*q : 0);
-  }, 0);
+  }, 0) + guffaTotal();
 }
 /* Delivery is free unless a fee is configured — cartTotal() stays the
    goods-only subtotal everywhere else it's already used (grid "Added"
@@ -1399,6 +1541,17 @@ function wireSearch(){
   });
   input.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ clearTimeout(searchTimer); renderSearch(input.value); input.blur(); } });
   clear.addEventListener('click', () => { input.value = ''; renderSearch(''); input.focus(); });
+}
+
+/* The entry tile only appears once a usable basket config is loaded, so a
+   half-configured feature can never be opened by a customer. */
+function renderGuffaTile(){
+  const tile = document.getElementById('guffaTile');
+  if(!tile) return;
+  tile.classList.toggle('hide', !GUFFA);
+  if(!GUFFA) return;
+  document.getElementById('guffaTileName').textContent = GUFFA.name[LANG] || t('guffaTitle');
+  document.getElementById('guffaTileSub').textContent  = GUFFA.note[LANG] || t('guffaSub');
 }
 
 function renderPeek(){
@@ -1731,6 +1884,140 @@ window.addEventListener('keydown', (e) => {
   if(e.key === 'ArrowRight') showLbImage(lbIdx + (document.documentElement.dir === 'rtl' ? -1 : 1));
 });
 
+
+/* ═══════════════════════════════════════════════════════════════
+   El Guffa builder — pick a box, then fill it from the trays.
+   Trays are shuffled each time it opens so the same few products
+   don't always sit at the front; the shuffle is per-view only and
+   never touches the catalogue itself.
+   ═══════════════════════════════════════════════════════════════ */
+let gBox = null;        // the box type being filled
+let gPicked = [];       // chosen item ids, in the order tapped
+let gShuffleSeed = 0;
+
+function shuffled(list, seed){
+  /* deterministic within one viewing, so re-rendering after a tap doesn't
+     reshuffle the strip under the customer's finger */
+  const a = list.slice();
+  let x = seed || 1;
+  for(let i = a.length - 1; i > 0; i--){
+    x = (x * 1103515245 + 12345) & 0x7fffffff;
+    const j = x % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function guffaItemsFor(catId){
+  const c = findCategory(catId);
+  if(!c) return [];
+  return c.items.filter(it => it.stock !== 0);   /* never let someone build a box around a sold-out piece */
+}
+function openGuffa(){
+  if(!GUFFA){ toast(t('guffaOff')); return; }
+  gBox = null; gPicked = []; gShuffleSeed = Date.now() % 100000;
+  renderGuffa();
+  document.getElementById('gview').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  window.scrollTo(0,0);
+}
+function closeGuffa(){
+  document.getElementById('gview').classList.remove('on');
+  document.body.style.overflow = '';
+}
+function renderGuffa(){
+  const body = document.getElementById('gBody');
+  if(!GUFFA){ body.innerHTML = ''; return; }
+
+  /* step 1 — which box */
+  if(!gBox){
+    body.innerHTML = `
+      <div class="g-intro">
+        <h1>${GUFFA.name[LANG] || t('guffaTitle')}</h1>
+        <p>${GUFFA.note[LANG] || t('guffaNote')}</p>
+      </div>
+      <div class="g-boxes">${GUFFA.boxes.map(b => `
+        <button class="g-box" data-box="${b.id}">
+          <span class="g-box-name">${b.name[LANG] || b.id}</span>
+          <span class="g-box-price">${b.price}<span class="cur">DH</span></span>
+          <span class="g-box-picks">${t('guffaPickN',{n:b.picks})}</span>
+          ${b.note[LANG] ? `<span class="g-box-note">${b.note[LANG]}</span>` : ''}
+        </button>`).join('')}
+      </div>`;
+    body.querySelectorAll('[data-box]').forEach(btn => btn.addEventListener('click', () => {
+      gBox = guffaBoxById(btn.dataset.box); gPicked = []; renderGuffa();
+    }));
+    return;
+  }
+
+  /* step 2 — fill it */
+  const trays = gBox.cats.map(catId => {
+    const cat = findCategory(catId);
+    const items = shuffled(guffaItemsFor(catId), gShuffleSeed + catId.length);
+    if(!cat || !items.length) return '';
+    const chosenHere = items.filter(it => gPicked.includes(it.id)).length;
+    return `
+      <div class="g-tray ${chosenHere ? 'on' : ''}">
+        <div class="g-tray-head">
+          <span class="g-tray-cat">${cat.name[LANG]}</span>
+          ${chosenHere ? `<span class="g-tray-count">${chosenHere}</span>` : ''}
+        </div>
+        <div class="g-strip">${items.map(it => `
+          <button class="g-thumb ${gPicked.includes(it.id) ? 'on' : ''}" data-pick="${it.id}" title="${it.name[LANG]}">
+            <span class="g-thumb-media" style="background:${GRADS[it.icon]}">${archMedia(it)}</span>
+            <span class="g-thumb-name">${it.name[LANG]}</span>
+            <span class="g-tick">✓</span>
+          </button>`).join('')}</div>
+      </div>`;
+  }).join('');
+
+  const full = gPicked.length >= gBox.picks;
+  body.innerHTML = `
+    <div class="g-intro">
+      <button class="g-back" id="gBackBox">← ${t('guffaChangeBox')}</button>
+      <h1>${gBox.name[LANG] || gBox.id}</h1>
+      <p>${t('guffaFill',{n:gBox.picks})}</p>
+    </div>
+    <div class="g-trays">${trays}</div>
+    <div class="g-bar">
+      <div class="g-progress">
+        <b>${gPicked.length}/${gBox.picks}</b>
+        <span>${full ? t('guffaFullMsg') : t('guffaMore',{n:gBox.picks - gPicked.length})}</span>
+      </div>
+      <div class="g-bar-right">
+        <span class="g-bar-price">${gBox.price}<span class="cur">DH</span></span>
+        <button class="g-add" id="gAddBtn" ${full ? '' : 'disabled'}>${t('guffaAdd')}</button>
+      </div>
+    </div>`;
+
+  body.querySelectorAll('[data-pick]').forEach(btn => btn.addEventListener('click', () => {
+    const id = btn.dataset.pick;
+    const at = gPicked.indexOf(id);
+    if(at >= 0){ gPicked.splice(at,1); }
+    else if(gPicked.length >= gBox.picks){ toast(t('guffaFullWarn',{n:gBox.picks})); return; }
+    else { gPicked.push(id); }
+    renderGuffa();
+  }));
+  const back = document.getElementById('gBackBox');
+  if(back) back.addEventListener('click', () => { gBox = null; gPicked = []; renderGuffa(); });
+  const add = document.getElementById('gAddBtn');
+  if(add && full) add.addEventListener('click', addGuffaToCart);
+}
+function addGuffaToCart(){
+  if(!gBox || gPicked.length < gBox.picks) return;
+  guffaCart.push({
+    lineId: 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2,5),
+    boxId: gBox.id, price: gBox.price, items: gPicked.slice(), at: Date.now()
+  });
+  saveCart(); renderCart();
+  toast(t('guffaAdded'));
+  closeGuffa();
+  openCartDrawer();
+}
+function removeGuffaLine(lineId){
+  guffaCart = guffaCart.filter(l => l.lineId !== lineId);
+  saveCart(); renderCart();
+}
+
 /* ═══════════════════════════════════════════════════════════════
    9. Routing — '', '#c-<id>', '#p-<id>'
    ═══════════════════════════════════════════════════════════════ */
@@ -1777,6 +2064,8 @@ function route(){
 window.addEventListener('hashchange', route);
 document.addEventListener('visibilitychange', () => { if(document.hidden) stopPvVideo(); });
 document.getElementById('cvBack').addEventListener('click', () => { location.hash = ''; });
+document.getElementById('gBack').addEventListener('click', closeGuffa);
+document.getElementById('guffaTile').addEventListener('click', openGuffa);
 document.getElementById('pvBack').addEventListener('click', () => {
   const cat = currentProduct ? categoryOf(currentProduct) : null;
   location.hash = cat ? ('c-' + cat.id) : '';
@@ -1873,7 +2162,7 @@ function sendOrder(){
 
   window.open('https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
   toast(t('toastSent'));
-  cart = {}; saveCart(); renderCart(); renderCategories(); if(currentCat) renderCategoryGrid(currentCat);
+  cart = {}; guffaCart = []; saveCart(); renderCart(); renderCategories(); if(currentCat) renderCategoryGrid(currentCat);
 }
 document.getElementById('sendOrder').addEventListener('click', sendOrder);
 function paintWaLinks(){
@@ -1909,7 +2198,7 @@ function toast(msg){
               usable instantly, but a shared #p-/#c- link to a real
               product won't resolve yet since it isn't in this data */
 
-  await Promise.all([loadCatalogue(), loadSettings()]);
+  await Promise.all([loadCatalogue(), loadSettings(), loadGuffa()]);
   catalogueReady = true;
   pruneCart();
   /* the catalogue (and possibly the WhatsApp number) may have just
@@ -1920,6 +2209,7 @@ function toast(msg){
   applyStatic();
   renderPeek();
   renderCategories();
+  renderGuffaTile();
   renderCart();
   paintWaLinks();
   route();
