@@ -218,6 +218,22 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 
 /* ── category tiles (home) ─────────────────────────────────── */
 .shop{ padding:56px 0 8px; }
+.searchbar{ display:flex; align-items:center; gap:10px; max-width:520px; margin:0 auto 26px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-pill); padding:11px 16px;
+  transition:border-color .2s, box-shadow .2s; }
+.searchbar:focus-within{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(224,137,28,.14); }
+.searchbar svg{ width:17px; height:17px; color:var(--ink-faint); flex:none; }
+.searchbar input{ flex:1; border:0; background:transparent; font:inherit; font-size:.94rem; color:var(--ink); min-width:0; }
+.searchbar input:focus{ outline:none; }
+.searchbar input::-webkit-search-cancel-button{ -webkit-appearance:none; }
+.search-clear{ border:0; background:transparent; color:var(--ink-faint); font-size:1.3rem; line-height:1; padding:0 2px; }
+.search-count{ text-align:center; font-size:.82rem; color:var(--ink-soft); margin:0 0 18px; }
+.search-empty{ text-align:center; padding:44px 18px 52px; color:var(--ink-faint); }
+.search-empty .glyph{ font-family:var(--f-disp); font-size:2.2rem; color:var(--accent-pale); }
+.search-empty p{ margin:12px 0 0; font-size:.9rem; line-height:1.7; }
+.search-empty b{ color:var(--ink); font-size:1.02rem; }
+.btn-wa{ display:inline-flex; align-items:center; gap:8px; margin-top:18px; background:#25D366; color:#fff;
+  border-radius:var(--r-pill); padding:11px 22px; font-size:.8rem; font-weight:700; }
 .cats{ display:grid; gap:22px; grid-template-columns:repeat(3, 1fr); }
 .cat-tile{ all:unset; cursor:pointer; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; display:block; padding:22px; transition:border-color .2s, box-shadow .2s; }
 .cat-tile:hover{ border-color:var(--accent-pale); box-shadow:0 12px 26px -18px rgba(46,27,66,.3); }
@@ -318,6 +334,11 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .line .thumb svg{ width:44%; height:44%; }
 .line .thumb img{ width:100%; height:100%; object-fit:cover; }
 .line .nm{ font-weight:700; font-size:.86rem; }
+/* photo + name open the product so a wrong colour/size can be corrected */
+.line-open{ all:unset; cursor:pointer; }
+.line-open-txt{ all:unset; cursor:pointer; font-weight:700; font-size:.86rem; color:var(--ink); display:block;
+  text-decoration:underline; text-decoration-color:transparent; text-underline-offset:3px; transition:text-decoration-color .2s; }
+.line-open-txt:hover{ text-decoration-color:var(--accent); }
 .line .cat{ font-size:.62rem; color:var(--ink-faint); margin-top:2px; }
 .line .rgt{ text-align:end; }
 .line-amt{ font-weight:800; font-size:.86rem; color:var(--accent); font-variant-numeric:tabular-nums; }
@@ -547,9 +568,17 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
   <section class="shell shop" id="shop">
     <div class="sec-head">
       <span class="eyebrow" data-i18n="shopEyebrow">Step inside</span>
-      <h2 data-i18n="shopTitle">The categories</h2>
-      <p data-i18n="shopSub">Each one is its own small alley — a few pieces, picked on purpose.</p>
+      <h2 data-i18n="shopTitle">A few chosen pieces for what you need</h2>
+      <p data-i18n="shopSub">Each category is its own small alley — a handful of things, picked on purpose.</p>
     </div>
+
+    <div class="searchbar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="search" id="searchInput" autocomplete="off" data-i18n-ph="searchPlaceholder" placeholder="Search the souk…" />
+      <button type="button" class="search-clear hide" id="searchClear" aria-label="Clear">×</button>
+    </div>
+
+    <div id="searchResults" class="hide"></div>
     <div class="cats" id="cats"></div>
   </section>
 
@@ -1012,6 +1041,10 @@ const I18N = {
     heroEyebrow:'A small souk, curated', heroTitle:'A few categories, a few good finds in each',
     heroSub:"Small enough to walk in a minute, chosen slowly. Take what you like — and don't worry, we're always updating our catalogue to fit your quest.",
     heroCta:'Browse the souk',
+    searchPlaceholder:'Search the souk…', searchCount:'{n} found', searchNoneTitle:'Nothing matches that yet',
+    searchNoneNote:"It may still be on its way in — tell us what you're after and we'll look for it.",
+    searchAskWa:'Ask us on WhatsApp', searchWaMsg:'Hello! Do you have: {q}?',
+    editLine:'Open to change your choice', updateLine:'Update my choice', lineUpdated:'Your choice was updated',
     shopEyebrow:'Step inside', shopTitle:'A few chosen pieces for what you need', shopSub:"Each category is its own small alley — a handful of things, picked on purpose.", browseCat:'Browse',
     trust1t:'Cash on delivery', trust1s:"Pay when it's in your hands",
     trust2t:'Nationwide delivery', trust2s:'To your door, city or village',
@@ -1040,6 +1073,10 @@ const I18N = {
     heroEyebrow:'Un petit souk, sélectionné', heroTitle:'Quelques catégories, quelques bonnes trouvailles dans chacune',
     heroSub:"Assez petit pour en faire le tour en une minute, choisi lentement. Prenez ce qui vous plaît — et rassurez-vous, nous enrichissons sans cesse notre catalogue au fil de vos quêtes.",
     heroCta:'Voir le souk',
+    searchPlaceholder:'Rechercher dans le souk…', searchCount:'{n} trouvé(s)', searchNoneTitle:'Rien ne correspond encore',
+    searchNoneNote:"C'est peut-être en route — dites-nous ce que vous cherchez et on ira le trouver.",
+    searchAskWa:'Demandez-nous sur WhatsApp', searchWaMsg:'Bonjour ! Avez-vous : {q} ?',
+    editLine:'Ouvrir pour changer votre choix', updateLine:'Mettre à jour mon choix', lineUpdated:'Votre choix a été mis à jour',
     shopEyebrow:'Entrez', shopTitle:'Quelques pièces choisies pour ce qu\'il vous faut', shopSub:"Chaque catégorie est sa propre petite allée — quelques pièces, choisies avec soin.", browseCat:'Parcourir',
     trust1t:'Paiement à la livraison', trust1s:'Payez en recevant',
     trust2t:'Livraison partout', trust2s:'Chez vous, ville ou village',
@@ -1068,6 +1105,10 @@ const I18N = {
     heroEyebrow:'سوق صغير، منتقى بعناية', heroTitle:'فئات قليلة، وفي كل واحدة اختيارات جيدة',
     heroSub:'سوق صغير تجوله في دقيقة، اختير على مهل. خذ ما يعجبك — ولا تقلق، نحدّث تشكيلتنا باستمرار لتواكب ما تبحث عنه.',
     heroCta:'تصفح السوق',
+    searchPlaceholder:'ابحث في السوق…', searchCount:'{n} نتيجة', searchNoneTitle:'لا يوجد ما يطابق بحثك بعد',
+    searchNoneNote:'قد يكون في طريقه إلينا — أخبرنا بما تبحث عنه وسنبحث عنه لك.',
+    searchAskWa:'اسألنا عبر واتساب', searchWaMsg:'مرحبًا! هل لديكم: {q}؟',
+    editLine:'افتح لتغيير اختيارك', updateLine:'حدّث اختياري', lineUpdated:'تم تحديث اختيارك',
     shopEyebrow:'ادخل', shopTitle:'قطع مختارة لما تحتاجه', shopSub:'كل فئة هي زقاقها الصغير الخاص — قطع قليلة، اختيرت بعناية.', browseCat:'تصفح',
     trust1t:'الدفع عند الاستلام', trust1s:'تدفع عندما تصلك السلعة',
     trust2t:'توصيل لكل المدن', trust2s:'إلى باب منزلك، مدينة أو قرية',
@@ -1101,6 +1142,7 @@ function applyStatic(){
   document.documentElement.lang = LANG; document.documentElement.dir = I18N[LANG].dir;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.dataset.i18nPh)); });
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('on', b.dataset.lang === LANG));
   if(CONFIG.deliveryFee === 0){ const el = document.getElementById('trust2Title'); if(el) el.textContent = t('trust2tFree'); }
 }
@@ -1203,6 +1245,158 @@ function renderCategories(){
   }).join('');
   document.querySelectorAll('[data-open-cat]').forEach(b => b.addEventListener('click', () => { location.hash = 'c-' + b.dataset.openCat; }));
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Search — matched in the browser against the catalogue that's
+   already in memory. The whole shop is a few dozen products, so a
+   server round-trip per keystroke would be slower and cost more
+   than it could ever save.
+
+   Normalisation carries the weight here. A customer typing Arabic
+   may write هاتف or ھاتف, أسود or اسود, and a French speaker will
+   skip accents (ecouteur for écouteur). Matching raw strings would
+   miss all of that and look broken to the person searching.
+   ═══════════════════════════════════════════════════════════════ */
+function normText(str){
+  return String(str || '')
+    .toLowerCase()
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')  /* é → e, ç → c, and Arabic presentation forms → base letters */
+    .replace(/[\u064B-\u0652\u0670\u0640]/g, '')       /* Arabic diacritics + tatweel */
+    .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627')  /* آأإٱ → ا */
+    .replace(/\u0649/g, '\u064A')                      /* ى → ي */
+    .replace(/\u0629/g, '\u0647')                      /* ة → ه */
+    .replace(/[\u06A9]/g, '\u0643')                    /* ک → ك */
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')                 /* punctuation → space */
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+/* Everything a product could reasonably be found by, in every language —
+   not just the current one, since a French speaker may well type an
+   English product name. */
+function searchHaystack(it, cat){
+  const langs = ['en','fr','ar'];
+  const parts = [];
+  ['name','hook','desc','tag'].forEach(f => langs.forEach(l => parts.push(it[f] && it[f][l])));
+  langs.forEach(l => { (it.benefits && it.benefits[l] || []).forEach(b => parts.push(b)); });
+  (it.options || []).forEach(o => { langs.forEach(l => parts.push(o.name && o.name[l])); (o.values||[]).forEach(v => parts.push(v)); });
+  if(cat) langs.forEach(l => parts.push(cat.name && cat.name[l]));
+  return normText(parts.filter(Boolean).join(' '));
+}
+/* Edit distance, capped — we only ever care about "is this within 1 typo",
+   so bail out as soon as it can't be. */
+function editDistance(a, b, max){
+  if(Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({length: b.length + 1}, (_, i) => i);
+  for(let i = 1; i <= a.length; i++){
+    const cur = [i];
+    let best = i;
+    for(let j = 1; j <= b.length; j++){
+      cur[j] = Math.min(prev[j] + 1, cur[j-1] + 1, prev[j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+      if(cur[j] < best) best = cur[j];
+    }
+    if(best > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+/* Does any single word in the haystack sit within one typo of this term?
+   Only for terms long enough that an edit still means the same word —
+   below 4 characters a single edit turns one real word into another. */
+function fuzzyHit(term, hayWords){
+  if(term.length < 4) return false;
+  return hayWords.some(w => Math.abs(w.length - term.length) <= 1 && editDistance(term, w, 1) <= 1);
+}
+function searchCatalogue(query){
+  const q = normText(query);
+  if(q.length < 2) return null;                 /* null = "not searching" */
+  const terms = q.split(' ').filter(Boolean);
+  const scored = [];
+  CATEGORIES.forEach(cat => cat.items.forEach(it => {
+    const hay = searchHaystack(it, cat);
+    /* strict first: plain substring. Only if a term misses do we spend
+       effort on the typo check, so ordinary searches stay cheap. */
+    if(!terms.every(t => hay.includes(t) || fuzzyHit(t, hay.split(' ')))) return;
+    /* a hit in the product's own name is worth more than one buried in
+       a benefit line, so the obvious match lands at the top */
+    const nameHay = normText(['en','fr','ar'].map(l => it.name && it.name[l]).filter(Boolean).join(' '));
+    let score = terms.reduce((sc,t) => sc + (nameHay.includes(t) ? 2 : 0), 0);
+    if(nameHay.startsWith(terms[0])) score += 3;
+    scored.push({ it, score });
+  }));
+  return scored.sort((a,b) => b.score - a.score).map(x => x.it);
+}
+
+/* ── demand log ────────────────────────────────────────────────
+   Every committed search is recorded with how many products it found.
+   Zero-result searches are the valuable ones: they're customers telling
+   the shop what it should be stocking. Only the term itself is stored —
+   no identity, no device, nothing that could tie a search to a person. */
+const SEARCH_LOG_KEY = 'souqlik_logged_searches';
+let loggedThisSession = new Set();
+function logSearch(query, hits){
+  const q = normText(query);
+  if(q.length < 2) return;
+  const dedupeKey = q + '|' + (hits > 0 ? 'hit' : 'miss');
+  if(loggedThisSession.has(dedupeKey)) return;   /* one entry per term per visit */
+  loggedThisSession.add(dedupeKey);
+  fetch(FIREBASE_DB + '/searches.json', {
+    method:'POST', headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ q, raw:String(query).slice(0,80), hits, lang:LANG, at:Date.now() })
+  }).catch(() => {});   /* a failed log must never disturb the shopper */
+}
+
+let searchTimer, searchLogTimer;
+function renderSearch(query){
+  const results = searchCatalogue(query);
+  const box = document.getElementById('searchResults');
+  const cats = document.getElementById('cats');
+  const clear = document.getElementById('searchClear');
+  clear.classList.toggle('hide', !String(query || '').length);
+
+  if(results === null){                 /* too short / empty — back to categories */
+    box.classList.add('hide'); box.innerHTML = '';
+    cats.classList.remove('hide');
+    return;
+  }
+  cats.classList.add('hide');
+  box.classList.remove('hide');
+
+  if(!results.length){
+    box.innerHTML = `<div class="search-empty">
+        <div class="glyph">✦</div>
+        <p><b>${t('searchNoneTitle')}</b><br>${t('searchNoneNote')}</p>
+        <a class="btn-wa" id="searchWa" target="_blank" rel="noopener" href="#">${t('searchAskWa')}</a>
+      </div>`;
+    const wa = document.getElementById('searchWa');
+    if(wa) wa.href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(t('searchWaMsg',{q:String(query).trim()}));
+  }else{
+    box.innerHTML = `<p class="search-count">${t('searchCount',{n:results.length})}</p>
+      <div class="grid">${results.map(stallCard).join('')}</div>`;
+    box.querySelectorAll('[data-open-item]').forEach(b => b.addEventListener('click', () => { location.hash = 'p-' + b.dataset.openItem; }));
+    box.querySelectorAll('[data-add-item]').forEach(b => b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(b.dataset.needsOptions){ location.hash = 'p-' + b.dataset.addItem; return; }
+      addToCart(b.dataset.addItem, 1);
+    }));
+    box.querySelectorAll('[data-share-item]').forEach(b => b.addEventListener('click', (e) => openShareSheet(b.dataset.shareItem, e)));
+  }
+
+  /* log only once typing settles, so "e", "ea", "ear" don't all get filed */
+  clearTimeout(searchLogTimer);
+  searchLogTimer = setTimeout(() => logSearch(query, results.length), 1200);
+}
+function wireSearch(){
+  const input = document.getElementById('searchInput');
+  const clear = document.getElementById('searchClear');
+  if(!input) return;
+  input.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => renderSearch(input.value), 220);
+  });
+  input.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ clearTimeout(searchTimer); renderSearch(input.value); input.blur(); } });
+  clear.addEventListener('click', () => { input.value = ''; renderSearch(''); input.focus(); });
+}
+
 function renderPeek(){
   document.getElementById('peekRow').innerHTML = allItems().map(p => `<button type="button" class="peek-arch" data-open-item="${p.id}">${archMedia(p)}</button>`).join('');
   document.querySelectorAll('#peekRow [data-open-item]').forEach(b => b.addEventListener('click', () => { location.hash = 'p-' + b.dataset.openItem; }));
@@ -1212,7 +1406,7 @@ function renderPeek(){
 function stallCard(p){
   const inCart = cart[p.id] > 0, out = p.stock === 0, low = p.stock != null && p.stock > 0 && p.stock <= 8;
   const badgeText = low ? t('lowStock',{n:p.stock}) : (p.tag && p.tag[LANG] ? p.tag[LANG] : '');
-  const needsOptions = p.options && p.options.length > 0;
+  const needsOptions = (p.options || []).some(o => (o.values || []).length);
   return `
     <article class="stall">
       <button class="stall-btn" data-open-item="${p.id}">
@@ -1264,6 +1458,11 @@ function renderCategoryGrid(catId){
    8. Product view — its own sales page
    ═══════════════════════════════════════════════════════════════ */
 let currentProduct = null;
+/* When a cart line is opened for editing we remember which line it was, so
+   choosing a different colour REPLACES that line instead of quietly adding a
+   second one — "I picked the wrong colour" must not end with both in the
+   basket. Holds the original cart key and its quantity. */
+let editingCart = null;   // { key, qty }
 let pvMedia = [];
 let pvIdx = 0;
 let pvPoster = '';
@@ -1328,6 +1527,11 @@ function renderProductView(id){
     : (p.stock != null && p.stock <= 8 ? `<p class="pv-stock low">${t('lowStock',{n:p.stock})}</p>` : `<p class="pv-stock ok">${t('inStock')}</p>`);
 
   pvMedia = productMedia(p); pvIdx = 0; selectedOptions = {};
+  /* An option group with no choices typed in yet would render a label with
+     nothing under it and then block Add to cart forever, since it could
+     never be satisfied. Ignore those everywhere — rendering, validation and
+     the variant key must all agree on the same list, or the indexes drift. */
+  const pickable = (p.options || []).filter(o => (o.values || []).length);
   const first = pvMedia[0];
   const hasMedia = pvMedia.length > 0;
   /* the product's own cover photo doubles as the video poster and as the
@@ -1359,19 +1563,20 @@ function renderProductView(id){
         ${p.was ? `<span class="pv-was">${p.was} DH</span>` : ''}
         ${save ? `<span class="pv-save">${t('save',{n:save})}</span>` : ''}
       </div>
-      ${(p.options||[]).map((opt, oi) => `
+      ${pickable.map((opt, oi) => `
       <div class="pv-sizes">
         <label>${opt.name[LANG] || opt.name.en}</label>
         <div class="size-row" data-opt-group="${oi}">${opt.values.map(v => `<button type="button" class="size-opt" data-opt-value="${v}">${v}</button>`).join('')}</div>
       </div>`).join('')}
+      ${(p.benefits[LANG] || []).length ? `
       <h3 style="font-family:var(--f-disp);font-weight:600;color:var(--brand);font-size:1.05rem;margin:22px 0 0">${t('pvBenefitsTitle')}</h3>
-      <ul class="pv-benefits">${p.benefits[LANG].map(b => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>${b}</span></li>`).join('')}</ul>
+      <ul class="pv-benefits">${p.benefits[LANG].map(b => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>${b}</span></li>`).join('')}</ul>` : ''}
       <div class="pv-buy">
         <button class="pv-add" id="pvAddBtn" ${out ? 'disabled' : ''}>${out ? t('outOfStock') : t('add')}</button>
         <button class="pv-share" id="pvShareBtn">${SHARE_ICON}<span>${t('share')}</span></button>
       </div>
       ${stockLine}
-      <div class="pv-desc"><h3>${t('pvDescTitle')}</h3>${descHtml(p.desc[LANG])}</div>
+      ${String(p.desc[LANG] || '').trim() ? `<div class="pv-desc"><h3>${t('pvDescTitle')}</h3>${descHtml(p.desc[LANG])}</div>` : ''}
     </div>`;
 
   if(first && first.type === 'video') wireStageVideo();
@@ -1397,14 +1602,49 @@ function renderProductView(id){
     }));
   });
 
+  /* Arrived here from a cart line? Preselect what they already chose, so the
+     page opens showing their actual configuration and they only change the
+     one thing they came to change. */
+  const editing = editingCart && parseCartKey(editingCart.key).id === p.id ? editingCart : null;
+  if(editing){
+    const cur = parseCartKey(editing.key).variant || [];
+    pickable.forEach((_, oi) => {
+      if(cur[oi] === undefined) return;
+      selectedOptions[oi] = cur[oi];
+      const row = document.querySelector(`[data-opt-group="${oi}"]`);
+      if(row) row.querySelectorAll('.size-opt').forEach(b => b.classList.toggle('on', b.dataset.optValue === cur[oi]));
+    });
+  }
+
   const addBtn = document.getElementById('pvAddBtn');
+  if(addBtn && editing && !out) addBtn.textContent = t('updateLine');
   if(addBtn && !out) addBtn.addEventListener('click', () => {
-    const opts = p.options || [];
+    const opts = pickable;
     if(opts.length && opts.some((_, oi) => !selectedOptions[oi])){ toast(t('pickOption')); return; }
     const variant = opts.length ? opts.map((_, oi) => selectedOptions[oi]) : null;
-    addToCart(p.id, 1, variant); openCartDrawer();
+    if(editing){
+      /* replace the old line rather than stacking a second one; keep the
+         quantity they'd already chosen */
+      const qty = editing.qty;
+      delete cart[editing.key];
+      editingCart = null;
+      saveCart();
+      addToCart(p.id, qty, variant);
+      toast(t('lineUpdated'));
+    }else{
+      addToCart(p.id, 1, variant);
+    }
+    openCartDrawer();
   });
   document.getElementById('pvShareBtn').addEventListener('click', () => openShareSheet(p.id));
+}
+
+function openCartLineForEdit(key){
+  const { id } = parseCartKey(key);
+  if(!findItem(id)) return;
+  editingCart = { key, qty: cart[key] || 1 };
+  closeCartDrawer();
+  location.hash = 'p-' + id;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1425,17 +1665,32 @@ function showLbImage(idx){
   document.getElementById('lbNext').classList.toggle('hide', lbImages.length < 2);
   renderLbDots();
 }
+/* On a phone, "back" is how people close things. Without an entry of our
+   own in the history, pressing back while zoomed into a photo throws the
+   visitor out of the shop entirely. We push a state on open so back lands
+   here and merely closes the viewer; the URL is untouched, so the hash
+   router never sees it and the product page underneath stays put. */
+let lbHistoryPushed = false;
 function openLightbox(images, startIdx){
   if(!images || !images.length) return;
   lbImages = images; lbIdx = startIdx || 0;
   showLbImage(lbIdx);
   document.getElementById('lightbox').classList.add('on');
   document.body.style.overflow = 'hidden';
+  try{ history.pushState({ souqlikLightbox:true }, '', location.href); lbHistoryPushed = true; }
+  catch(e){ lbHistoryPushed = false; }
 }
-function closeLightbox(){
+function closeLightbox(fromPop){
+  /* closing by button/scrim should unwind the history entry too, or the
+     visitor would have to press back twice to leave the product */
+  if(!fromPop && lbHistoryPushed){ lbHistoryPushed = false; history.back(); return; }
+  lbHistoryPushed = false;
   document.getElementById('lightbox').classList.remove('on');
   document.body.style.overflow = document.getElementById('pview').classList.contains('on') || document.getElementById('cview').classList.contains('on') ? 'hidden' : '';
 }
+window.addEventListener('popstate', () => {
+  if(document.getElementById('lightbox').classList.contains('on')) closeLightbox(true);
+});
 function toggleLbZoom(e){
   const img = document.getElementById('lbImg');
   if(img.classList.contains('zoomed')){
@@ -1448,7 +1703,7 @@ function toggleLbZoom(e){
     img.classList.add('zoomed');
   }
 }
-document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.getElementById('lbClose').addEventListener('click', () => closeLightbox());
 document.getElementById('lightbox').addEventListener('click', (e) => { if(e.target.id === 'lightbox') closeLightbox(); });
 document.getElementById('lbPrev').addEventListener('click', () => showLbImage(lbIdx - 1));
 document.getElementById('lbNext').addEventListener('click', () => showLbImage(lbIdx + 1));
@@ -1477,6 +1732,7 @@ window.addEventListener('keydown', (e) => {
    ═══════════════════════════════════════════════════════════════ */
 function hideOverlays(){
   stopPvVideo(); /* leaving the product must never leave audio playing */
+  editingCart = null; /* walked away from the edit — don't apply it later */
   document.getElementById('cview').classList.remove('on');
   document.getElementById('pview').classList.remove('on');
   document.body.style.overflow = ''; currentCat = null; currentProduct = null;
@@ -1538,11 +1794,12 @@ function renderCart(){
     const { id, variant } = parseCartKey(key);
     const p = findItem(id); if(!p) return ''; const q = cart[key]; const cat = categoryOf(id);
     const catLabel = [cat ? cat.name[LANG] : '', variant ? variant.join(' · ') : ''].filter(Boolean).join(' · ');
+    const editable = (p.options || []).some(o => (o.values || []).length) ? ` title="${t('editLine')}"` : '';
     return `
     <div class="line">
-      <div class="thumb" style="background:${GRADS[p.icon]}">${archMedia(p)}</div>
+      <button class="line-open thumb" style="background:${GRADS[p.icon]}" data-edit="${key}"${editable}>${archMedia(p)}</button>
       <div>
-        <div class="nm">${p.name[LANG]}</div>
+        <button class="nm line-open-txt" data-edit="${key}"${editable}>${p.name[LANG]}</button>
         <div class="cat">${catLabel}</div>
         <div class="stepper"><button data-dec="${key}">−</button><input type="text" value="${q}" data-qty="${key}" readonly /><button data-inc="${key}">+</button></div>
       </div>
@@ -1554,6 +1811,7 @@ function renderCart(){
   if(CONFIG.deliveryFee > 0){ feeEl.textContent = CONFIG.deliveryFee + ' DH'; feeEl.classList.remove('free'); }
   else { feeEl.textContent = t('free'); feeEl.classList.add('free'); }
   document.getElementById('cartTotal').textContent = grandTotal() + ' DH';
+  lines.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openCartLineForEdit(b.dataset.edit)));
   lines.querySelectorAll('[data-inc]').forEach(b => b.addEventListener('click', () => setQty(b.dataset.inc, (cart[b.dataset.inc]||0)+1)));
   lines.querySelectorAll('[data-dec]').forEach(b => b.addEventListener('click', () => setQty(b.dataset.dec, (cart[b.dataset.dec]||0)-1)));
   lines.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => setQty(b.dataset.rm, 0)));
@@ -1641,6 +1899,7 @@ function toast(msg){
   renderCategories();
   renderCart();
   paintWaLinks();
+  wireSearch();
   document.getElementById('yr').textContent = new Date().getFullYear();
   route(); /* first pass, against the built-in fallback — makes the page
               usable instantly, but a shared #p-/#c- link to a real
