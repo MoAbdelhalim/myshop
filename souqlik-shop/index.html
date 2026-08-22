@@ -207,6 +207,19 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
 #paper .sig{ display:flex; justify-content:space-between; margin-top:36px; }
 #paper .sig div{ width:44%; border-top:1px solid #999; padding-top:6px; font-size:11px; color:#555; text-align:center; }
 #paper .pf{ margin-top:26px; text-align:center; font-size:10.5px; color:#888; line-height:1.7; }
+#paper .cf-hello{ font-size:12.5px; line-height:1.9; margin:0 0 14px; }
+#paper .cf-fr{ color:#555; font-size:11.5px; }
+#paper .cf-items{ display:grid; gap:8px; margin-bottom:14px; }
+#paper .cf-item{ display:flex; align-items:center; gap:12px; border:1px solid #ccc; border-radius:6px; padding:8px 10px; page-break-inside:avoid; }
+#paper .cf-shot{ width:74px; height:74px; flex:none; border:1px solid #ddd; border-radius:4px; overflow:hidden; display:grid; place-items:center; background:#f7f4ee; }
+#paper .cf-shot img{ width:100%; height:100%; object-fit:cover; }
+#paper .cf-noshot{ color:#bbb; font-size:18px; }
+#paper .cf-meta{ flex:1; display:flex; flex-direction:column; gap:3px; font-size:12.5px; }
+#paper .cf-var{ color:#555; font-size:11.5px; }
+#paper .cf-qty{ color:#555; font-size:11.5px; }
+#paper .cf-line{ font-weight:800; font-size:13px; white-space:nowrap; }
+@media print{ #paper .cf-shot img{ -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+
 </style>
 </head>
 <body>
@@ -240,6 +253,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
     <div class="tabs" id="tabs">
       <button data-tab="orders" class="on">Orders<span class="n" id="cOrders"></span></button>
       <button data-tab="customers">Customers</button>
+      <button data-tab="searches">Searches<span class="n" id="cSearches"></span></button>
       <button data-tab="suppliers">Suppliers</button>
       <button data-tab="catalogue">Catalogue</button>
       <button data-tab="votes">Votes</button>
@@ -301,6 +315,29 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
       <button class="btn solid" id="saveSuppBtn">Save supplier sheet</button>
       <span class="state" id="suppState"></span>
     </div>
+  </section>
+
+
+  <!-- ═══ SEARCHES ═══ -->
+  <section class="card hide" id="tab-searches">
+    <h2>What customers searched for</h2>
+    <p class="note">Every search typed into the storefront, grouped by term. The ones with <b>no results</b> are the useful ones — that's demand you aren't stocking yet. Nothing about who searched is recorded, only the words.</p>
+    <div class="row" style="margin-top:12px">
+      <select class="status" id="searchFilter">
+        <option value="miss">No results only</option>
+        <option value="all">All searches</option>
+        <option value="hit">Found something</option>
+      </select>
+      <button class="btn" id="refreshSearchesBtn">Refresh</button>
+      <button class="btn" id="exportSearchesBtn">Export CSV</button>
+    </div>
+    <div class="tbl-wrap" style="margin-top:12px">
+      <table>
+        <thead><tr><th>Search term</th><th>Times</th><th>Results</th><th>Last searched</th></tr></thead>
+        <tbody id="searchBody"></tbody>
+      </table>
+    </div>
+    <div class="empty hide" id="searchEmpty">Nothing yet — searches will appear here once customers use the search bar.</div>
   </section>
 
   <!-- ═══ CATALOGUE ═══ -->
@@ -421,6 +458,8 @@ let ORDERS = [];          // array of {_key, ref, at, status, items, total, cust
 let SUPPLIERS = {};       // { itemId: {supplier, contact, cost, lead, notes} }
 let VOTES = {};           // { itemId: number }
 let SETTINGS = { whatsapp:'212600000000', deliveryFee:0 };
+let ITEM_INDEX = {};   // itemId -> item, unfiltered; used for order-document photos
+let SEARCHES = [];     // raw storefront search log
 let LANG = 'en';
 let catalogueDirty = false;
 let openItemEdits = new Set(); /* which "ci:ii" edit panels are expanded, kept across re-renders */
@@ -500,6 +539,10 @@ function categoriesFromFirebase(raw){
   if(!raw || typeof raw !== 'object') return [];
   return Object.values(raw).map(normCategory);
 }
+function searchesFromFirebase(raw){
+  if(!raw || typeof raw !== 'object') return [];
+  return Object.values(raw).filter(r => r && r.q).map(r => ({ q:String(r.q), raw:String(r.raw || r.q), hits:Number(r.hits)||0, at:Number(r.at)||0 }));
+}
 function ordersFromFirebase(raw){
   if(!raw || typeof raw !== 'object') return [];
   return Object.entries(raw).map(([key, o]) => {
@@ -577,11 +620,12 @@ function setDbState(msg, isErr){
 }
 async function loadAllData(){
   setDbState('Loading your data…');
-  let catSnap, ordSnap, suppSnap, voteSnap, setSnap;
+  let catSnap, ordSnap, srchSnap, suppSnap, voteSnap, setSnap;
   try{
-    [catSnap, ordSnap, suppSnap, voteSnap, setSnap] = await Promise.all([
+    [catSnap, ordSnap, srchSnap, suppSnap, voteSnap, setSnap] = await Promise.all([
       db.ref('categories').once('value'),
       db.ref('orders').once('value'),
+      db.ref('searches').once('value'),
       db.ref('suppliers').once('value'),
       db.ref('votes').once('value'),
       db.ref('settings').once('value')
@@ -591,7 +635,19 @@ async function loadAllData(){
     return;
   }
   try{ CATEGORIES = categoriesFromFirebase(catSnap.val()); }catch(e){ console.error('categories', e); CATEGORIES = []; }
+  /* Photo lookup for order documents. Orders store name/qty/price but not
+     the image, so it has to come from the catalogue by id. Built from the
+     UNFILTERED catalogue on purpose: in the team panel CATEGORIES is
+     narrowed to that seller's own items, and an order can legitimately
+     contain a teammate's product — narrowing this too would silently drop
+     those photos from the customer's confirmation. */
+  try{
+    ITEM_INDEX = {};
+    categoriesFromFirebase(catSnap.val()).forEach(c => c.items.forEach(it => { ITEM_INDEX[it.id] = it; }));
+  }catch(e){ ITEM_INDEX = {}; }
+
   try{ ORDERS = ordersFromFirebase(ordSnap.val()); }catch(e){ console.error('orders', e); ORDERS = []; }
+  try{ SEARCHES = searchesFromFirebase(srchSnap.val()); }catch(e){ console.error('searches', e); SEARCHES = []; }
   try{ SUPPLIERS = suppSnap.val() || {}; }catch(e){ SUPPLIERS = {}; }
   try{ VOTES = voteSnap.val() || {}; }catch(e){ VOTES = {}; }
   try{ SETTINGS = setSnap.val() || { whatsapp:'212600000000', deliveryFee:0 }; }catch(e){ SETTINGS = { whatsapp:'212600000000', deliveryFee:0 }; }
@@ -616,6 +672,45 @@ document.getElementById('langSel').addEventListener('change', (e) => { LANG = e.
 /* ═══════════════════════════════════════════════════════════════
    ORDERS
    ═══════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   SEARCHES — what customers typed into the storefront.
+   Raw rows are one-per-search; this groups them by normalised term so
+   the tab answers the only question that matters: what are people
+   asking for repeatedly that we don't sell?
+   ═══════════════════════════════════════════════════════════════ */
+function searchRows(){
+  const by = {};
+  SEARCHES.forEach(r => {
+    const k = r.q;
+    if(!by[k]) by[k] = { q:k, raw:r.raw || r.q, times:0, lastAt:0, maxHits:0 };
+    by[k].times++;
+    by[k].lastAt = Math.max(by[k].lastAt, r.at || 0);
+    by[k].maxHits = Math.max(by[k].maxHits, r.hits || 0);
+    if(r.at >= by[k].lastAt) by[k].raw = r.raw || r.q;
+  });
+  return Object.values(by).sort((a,b) => b.times - a.times || b.lastAt - a.lastAt);
+}
+function renderSearches(){
+  const filt = (document.getElementById('searchFilter') || {}).value || 'miss';
+  const rows = searchRows().filter(r =>
+    filt === 'all' ? true : filt === 'miss' ? r.maxHits === 0 : r.maxHits > 0);
+  const missCount = searchRows().filter(r => r.maxHits === 0).length;
+  const badge = document.getElementById('cSearches');
+  if(badge) badge.textContent = missCount || '';
+  const empty = document.getElementById('searchEmpty');
+  if(empty) empty.classList.toggle('hide', rows.length > 0);
+  const body = document.getElementById('searchBody');
+  if(!body) return;
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td>${esc(r.raw)}</td>
+      <td>${r.times}</td>
+      <td>${r.maxHits === 0 ? '<span class="pill cancelled">none</span>' : r.maxHits}</td>
+      <td>${r.lastAt ? new Date(r.lastAt).toLocaleDateString() : '—'}</td>
+    </tr>`).join('');
+}
+
 function statusPillHtml(s){ return `<span class="pill ${s}">${s}</span>`; }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -682,6 +777,82 @@ function deliverySlipHtml(o){
     </div>
   </div>`;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Customer confirmation — the document sent TO the buyer before
+   dispatch, so they can eyeball the actual product photo and catch a
+   wrong item/size before it ships. Same hidden-#paper + window.print()
+   mechanism as the delivery slip (no popup, works on mobile).
+   ═══════════════════════════════════════════════════════════════ */
+function itemPhoto(id){
+  const it = ITEM_INDEX[id];
+  return (it && it.img) ? it.img : '';
+}
+function confirmationHtml(o){
+  const d = new Date(o.at || Date.now());
+  const dateStr = d.toLocaleDateString('fr-FR');
+  const timeStr = d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+  const deliveryDH = o.deliveryFee > 0 ? `${o.deliveryFee} درهم` : 'مجاني';
+  const wa = (SETTINGS.whatsapp || '').replace(/[^0-9]/g,'');
+  const cards = (o.items || []).map(it => {
+    const src = itemPhoto(it.id);
+    return `<div class="cf-item">
+      <div class="cf-shot">${src ? `<img src="${esc(src)}" alt="" />` : '<span class="cf-noshot">—</span>'}</div>
+      <div class="cf-meta">
+        <b>${esc(it.name)}</b>
+        ${it.variant && it.variant.length ? `<span class="cf-var">${esc(it.variant.join(' · '))}</span>` : ''}
+        <span class="cf-qty">${it.qty} × ${it.price} درهم</span>
+      </div>
+      <div class="cf-line">${it.lineTotal} درهم</div>
+    </div>`;
+  }).join('');
+  return `<div class="pg cf">
+    <div class="ph">
+      <div class="b">Souq<span>lik</span><small>${wa ? 'واتساب ' + wa : ''}</small></div>
+      <div class="doc"><h1>تأكيد الطلب / Confirmation de commande</h1><div class="ref">${esc(o.ref)}</div><div class="dt">${timeStr} — ${dateStr}</div></div>
+    </div>
+
+    <p class="cf-hello">مرحبًا ${esc(o.customer.name)}، هذا ملخص طلبك بالصور. تأكد من القطع والمقاسات، وإن كان كل شيء صحيحًا أكّد لنا عبر واتساب ونرسله إليك.<br>
+    <span class="cf-fr">Voici le récapitulatif de votre commande en images. Vérifiez les articles, puis confirmez-nous sur WhatsApp et nous l'expédions.</span></p>
+
+    <div class="cf-items">${cards}</div>
+
+    <div class="sum">
+      <div><span>المجموع الفرعي</span><span>${o.subtotal} درهم</span></div>
+      <div><span>التوصيل</span><span>${deliveryDH}</span></div>
+      <div class="big"><span>الإجمالي</span><span>${o.total} درهم</span></div>
+    </div>
+
+    <div class="cod">الدفع عند الاستلام : ${o.total} درهم</div>
+
+    <div class="cols">
+      <div class="bx"><h4>يُرسل إلى / Livré à</h4>
+        <b>${esc(o.customer.name)}</b><br>${esc(o.customer.phone)}${o.customer.city ? '<br>' + esc(o.customer.city) : ''}${o.customer.address ? '<br>' + esc(o.customer.address) : ''}</div>
+    </div>
+
+    <div class="pf">
+      لم يُطلب أي دفع الآن — الخلاص عند الاستلام.<br>
+      ${wa ? wa + ' · ' : ''}souqlik.store
+    </div>
+  </div>`;
+}
+function printCustomerConfirmation(o){
+  document.getElementById('paper').innerHTML = confirmationHtml(o);
+  /* Photos come from the CDN; printing before they decode yields empty
+     boxes. Wait for them (with a ceiling, so a dead URL can't hang it). */
+  const imgs = Array.from(document.getElementById('paper').querySelectorAll('img'));
+  const pending = imgs.filter(i => !i.complete);
+  if(!pending.length){ window.print(); return; }
+  let done = 0, fired = false;
+  const go = () => { if(!fired){ fired = true; window.print(); } };
+  pending.forEach(i => {
+    const tick = () => { if(++done === pending.length) go(); };
+    i.addEventListener('load', tick, { once:true });
+    i.addEventListener('error', tick, { once:true });
+  });
+  setTimeout(go, 3000);
+}
+
 function printDeliverySlip(o){
   document.getElementById('paper').innerHTML = deliverySlipHtml(o);
   window.print();
@@ -719,9 +890,14 @@ function renderOrders(){
         </select>
         <a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${(o.customer.phone||'').replace(/[^0-9]/g,'')}">Message on WhatsApp</a>
         <button class="btn sm" data-print-slip="${o._key}">Delivery slip</button>
+        <button class="btn sm" data-print-confirm="${o._key}">Customer confirmation</button>
         <button class="btn sm danger" data-del-order="${o._key}">Delete</button>
       </div>
     </div>`).join('');
+  box.querySelectorAll('[data-print-confirm]').forEach(btn => btn.addEventListener('click', () => {
+    const o = ORDERS.find(x => x._key === btn.dataset.printConfirm);
+    if(o) printCustomerConfirmation(o);
+  }));
   box.querySelectorAll('[data-print-slip]').forEach(btn => btn.addEventListener('click', () => {
     const o = ORDERS.find(x => x._key === btn.dataset.printSlip);
     if(o) printDeliverySlip(o);
@@ -1200,12 +1376,28 @@ function downloadCsv(rows, filename){
    ═══════════════════════════════════════════════════════════════ */
 let toastTimer;
 function toast(msg){ const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('on'), 2800); }
+
+const _sf = document.getElementById('searchFilter');
+if(_sf) _sf.addEventListener('change', renderSearches);
+const _rs = document.getElementById('refreshSearchesBtn');
+if(_rs) _rs.addEventListener('click', async () => {
+  try{ const snap = await db.ref('searches').once('value'); SEARCHES = searchesFromFirebase(snap.val()); renderSearches(); toast('Refreshed'); }
+  catch(e){ toast('Could not refresh: ' + e.message); }
+});
+const _es = document.getElementById('exportSearchesBtn');
+if(_es) _es.addEventListener('click', () => {
+  const rows = [['Search term','Times searched','Best result count','Last searched']];
+  searchRows().forEach(r => rows.push([r.raw, r.times, r.maxHits, r.lastAt ? new Date(r.lastAt).toISOString() : '']));
+  downloadCsv(rows, 'souqlik-searches.csv');
+});
+
 function safeRender(fn, label){
   try{ fn(); }catch(e){ console.error(label, e); toast(label + ' tab had a display problem: ' + e.message); }
 }
 function renderAll(){
   safeRender(renderOrders, 'Orders');
   safeRender(renderCustomers, 'Customers');
+  safeRender(renderSearches, 'Searches');
   safeRender(renderSuppliers, 'Suppliers');
   safeRender(renderCatalogue, 'Catalogue');
   safeRender(renderVotes, 'Votes');
