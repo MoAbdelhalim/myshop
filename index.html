@@ -47,7 +47,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Karla:wght@400;500;700&family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
 <!-- structured data — the business itself; product-level data isn't
      included since the catalogue loads dynamically from Firebase and
@@ -104,19 +104,31 @@
   --shell:  1180px;
   --ease:   cubic-bezier(.16,.84,.34,1);
 
-  /* Fraunces is a warm, slightly hand-cut serif — it carries the
-     "curated souk stall" feeling the old grotesque couldn't. DM Sans
-     keeps body copy friendly rather than clinical. Cairo covers Arabic
-     for both roles (there's no good serif Arabic pairing for Fraunces,
-     and Cairo's warmth matches it better than Tajawal's neutrality). */
-  --f-disp: 'Fraunces', Georgia, serif;
-  --f-body: 'DM Sans', system-ui, -apple-system, sans-serif;
-  --f-ar:   'Cairo', system-ui, sans-serif;
+  /* Cormorant Garamond for display: high-contrast old-style with long,
+     drawn strokes — the closest a webfont gets to silk. It carries warmth
+     and memory where a grotesque reads as a spreadsheet. Karla underneath
+     is humanist and slightly irregular, so body copy stays human without
+     fighting the headings. Arabic gets Amiri for display — a revival of
+     early-1900s Bulaq Naskh, which is exactly the nostalgic register
+     Cormorant occupies in Latin — with Cairo kept for Arabic body text,
+     where Amiri's fine strokes would hurt readability at small sizes. */
+  --f-disp:    'Cormorant Garamond', Georgia, serif;
+  --f-body:    'Karla', system-ui, -apple-system, sans-serif;
+  --f-ar:      'Cairo', system-ui, sans-serif;
+  --f-ar-disp: 'Amiri', 'Cairo', serif;
 }
 *,*::before,*::after{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
 body{
-  margin:0; background:var(--page); color:var(--ink);
+  margin:0; color:var(--ink);
+  /* Zellige across the whole page ground. Deliberately faint (5.5%) and
+     only ever behind the cream backdrop — every card, panel and photo sits
+     on its own opaque surface above it. Conversion research is consistent
+     that texture behind *content* raises cognitive load and costs sales;
+     texture behind *space* just makes the room feel finished. */
+  background-color:var(--page);
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%20fill=%27none%27%20stroke=%27%232E1B42%27%20stroke-opacity=%270.055%27%20stroke-width=%271.1%27%20stroke-linejoin=%27round%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2012.24%2C5.07%20L%2016.97%2C16.97%20L%205.07%2C12.24%20L%200.00%2C24.00%20L%20-5.07%2C12.24%20L%20-16.97%2C16.97%20L%20-12.24%2C5.07%20L%20-24.00%2C0.00%20L%20-12.24%2C-5.07%20L%20-16.97%2C-16.97%20L%20-5.07%2C-12.24%20L%20-0.00%2C-24.00%20L%205.07%2C-12.24%20L%2016.97%2C-16.97%20L%2012.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C0.00%20L%20132.24%2C5.07%20L%20136.97%2C16.97%20L%20125.07%2C12.24%20L%20120.00%2C24.00%20L%20114.93%2C12.24%20L%20103.03%2C16.97%20L%20107.76%2C5.07%20L%2096.00%2C0.00%20L%20107.76%2C-5.07%20L%20103.03%2C-16.97%20L%20114.93%2C-12.24%20L%20120.00%2C-24.00%20L%20125.07%2C-12.24%20L%20136.97%2C-16.97%20L%20132.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2012.24%2C125.07%20L%2016.97%2C136.97%20L%205.07%2C132.24%20L%200.00%2C144.00%20L%20-5.07%2C132.24%20L%20-16.97%2C136.97%20L%20-12.24%2C125.07%20L%20-24.00%2C120.00%20L%20-12.24%2C114.93%20L%20-16.97%2C103.03%20L%20-5.07%2C107.76%20L%20-0.00%2C96.00%20L%205.07%2C107.76%20L%2016.97%2C103.03%20L%2012.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C120.00%20L%20132.24%2C125.07%20L%20136.97%2C136.97%20L%20125.07%2C132.24%20L%20120.00%2C144.00%20L%20114.93%2C132.24%20L%20103.03%2C136.97%20L%20107.76%2C125.07%20L%2096.00%2C120.00%20L%20107.76%2C114.93%20L%20103.03%2C103.03%20L%20114.93%2C107.76%20L%20120.00%2C96.00%20L%20125.07%2C107.76%20L%20136.97%2C103.03%20L%20132.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%2072.24%2C65.07%20L%2076.97%2C76.97%20L%2065.07%2C72.24%20L%2060.00%2C84.00%20L%2054.93%2C72.24%20L%2043.03%2C76.97%20L%2047.76%2C65.07%20L%2036.00%2C60.00%20L%2047.76%2C54.93%20L%2043.03%2C43.03%20L%2054.93%2C47.76%20L%2060.00%2C36.00%20L%2065.07%2C47.76%20L%2076.97%2C43.03%20L%2072.24%2C54.93%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C-8.00%20L%2068.00%2C0.00%20L%2060.00%2C8.00%20L%2052.00%2C0.00%20Z%27/%3E%3Cpath%20d=%27M%20120.00%2C52.00%20L%20128.00%2C60.00%20L%20120.00%2C68.00%20L%20112.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C112.00%20L%2068.00%2C120.00%20L%2060.00%2C128.00%20L%2052.00%2C120.00%20Z%27/%3E%3Cpath%20d=%27M%200.00%2C52.00%20L%208.00%2C60.00%20L%200.00%2C68.00%20L%20-8.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2043.03%2C43.03%20L%2016.97%2C16.97%27/%3E%3Cpath%20d=%27M%2076.97%2C43.03%20L%20103.03%2C16.97%27/%3E%3Cpath%20d=%27M%2043.03%2C76.97%20L%2016.97%2C103.03%27/%3E%3Cpath%20d=%27M%2076.97%2C76.97%20L%20103.03%2C103.03%27/%3E%3Cpath%20d=%27M%2060.00%2C36.00%20L%2060.00%2C8.00%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%20112.00%2C60.00%27/%3E%3Cpath%20d=%27M%2060.00%2C84.00%20L%2060.00%2C112.00%27/%3E%3Cpath%20d=%27M%2036.00%2C60.00%20L%208.00%2C60.00%27/%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2052.00%2C0.00%27/%3E%3Cpath%20d=%27M%200.00%2C24.00%20L%200.00%2C52.00%27/%3E%3Cpath%20d=%27M%2096.00%2C0.00%20L%2068.00%2C0.00%27/%3E%3Cpath%20d=%27M%20120.00%2C24.00%20L%20120.00%2C52.00%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2052.00%2C120.00%27/%3E%3Cpath%20d=%27M%200.00%2C96.00%20L%200.00%2C68.00%27/%3E%3Cpath%20d=%27M%20120.00%2C96.00%20L%20120.00%2C68.00%27/%3E%3Cpath%20d=%27M%2096.00%2C120.00%20L%2068.00%2C120.00%27/%3E%3C/svg%3E");
+  background-size:168px 168px;
   font-family:var(--f-body); font-size:15px; line-height:1.6;
   -webkit-font-smoothing:antialiased;
 }
@@ -132,10 +144,10 @@ svg[data-icon]{ width:100%; height:100%; }
    Headings set font-family:var(--f-disp) directly, and the Latin display
    face carries no Arabic glyphs — without this, Arabic headings fall back
    to whatever the system picks and look nothing like the rest of the page. */
-html[lang="ar"]{ --f-disp: 'Cairo', system-ui, sans-serif; --f-body: 'Cairo', system-ui, sans-serif; }
+html[lang="ar"]{ --f-disp: var(--f-ar-disp); --f-body: 'Cairo', system-ui, sans-serif; }
 html[lang="ar"] body{ font-family:var(--f-ar); }
 html[lang="ar"] *{ letter-spacing:normal !important; }
-html[lang="ar"] .wordmark .lat{ letter-spacing:.16em !important; font-family:'Fraunces', Georgia, serif; }
+html[lang="ar"] .wordmark .lat{ letter-spacing:.16em !important; font-family:'Cormorant Garamond', Georgia, serif; }
 html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
   direction:ltr; unicode-bidi:isolate; display:inline-block;
 }
@@ -149,7 +161,7 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .masthead{ position:sticky; top:0; z-index:60; background:rgba(245,240,230,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
 .mast-in{ display:flex; align-items:center; gap:14px; padding:12px 0; }
 .wordmark{ display:flex; flex-direction:column; line-height:1.05; margin-inline-end:auto; }
-.wordmark .lat{ font-family:var(--f-disp); font-weight:800; font-size:1.34rem; color:var(--brand); }
+.wordmark .lat{ font-family:var(--f-disp); font-weight:700; font-size:1.62rem; letter-spacing:.01em; color:var(--brand); }
 .wordmark .lat span{ color:var(--accent); }
 .wordmark .ar{ font-family:var(--f-ar); font-size:.68rem; font-weight:700; letter-spacing:.06em; color:var(--ink-faint); }
 .langs{ display:inline-flex; border:1px solid var(--line); border-radius:var(--r-pill); padding:2px; background:var(--panel); }
@@ -161,16 +173,22 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 
 /* ── hero ───────────────────────────────────────────────────── */
 .hero{ background:var(--brand); color:var(--on-brand); overflow:hidden; position:relative; }
-.hero-in{ padding:clamp(46px,8vw,84px) 0 0; text-align:center; }
+/* zellige veil — original 8-point khatam geometry, drawn for Souqlik.
+   Kept faint on purpose: it should read as texture you notice second,
+   never as wallpaper competing with the products. */
+.hero::before{ content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%20fill=%27none%27%20stroke=%27%23F2A339%27%20stroke-width=%271.1%27%20stroke-linejoin=%27round%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2012.24%2C5.07%20L%2016.97%2C16.97%20L%205.07%2C12.24%20L%200.00%2C24.00%20L%20-5.07%2C12.24%20L%20-16.97%2C16.97%20L%20-12.24%2C5.07%20L%20-24.00%2C0.00%20L%20-12.24%2C-5.07%20L%20-16.97%2C-16.97%20L%20-5.07%2C-12.24%20L%20-0.00%2C-24.00%20L%205.07%2C-12.24%20L%2016.97%2C-16.97%20L%2012.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C0.00%20L%20132.24%2C5.07%20L%20136.97%2C16.97%20L%20125.07%2C12.24%20L%20120.00%2C24.00%20L%20114.93%2C12.24%20L%20103.03%2C16.97%20L%20107.76%2C5.07%20L%2096.00%2C0.00%20L%20107.76%2C-5.07%20L%20103.03%2C-16.97%20L%20114.93%2C-12.24%20L%20120.00%2C-24.00%20L%20125.07%2C-12.24%20L%20136.97%2C-16.97%20L%20132.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2012.24%2C125.07%20L%2016.97%2C136.97%20L%205.07%2C132.24%20L%200.00%2C144.00%20L%20-5.07%2C132.24%20L%20-16.97%2C136.97%20L%20-12.24%2C125.07%20L%20-24.00%2C120.00%20L%20-12.24%2C114.93%20L%20-16.97%2C103.03%20L%20-5.07%2C107.76%20L%20-0.00%2C96.00%20L%205.07%2C107.76%20L%2016.97%2C103.03%20L%2012.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C120.00%20L%20132.24%2C125.07%20L%20136.97%2C136.97%20L%20125.07%2C132.24%20L%20120.00%2C144.00%20L%20114.93%2C132.24%20L%20103.03%2C136.97%20L%20107.76%2C125.07%20L%2096.00%2C120.00%20L%20107.76%2C114.93%20L%20103.03%2C103.03%20L%20114.93%2C107.76%20L%20120.00%2C96.00%20L%20125.07%2C107.76%20L%20136.97%2C103.03%20L%20132.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%2072.24%2C65.07%20L%2076.97%2C76.97%20L%2065.07%2C72.24%20L%2060.00%2C84.00%20L%2054.93%2C72.24%20L%2043.03%2C76.97%20L%2047.76%2C65.07%20L%2036.00%2C60.00%20L%2047.76%2C54.93%20L%2043.03%2C43.03%20L%2054.93%2C47.76%20L%2060.00%2C36.00%20L%2065.07%2C47.76%20L%2076.97%2C43.03%20L%2072.24%2C54.93%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C-8.00%20L%2068.00%2C0.00%20L%2060.00%2C8.00%20L%2052.00%2C0.00%20Z%27/%3E%3Cpath%20d=%27M%20120.00%2C52.00%20L%20128.00%2C60.00%20L%20120.00%2C68.00%20L%20112.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C112.00%20L%2068.00%2C120.00%20L%2060.00%2C128.00%20L%2052.00%2C120.00%20Z%27/%3E%3Cpath%20d=%27M%200.00%2C52.00%20L%208.00%2C60.00%20L%200.00%2C68.00%20L%20-8.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2043.03%2C43.03%20L%2016.97%2C16.97%27/%3E%3Cpath%20d=%27M%2076.97%2C43.03%20L%20103.03%2C16.97%27/%3E%3Cpath%20d=%27M%2043.03%2C76.97%20L%2016.97%2C103.03%27/%3E%3Cpath%20d=%27M%2076.97%2C76.97%20L%20103.03%2C103.03%27/%3E%3Cpath%20d=%27M%2060.00%2C36.00%20L%2060.00%2C8.00%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%20112.00%2C60.00%27/%3E%3Cpath%20d=%27M%2060.00%2C84.00%20L%2060.00%2C112.00%27/%3E%3Cpath%20d=%27M%2036.00%2C60.00%20L%208.00%2C60.00%27/%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2052.00%2C0.00%27/%3E%3Cpath%20d=%27M%200.00%2C24.00%20L%200.00%2C52.00%27/%3E%3Cpath%20d=%27M%2096.00%2C0.00%20L%2068.00%2C0.00%27/%3E%3Cpath%20d=%27M%20120.00%2C24.00%20L%20120.00%2C52.00%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2052.00%2C120.00%27/%3E%3Cpath%20d=%27M%200.00%2C96.00%20L%200.00%2C68.00%27/%3E%3Cpath%20d=%27M%20120.00%2C96.00%20L%20120.00%2C68.00%27/%3E%3Cpath%20d=%27M%2096.00%2C120.00%20L%2068.00%2C120.00%27/%3E%3C/svg%3E"); background-size:150px 150px; opacity:.14; }
+.hero-in{ padding:clamp(46px,8vw,84px) 0 0; text-align:center; position:relative; z-index:1; }
+.hero-fade{ position:relative; z-index:1; }
 .eyebrow{ font-size:.7rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-lit); }
-.hero h1{ font-family:var(--f-disp); font-weight:800; margin:16px auto 0; max-width:22ch; font-size:clamp(1.7rem, 4.4vw, 2.5rem); line-height:1.15; letter-spacing:-.015em; }
+.hero h1{ font-family:var(--f-disp); font-weight:600; margin:18px auto 0; max-width:20ch; font-size:clamp(2.1rem, 5.6vw, 3.15rem); line-height:1.16; letter-spacing:-.005em; }
 .hero h1 em{ font-style:normal; color:var(--accent-lit); }
 .hero p{ margin:14px auto 0; max-width:46ch; color:#D8CEE6; font-size:1.02rem; }
 .hero .cta{ display:inline-flex; align-items:center; gap:8px; margin-top:24px; background:var(--accent); color:var(--on-accent); border:0; border-radius:var(--r-pill); padding:14px 28px; font-size:.84rem; font-weight:800; transition:filter .2s; }
 .hero .cta:hover{ filter:brightness(1.1); }
 .hero .cta svg{ width:15px; height:15px; }
 .peek{ display:flex; justify-content:center; gap:14px; margin-top:clamp(30px,6vw,52px); }
-.peek-arch{ all:unset; cursor:pointer; position:relative; overflow:hidden; width:clamp(58px,11vw,96px); aspect-ratio:3/4; border-radius:999px 999px 8px 8px; background:linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.18); display:grid; place-items:center; color:rgba(255,255,255,.55); transition:transform .2s, border-color .2s; }
+.peek-arch{ all:unset; cursor:pointer; position:relative; overflow:hidden; width:clamp(58px,11vw,96px); aspect-ratio:3/4; clip-path:url(#souq-arch); background:linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.18); display:grid; place-items:center; color:rgba(255,255,255,.55); transition:transform .2s, border-color .2s; }
 .peek-arch:hover{ transform:translateY(-3px); border-color:rgba(255,255,255,.4); }
 .peek-arch svg{ width:38%; height:38%; }
 .peek-arch img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
@@ -180,17 +198,21 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 /* ── section heads ──────────────────────────────────────────── */
 .sec-head{ text-align:center; margin:8px 0 26px; }
 .sec-head .eyebrow{ color:var(--ink-faint); }
-.sec-head h2{ font-family:var(--f-disp); font-weight:800; margin:10px 0 0; font-size:clamp(1.22rem, 2.8vw, 1.55rem); color:var(--brand); letter-spacing:-.01em; }
+.sec-head h2{ font-family:var(--f-disp); font-weight:600; margin:10px 0 0; font-size:clamp(1.5rem, 3.4vw, 1.95rem); color:var(--brand); letter-spacing:-.005em; }
 .sec-head p{ margin:8px auto 0; max-width:44ch; color:var(--ink-soft); font-size:.92rem; }
 
 /* ── arch (shared by category tiles and product stalls) + a small
    corner badge for a real stock count or an editorial tag — no
    striped ribbons, just a plain label when there's something worth
    saying ── */
-.arch{ position:relative; overflow:hidden; display:grid; place-items:center; }
+/* Soft Moorish dome applied to the frame itself, so the photo and its
+   backing take the silhouette together. Bottom corners stay square,
+   which is why the badge below sits safely at bottom-start. */
+.arch{ position:relative; overflow:hidden; display:grid; place-items:center;
+  clip-path:url(#souq-arch); }
 .arch .icon{ color:rgba(255,255,255,.92); }
 .arch img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.badge{ position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:2; background:rgba(255,255,255,.96); color:var(--ink); font-size:.64rem; font-weight:700; padding:5px 11px; border-radius:var(--r-pill); border:1px solid var(--line); white-space:nowrap; box-shadow:0 2px 8px rgba(36,25,52,.12); }
+.badge{ position:absolute; bottom:12px; inset-inline-start:12px; z-index:2; background:rgba(255,255,255,.96); color:var(--ink); font-size:.64rem; font-weight:700; padding:5px 11px; border-radius:var(--r-pill); border:1px solid var(--line); white-space:nowrap; box-shadow:0 2px 8px rgba(36,25,52,.12); }
 .badge.low{ color:var(--sale); }
 .badge-out{ position:absolute; inset:0; background:rgba(36,25,52,.55); display:grid; place-items:center; color:#fff; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
 
@@ -200,11 +222,22 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .cat-tile{ all:unset; cursor:pointer; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; display:block; padding:22px; transition:border-color .2s, box-shadow .2s; }
 .cat-tile:hover{ border-color:var(--accent-pale); box-shadow:0 12px 26px -18px rgba(46,27,66,.3); }
 .cat-head{ margin-bottom:16px; }
-.cat-name{ font-family:var(--f-disp); font-weight:700; font-size:1.06rem; color:var(--ink); line-height:1.25; }
+.cat-name{ font-family:var(--f-disp); font-weight:600; font-size:1.28rem; color:var(--ink); line-height:1.25; }
 .cat-count{ font-size:.8rem; color:var(--ink-faint); margin-top:3px; }
-.cat-preview{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.cat-preview .arch{ aspect-ratio:1; border-radius:999px 999px 10px 10px; }
+/* Mosaic, not a uniform waffle: one tall lead image beside two smaller
+   ones. Uneven sizes read as a curated stall rather than a spreadsheet,
+   and give the lead product room to actually be seen. */
+.cat-preview{ display:grid; grid-template-columns:1.3fr 1fr; grid-template-rows:1fr 1fr;
+  gap:10px; height:clamp(190px, 46vw, 232px); }
+.cat-preview .arch{ height:100%; width:100%; border-radius:0; clip-path:url(#souq-arch); }
+.cat-preview .arch:first-child{ grid-row:1 / span 2; }
+/* Not every category has three photographed items yet — collapse the
+   mosaic gracefully instead of leaving empty cells. */
+.cat-preview .arch:only-child{ grid-column:1 / span 2; }
+.cat-preview .arch:first-child:nth-last-child(2),
+.cat-preview .arch:first-child:nth-last-child(2) ~ .arch{ grid-row:1 / span 2; }
 .cat-preview .arch .icon{ width:26%; height:26%; }
+@media (max-width:560px){ .cat-preview{ height:clamp(180px, 54vw, 220px); } }
 .cat-more{ margin-top:18px; display:inline-flex; align-items:center; gap:6px; font-size:.82rem; font-weight:700; color:var(--brand); }
 .cat-more svg{ width:14px; height:14px; transition:transform .2s; }
 [dir="rtl"] .cat-more svg{ transform:scaleX(-1); }
@@ -218,13 +251,13 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .stall{ background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; text-align:start; display:flex; flex-direction:column; transition:border-color .2s; }
 .stall:hover{ border-color:var(--accent-pale); }
 .stall-btn{ all:unset; display:block; cursor:pointer; }
-.stall .arch{ aspect-ratio:4/5; margin:14px 14px 0; border-radius:999px 999px 10px 10px; }
+.stall .arch{ aspect-ratio:4/5; margin:14px 14px 0; border-radius:12px; }
 .stall .arch .icon{ width:34%; height:34%; }
 .stall-body{ padding:14px 16px 16px; display:flex; flex-direction:column; gap:6px; flex:1; }
-.stall-name{ font-family:var(--f-disp); font-weight:700; font-size:1rem; color:var(--ink); line-height:1.25; }
+.stall-name{ font-family:var(--f-disp); font-weight:600; font-size:1.16rem; color:var(--ink); line-height:1.28; }
 .stall-hook{ font-size:.8rem; color:var(--ink-soft); flex:1; }
 .price-row{ display:flex; align-items:baseline; gap:8px; margin-top:4px; }
-.price{ font-family:var(--f-disp); font-weight:800; font-size:1.12rem; color:var(--accent); }
+.price{ font-family:var(--f-body); font-weight:700; font-size:1.08rem; color:var(--accent); }
 .price .cur{ font-size:.6em; font-weight:700; margin-inline-start:2px; opacity:.75; }
 .was{ font-size:.76rem; color:var(--ink-faint); text-decoration:line-through; }
 .buy-row{ display:flex; gap:8px; margin-top:10px; }
@@ -239,7 +272,9 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 @media (max-width:520px){ .grid{ gap:14px; } .stall-name{ font-size:.92rem; } }
 
 /* ── trust strip ────────────────────────────────────────────── */
-.trust{ background:var(--panel); border-block:1px solid var(--line); margin-top:58px; padding:32px 0; }
+.zellige-band{ height:54px; margin-top:58px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%20fill=%27none%27%20stroke=%27%232E1B42%27%20stroke-width=%271.1%27%20stroke-linejoin=%27round%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2012.24%2C5.07%20L%2016.97%2C16.97%20L%205.07%2C12.24%20L%200.00%2C24.00%20L%20-5.07%2C12.24%20L%20-16.97%2C16.97%20L%20-12.24%2C5.07%20L%20-24.00%2C0.00%20L%20-12.24%2C-5.07%20L%20-16.97%2C-16.97%20L%20-5.07%2C-12.24%20L%20-0.00%2C-24.00%20L%205.07%2C-12.24%20L%2016.97%2C-16.97%20L%2012.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C0.00%20L%20132.24%2C5.07%20L%20136.97%2C16.97%20L%20125.07%2C12.24%20L%20120.00%2C24.00%20L%20114.93%2C12.24%20L%20103.03%2C16.97%20L%20107.76%2C5.07%20L%2096.00%2C0.00%20L%20107.76%2C-5.07%20L%20103.03%2C-16.97%20L%20114.93%2C-12.24%20L%20120.00%2C-24.00%20L%20125.07%2C-12.24%20L%20136.97%2C-16.97%20L%20132.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2012.24%2C125.07%20L%2016.97%2C136.97%20L%205.07%2C132.24%20L%200.00%2C144.00%20L%20-5.07%2C132.24%20L%20-16.97%2C136.97%20L%20-12.24%2C125.07%20L%20-24.00%2C120.00%20L%20-12.24%2C114.93%20L%20-16.97%2C103.03%20L%20-5.07%2C107.76%20L%20-0.00%2C96.00%20L%205.07%2C107.76%20L%2016.97%2C103.03%20L%2012.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C120.00%20L%20132.24%2C125.07%20L%20136.97%2C136.97%20L%20125.07%2C132.24%20L%20120.00%2C144.00%20L%20114.93%2C132.24%20L%20103.03%2C136.97%20L%20107.76%2C125.07%20L%2096.00%2C120.00%20L%20107.76%2C114.93%20L%20103.03%2C103.03%20L%20114.93%2C107.76%20L%20120.00%2C96.00%20L%20125.07%2C107.76%20L%20136.97%2C103.03%20L%20132.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%2072.24%2C65.07%20L%2076.97%2C76.97%20L%2065.07%2C72.24%20L%2060.00%2C84.00%20L%2054.93%2C72.24%20L%2043.03%2C76.97%20L%2047.76%2C65.07%20L%2036.00%2C60.00%20L%2047.76%2C54.93%20L%2043.03%2C43.03%20L%2054.93%2C47.76%20L%2060.00%2C36.00%20L%2065.07%2C47.76%20L%2076.97%2C43.03%20L%2072.24%2C54.93%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C-8.00%20L%2068.00%2C0.00%20L%2060.00%2C8.00%20L%2052.00%2C0.00%20Z%27/%3E%3Cpath%20d=%27M%20120.00%2C52.00%20L%20128.00%2C60.00%20L%20120.00%2C68.00%20L%20112.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C112.00%20L%2068.00%2C120.00%20L%2060.00%2C128.00%20L%2052.00%2C120.00%20Z%27/%3E%3Cpath%20d=%27M%200.00%2C52.00%20L%208.00%2C60.00%20L%200.00%2C68.00%20L%20-8.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2043.03%2C43.03%20L%2016.97%2C16.97%27/%3E%3Cpath%20d=%27M%2076.97%2C43.03%20L%20103.03%2C16.97%27/%3E%3Cpath%20d=%27M%2043.03%2C76.97%20L%2016.97%2C103.03%27/%3E%3Cpath%20d=%27M%2076.97%2C76.97%20L%20103.03%2C103.03%27/%3E%3Cpath%20d=%27M%2060.00%2C36.00%20L%2060.00%2C8.00%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%20112.00%2C60.00%27/%3E%3Cpath%20d=%27M%2060.00%2C84.00%20L%2060.00%2C112.00%27/%3E%3Cpath%20d=%27M%2036.00%2C60.00%20L%208.00%2C60.00%27/%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2052.00%2C0.00%27/%3E%3Cpath%20d=%27M%200.00%2C24.00%20L%200.00%2C52.00%27/%3E%3Cpath%20d=%27M%2096.00%2C0.00%20L%2068.00%2C0.00%27/%3E%3Cpath%20d=%27M%20120.00%2C24.00%20L%20120.00%2C52.00%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2052.00%2C120.00%27/%3E%3Cpath%20d=%27M%200.00%2C96.00%20L%200.00%2C68.00%27/%3E%3Cpath%20d=%27M%20120.00%2C96.00%20L%20120.00%2C68.00%27/%3E%3Cpath%20d=%27M%2096.00%2C120.00%20L%2068.00%2C120.00%27/%3E%3C/svg%3E"); background-size:120px 120px; opacity:.16; }
+.trust{ background:var(--panel); border-bottom:1px solid var(--line); padding:32px 0; }
 .trust-in{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; text-align:center; }
 .trust .ico{ width:42px; height:42px; margin:0 auto 10px; border-radius:var(--r-pill); background:var(--accent-pale); color:var(--accent); display:grid; place-items:center; }
 .trust .ico svg{ width:19px; height:19px; }
@@ -248,7 +283,8 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 @media (max-width:640px){ .trust-in{ grid-template-columns:repeat(2,1fr); } }
 
 /* ── footer ─────────────────────────────────────────────────── */
-.foot{ background:var(--brand); color:#D8CEE6; padding:40px 0 26px; }
+.foot{ background-color:var(--brand); background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%20fill=%27none%27%20stroke=%27%23F2A339%27%20stroke-opacity=%270.10%27%20stroke-width=%271.1%27%20stroke-linejoin=%27round%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2012.24%2C5.07%20L%2016.97%2C16.97%20L%205.07%2C12.24%20L%200.00%2C24.00%20L%20-5.07%2C12.24%20L%20-16.97%2C16.97%20L%20-12.24%2C5.07%20L%20-24.00%2C0.00%20L%20-12.24%2C-5.07%20L%20-16.97%2C-16.97%20L%20-5.07%2C-12.24%20L%20-0.00%2C-24.00%20L%205.07%2C-12.24%20L%2016.97%2C-16.97%20L%2012.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C0.00%20L%20132.24%2C5.07%20L%20136.97%2C16.97%20L%20125.07%2C12.24%20L%20120.00%2C24.00%20L%20114.93%2C12.24%20L%20103.03%2C16.97%20L%20107.76%2C5.07%20L%2096.00%2C0.00%20L%20107.76%2C-5.07%20L%20103.03%2C-16.97%20L%20114.93%2C-12.24%20L%20120.00%2C-24.00%20L%20125.07%2C-12.24%20L%20136.97%2C-16.97%20L%20132.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2012.24%2C125.07%20L%2016.97%2C136.97%20L%205.07%2C132.24%20L%200.00%2C144.00%20L%20-5.07%2C132.24%20L%20-16.97%2C136.97%20L%20-12.24%2C125.07%20L%20-24.00%2C120.00%20L%20-12.24%2C114.93%20L%20-16.97%2C103.03%20L%20-5.07%2C107.76%20L%20-0.00%2C96.00%20L%205.07%2C107.76%20L%2016.97%2C103.03%20L%2012.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C120.00%20L%20132.24%2C125.07%20L%20136.97%2C136.97%20L%20125.07%2C132.24%20L%20120.00%2C144.00%20L%20114.93%2C132.24%20L%20103.03%2C136.97%20L%20107.76%2C125.07%20L%2096.00%2C120.00%20L%20107.76%2C114.93%20L%20103.03%2C103.03%20L%20114.93%2C107.76%20L%20120.00%2C96.00%20L%20125.07%2C107.76%20L%20136.97%2C103.03%20L%20132.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%2072.24%2C65.07%20L%2076.97%2C76.97%20L%2065.07%2C72.24%20L%2060.00%2C84.00%20L%2054.93%2C72.24%20L%2043.03%2C76.97%20L%2047.76%2C65.07%20L%2036.00%2C60.00%20L%2047.76%2C54.93%20L%2043.03%2C43.03%20L%2054.93%2C47.76%20L%2060.00%2C36.00%20L%2065.07%2C47.76%20L%2076.97%2C43.03%20L%2072.24%2C54.93%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C-8.00%20L%2068.00%2C0.00%20L%2060.00%2C8.00%20L%2052.00%2C0.00%20Z%27/%3E%3Cpath%20d=%27M%20120.00%2C52.00%20L%20128.00%2C60.00%20L%20120.00%2C68.00%20L%20112.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C112.00%20L%2068.00%2C120.00%20L%2060.00%2C128.00%20L%2052.00%2C120.00%20Z%27/%3E%3Cpath%20d=%27M%200.00%2C52.00%20L%208.00%2C60.00%20L%200.00%2C68.00%20L%20-8.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2043.03%2C43.03%20L%2016.97%2C16.97%27/%3E%3Cpath%20d=%27M%2076.97%2C43.03%20L%20103.03%2C16.97%27/%3E%3Cpath%20d=%27M%2043.03%2C76.97%20L%2016.97%2C103.03%27/%3E%3Cpath%20d=%27M%2076.97%2C76.97%20L%20103.03%2C103.03%27/%3E%3Cpath%20d=%27M%2060.00%2C36.00%20L%2060.00%2C8.00%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%20112.00%2C60.00%27/%3E%3Cpath%20d=%27M%2060.00%2C84.00%20L%2060.00%2C112.00%27/%3E%3Cpath%20d=%27M%2036.00%2C60.00%20L%208.00%2C60.00%27/%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2052.00%2C0.00%27/%3E%3Cpath%20d=%27M%200.00%2C24.00%20L%200.00%2C52.00%27/%3E%3Cpath%20d=%27M%2096.00%2C0.00%20L%2068.00%2C0.00%27/%3E%3Cpath%20d=%27M%20120.00%2C24.00%20L%20120.00%2C52.00%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2052.00%2C120.00%27/%3E%3Cpath%20d=%27M%200.00%2C96.00%20L%200.00%2C68.00%27/%3E%3Cpath%20d=%27M%20120.00%2C96.00%20L%20120.00%2C68.00%27/%3E%3Cpath%20d=%27M%2096.00%2C120.00%20L%2068.00%2C120.00%27/%3E%3C/svg%3E"); background-size:150px 150px;
+  color:#D8CEE6; padding:40px 0 26px; }
 .foot-in{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:28px; }
 .foot .wordmark .lat{ color:#fff; } .foot .wordmark .ar{ color:#B8A8CC; }
 .foot p{ font-size:.82rem; color:#B8A8CC; margin:10px 0 0; max-width:32ch; }
@@ -274,11 +310,11 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 [dir="rtl"] .drawer{ transform:translateX(-103%); }
 .drawer.on{ transform:none !important; }
 .drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 14px; border-bottom:1px solid var(--line); }
-.drawer-head h2{ font-family:var(--f-disp); margin:0; font-size:1.14rem; color:var(--brand); }
+.drawer-head h2{ font-family:var(--f-disp); font-weight:600; margin:0; font-size:1.34rem; color:var(--brand); }
 .x{ border:0; background:transparent; font-size:1.6rem; line-height:1; color:var(--ink-soft); padding:0 4px; }
 .lines{ flex:1; overflow:auto; padding:6px 20px 16px; }
 .line{ display:grid; grid-template-columns:52px 1fr auto; gap:11px; align-items:center; padding:13px 0; border-bottom:1px solid var(--line-soft); }
-.line .thumb{ width:52px; height:52px; border-radius:999px 999px 8px 8px; overflow:hidden; display:grid; place-items:center; color:#fff; }
+.line .thumb{ width:52px; height:52px; border-radius:8px; overflow:hidden; clip-path:url(#souq-arch); display:grid; place-items:center; color:#fff; }
 .line .thumb svg{ width:44%; height:44%; }
 .line .thumb img{ width:100%; height:100%; object-fit:cover; }
 .line .nm{ font-weight:700; font-size:.86rem; }
@@ -291,13 +327,16 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
 .drop{ border:0; background:transparent; color:var(--ink-faint); font-size:.62rem; text-decoration:underline; text-underline-offset:3px; padding:5px 0 0; }
 .drop:hover{ color:var(--sale); }
-.cart-empty{ text-align:center; padding:60px 18px; color:var(--ink-faint); }
+/* An empty cart is a big white void — give it the souk's own texture
+   so it reads as a quiet room rather than a broken screen. */
+.cart-empty{ text-align:center; padding:74px 18px; color:var(--ink-faint);
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%20fill=%27none%27%20stroke=%27%232E1B42%27%20stroke-opacity=%270.07%27%20stroke-width=%271.1%27%20stroke-linejoin=%27round%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2012.24%2C5.07%20L%2016.97%2C16.97%20L%205.07%2C12.24%20L%200.00%2C24.00%20L%20-5.07%2C12.24%20L%20-16.97%2C16.97%20L%20-12.24%2C5.07%20L%20-24.00%2C0.00%20L%20-12.24%2C-5.07%20L%20-16.97%2C-16.97%20L%20-5.07%2C-12.24%20L%20-0.00%2C-24.00%20L%205.07%2C-12.24%20L%2016.97%2C-16.97%20L%2012.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C0.00%20L%20132.24%2C5.07%20L%20136.97%2C16.97%20L%20125.07%2C12.24%20L%20120.00%2C24.00%20L%20114.93%2C12.24%20L%20103.03%2C16.97%20L%20107.76%2C5.07%20L%2096.00%2C0.00%20L%20107.76%2C-5.07%20L%20103.03%2C-16.97%20L%20114.93%2C-12.24%20L%20120.00%2C-24.00%20L%20125.07%2C-12.24%20L%20136.97%2C-16.97%20L%20132.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2012.24%2C125.07%20L%2016.97%2C136.97%20L%205.07%2C132.24%20L%200.00%2C144.00%20L%20-5.07%2C132.24%20L%20-16.97%2C136.97%20L%20-12.24%2C125.07%20L%20-24.00%2C120.00%20L%20-12.24%2C114.93%20L%20-16.97%2C103.03%20L%20-5.07%2C107.76%20L%20-0.00%2C96.00%20L%205.07%2C107.76%20L%2016.97%2C103.03%20L%2012.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C120.00%20L%20132.24%2C125.07%20L%20136.97%2C136.97%20L%20125.07%2C132.24%20L%20120.00%2C144.00%20L%20114.93%2C132.24%20L%20103.03%2C136.97%20L%20107.76%2C125.07%20L%2096.00%2C120.00%20L%20107.76%2C114.93%20L%20103.03%2C103.03%20L%20114.93%2C107.76%20L%20120.00%2C96.00%20L%20125.07%2C107.76%20L%20136.97%2C103.03%20L%20132.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%2072.24%2C65.07%20L%2076.97%2C76.97%20L%2065.07%2C72.24%20L%2060.00%2C84.00%20L%2054.93%2C72.24%20L%2043.03%2C76.97%20L%2047.76%2C65.07%20L%2036.00%2C60.00%20L%2047.76%2C54.93%20L%2043.03%2C43.03%20L%2054.93%2C47.76%20L%2060.00%2C36.00%20L%2065.07%2C47.76%20L%2076.97%2C43.03%20L%2072.24%2C54.93%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C-8.00%20L%2068.00%2C0.00%20L%2060.00%2C8.00%20L%2052.00%2C0.00%20Z%27/%3E%3Cpath%20d=%27M%20120.00%2C52.00%20L%20128.00%2C60.00%20L%20120.00%2C68.00%20L%20112.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C112.00%20L%2068.00%2C120.00%20L%2060.00%2C128.00%20L%2052.00%2C120.00%20Z%27/%3E%3Cpath%20d=%27M%200.00%2C52.00%20L%208.00%2C60.00%20L%200.00%2C68.00%20L%20-8.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2043.03%2C43.03%20L%2016.97%2C16.97%27/%3E%3Cpath%20d=%27M%2076.97%2C43.03%20L%20103.03%2C16.97%27/%3E%3Cpath%20d=%27M%2043.03%2C76.97%20L%2016.97%2C103.03%27/%3E%3Cpath%20d=%27M%2076.97%2C76.97%20L%20103.03%2C103.03%27/%3E%3Cpath%20d=%27M%2060.00%2C36.00%20L%2060.00%2C8.00%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%20112.00%2C60.00%27/%3E%3Cpath%20d=%27M%2060.00%2C84.00%20L%2060.00%2C112.00%27/%3E%3Cpath%20d=%27M%2036.00%2C60.00%20L%208.00%2C60.00%27/%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2052.00%2C0.00%27/%3E%3Cpath%20d=%27M%200.00%2C24.00%20L%200.00%2C52.00%27/%3E%3Cpath%20d=%27M%2096.00%2C0.00%20L%2068.00%2C0.00%27/%3E%3Cpath%20d=%27M%20120.00%2C24.00%20L%20120.00%2C52.00%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2052.00%2C120.00%27/%3E%3Cpath%20d=%27M%200.00%2C96.00%20L%200.00%2C68.00%27/%3E%3Cpath%20d=%27M%20120.00%2C96.00%20L%20120.00%2C68.00%27/%3E%3Cpath%20d=%27M%2096.00%2C120.00%20L%2068.00%2C120.00%27/%3E%3C/svg%3E"); background-size:150px 150px; border-radius:var(--r); }
 .cart-empty .glyph{ font-family:var(--f-disp); font-size:2.2rem; color:var(--accent-pale); }
 .cart-empty p{ margin:10px 0 0; font-size:.88rem; }
 .drawer-foot{ padding:16px 20px calc(18px + env(safe-area-inset-bottom)); border-top:1px solid var(--line); background:var(--page); }
 .totals{ display:flex; justify-content:space-between; align-items:baseline; margin:2px 0 12px; }
 .totals span{ font-size:.8rem; color:var(--ink-soft); }
-.totals b{ font-family:var(--f-disp); font-size:1.3rem; color:var(--brand); font-variant-numeric:tabular-nums; }
+.totals b{ font-family:var(--f-body); font-weight:700; font-size:1.22rem; color:var(--brand); font-variant-numeric:tabular-nums; }
 .totals.sub{ margin:0 0 6px; }
 .totals.sub span{ font-size:.74rem; }
 .totals.sub b{ font-family:var(--f-body); font-size:.82rem; font-weight:700; color:var(--ink-soft); }
@@ -332,7 +371,7 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 }
 .share-head{ display:flex; align-items:center; gap:12px; padding:14px 18px 12px; border-bottom:1px solid var(--line); }
 .share-preview{ display:flex; align-items:center; gap:11px; flex:1; min-width:0; }
-.share-thumb{ width:44px; height:44px; border-radius:999px 999px 8px 8px; overflow:hidden; display:grid; place-items:center; flex:none; }
+.share-thumb{ width:44px; height:44px; border-radius:8px; overflow:hidden; clip-path:url(#souq-arch); display:grid; place-items:center; flex:none; }
 .share-thumb .icon{ width:44%; height:44%; color:#fff; }
 .share-thumb img{ width:100%; height:100%; object-fit:cover; }
 .share-pname{ font-weight:700; font-size:.86rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -348,7 +387,11 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 
 
 /* ── full-screen overlays (category view, product view) ──────── */
-.ov{ position:fixed; inset:0; z-index:100; background:var(--page); overflow-y:auto; transform:translateY(100%); transition:transform .45s var(--ease); }
+/* Category + product pages are full-screen overlays, so they paint over
+   the body entirely — they need the zellige ground themselves or the
+   texture vanishes the moment you step into a category. */
+.ov{ position:fixed; inset:0; z-index:100; overflow-y:auto; transform:translateY(100%); transition:transform .45s var(--ease);
+  background-color:var(--page); background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%20fill=%27none%27%20stroke=%27%232E1B42%27%20stroke-opacity=%270.055%27%20stroke-width=%271.1%27%20stroke-linejoin=%27round%27%20stroke-linecap=%27round%27%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2012.24%2C5.07%20L%2016.97%2C16.97%20L%205.07%2C12.24%20L%200.00%2C24.00%20L%20-5.07%2C12.24%20L%20-16.97%2C16.97%20L%20-12.24%2C5.07%20L%20-24.00%2C0.00%20L%20-12.24%2C-5.07%20L%20-16.97%2C-16.97%20L%20-5.07%2C-12.24%20L%20-0.00%2C-24.00%20L%205.07%2C-12.24%20L%2016.97%2C-16.97%20L%2012.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C0.00%20L%20132.24%2C5.07%20L%20136.97%2C16.97%20L%20125.07%2C12.24%20L%20120.00%2C24.00%20L%20114.93%2C12.24%20L%20103.03%2C16.97%20L%20107.76%2C5.07%20L%2096.00%2C0.00%20L%20107.76%2C-5.07%20L%20103.03%2C-16.97%20L%20114.93%2C-12.24%20L%20120.00%2C-24.00%20L%20125.07%2C-12.24%20L%20136.97%2C-16.97%20L%20132.24%2C-5.07%20Z%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2012.24%2C125.07%20L%2016.97%2C136.97%20L%205.07%2C132.24%20L%200.00%2C144.00%20L%20-5.07%2C132.24%20L%20-16.97%2C136.97%20L%20-12.24%2C125.07%20L%20-24.00%2C120.00%20L%20-12.24%2C114.93%20L%20-16.97%2C103.03%20L%20-5.07%2C107.76%20L%20-0.00%2C96.00%20L%205.07%2C107.76%20L%2016.97%2C103.03%20L%2012.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%20144.00%2C120.00%20L%20132.24%2C125.07%20L%20136.97%2C136.97%20L%20125.07%2C132.24%20L%20120.00%2C144.00%20L%20114.93%2C132.24%20L%20103.03%2C136.97%20L%20107.76%2C125.07%20L%2096.00%2C120.00%20L%20107.76%2C114.93%20L%20103.03%2C103.03%20L%20114.93%2C107.76%20L%20120.00%2C96.00%20L%20125.07%2C107.76%20L%20136.97%2C103.03%20L%20132.24%2C114.93%20Z%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%2072.24%2C65.07%20L%2076.97%2C76.97%20L%2065.07%2C72.24%20L%2060.00%2C84.00%20L%2054.93%2C72.24%20L%2043.03%2C76.97%20L%2047.76%2C65.07%20L%2036.00%2C60.00%20L%2047.76%2C54.93%20L%2043.03%2C43.03%20L%2054.93%2C47.76%20L%2060.00%2C36.00%20L%2065.07%2C47.76%20L%2076.97%2C43.03%20L%2072.24%2C54.93%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C-8.00%20L%2068.00%2C0.00%20L%2060.00%2C8.00%20L%2052.00%2C0.00%20Z%27/%3E%3Cpath%20d=%27M%20120.00%2C52.00%20L%20128.00%2C60.00%20L%20120.00%2C68.00%20L%20112.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2060.00%2C112.00%20L%2068.00%2C120.00%20L%2060.00%2C128.00%20L%2052.00%2C120.00%20Z%27/%3E%3Cpath%20d=%27M%200.00%2C52.00%20L%208.00%2C60.00%20L%200.00%2C68.00%20L%20-8.00%2C60.00%20Z%27/%3E%3Cpath%20d=%27M%2043.03%2C43.03%20L%2016.97%2C16.97%27/%3E%3Cpath%20d=%27M%2076.97%2C43.03%20L%20103.03%2C16.97%27/%3E%3Cpath%20d=%27M%2043.03%2C76.97%20L%2016.97%2C103.03%27/%3E%3Cpath%20d=%27M%2076.97%2C76.97%20L%20103.03%2C103.03%27/%3E%3Cpath%20d=%27M%2060.00%2C36.00%20L%2060.00%2C8.00%27/%3E%3Cpath%20d=%27M%2084.00%2C60.00%20L%20112.00%2C60.00%27/%3E%3Cpath%20d=%27M%2060.00%2C84.00%20L%2060.00%2C112.00%27/%3E%3Cpath%20d=%27M%2036.00%2C60.00%20L%208.00%2C60.00%27/%3E%3Cpath%20d=%27M%2024.00%2C0.00%20L%2052.00%2C0.00%27/%3E%3Cpath%20d=%27M%200.00%2C24.00%20L%200.00%2C52.00%27/%3E%3Cpath%20d=%27M%2096.00%2C0.00%20L%2068.00%2C0.00%27/%3E%3Cpath%20d=%27M%20120.00%2C24.00%20L%20120.00%2C52.00%27/%3E%3Cpath%20d=%27M%2024.00%2C120.00%20L%2052.00%2C120.00%27/%3E%3Cpath%20d=%27M%200.00%2C96.00%20L%200.00%2C68.00%27/%3E%3Cpath%20d=%27M%20120.00%2C96.00%20L%20120.00%2C68.00%27/%3E%3Cpath%20d=%27M%2096.00%2C120.00%20L%2068.00%2C120.00%27/%3E%3C/svg%3E"); background-size:168px 168px; }
 .ov.on{ transform:none; }
 .ov-top{ position:sticky; top:0; z-index:5; background:rgba(245,240,230,.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:12px 0; }
 .ov-back{ display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); background:var(--panel); color:var(--brand); border-radius:var(--r-pill); padding:9px 16px; font-size:.72rem; font-weight:800; }
@@ -358,28 +401,47 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 /* category view body */
 .cv-body{ padding:28px 0 70px; }
 .cv-head{ display:flex; align-items:center; gap:16px; margin-bottom:28px; }
-.cv-arch{ width:76px; aspect-ratio:1; border-radius:999px 999px 10px 10px; flex:none; }
+.cv-arch{ width:76px; aspect-ratio:1; border-radius:10px; flex:none; }
 .cv-arch .icon{ width:38%; height:38%; }
-.cv-head h1{ font-family:var(--f-disp); font-weight:800; font-size:clamp(1.4rem,3.6vw,1.9rem); color:var(--brand); margin:0; }
+.cv-head h1{ font-family:var(--f-disp); font-weight:600; font-size:clamp(1.7rem,4.2vw,2.3rem); color:var(--brand); margin:0; }
 .cv-head p{ margin:4px 0 0; color:var(--ink-soft); font-size:.86rem; }
 
 /* product view body */
 .pv-body{ padding:30px 0 70px; }
 .pv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:start; }
 .pv-gallery{ position:sticky; top:76px; }
-.pv-main{ aspect-ratio:1/1.05; border-radius:999px 999px 22px 22px; }
+.pv-main{ aspect-ratio:1/1.05; border-radius:20px; }
 .pv-main .icon{ width:32%; height:32%; }
+/* The stage holds whichever medium the current slide is. Video is
+   letterboxed (contain) rather than cropped (cover) — cropping a clip
+   inside a pointed arch would cut the subject's head off. */
+.pv-stage{ position:absolute; inset:0; display:grid; place-items:center; }
+.pv-stage img{ width:100%; height:100%; object-fit:cover; cursor:zoom-in; }
+.pv-stage video{ width:100%; height:100%; object-fit:contain; background:#120C1B; }
+.pv-videowrap{ position:absolute; inset:0; }
+/* Big, thumb-sized play target instead of relying on the small native
+   control. Sits above the poster; native controls only appear once the
+   clip is actually running. */
+.pv-bigplay{ position:absolute; inset:0; margin:auto; width:66px; height:66px; border:0; border-radius:var(--r-pill);
+  background:rgba(18,12,27,.55); color:#fff; display:grid; place-items:center; backdrop-filter:blur(2px);
+  transition:transform .2s, background .2s; }
+.pv-bigplay:hover{ transform:scale(1.06); background:rgba(18,12,27,.7); }
+.pv-bigplay svg{ width:26px; height:26px; margin-inline-start:3px; }
+.pv-vidbg{ position:absolute; inset:0; background:#120C1B; }
 .pv-zoom{ position:absolute; bottom:12px; inset-inline-end:12px; z-index:2; width:40px; height:40px; border-radius:var(--r-pill); background:rgba(36,25,52,.55); border:0; color:#fff; display:grid; place-items:center; backdrop-filter:blur(3px); }
 .pv-zoom svg{ width:18px; height:18px; }
 .pv-thumbs{ display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:2px; }
-.pv-thumb{ all:unset; cursor:pointer; flex:none; width:56px; height:56px; border-radius:12px; overflow:hidden; border:2px solid transparent; opacity:.55; transition:opacity .2s, border-color .2s; }
+.pv-thumb{ all:unset; cursor:pointer; flex:none; position:relative; width:56px; height:56px; border-radius:12px; overflow:hidden; border:2px solid transparent; opacity:.55; transition:opacity .2s, border-color .2s; }
+.pv-thumb.is-video img{ filter:brightness(.72); }
+.pv-play{ position:absolute; inset:0; display:grid; place-items:center; color:#fff; background:rgba(18,12,27,.35); }
+.pv-play svg{ width:18px; height:18px; }
 .pv-thumb.on{ border-color:var(--accent); opacity:1; }
 .pv-thumb img{ width:100%; height:100%; object-fit:cover; }
 .pv-tag{ font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); }
-.pv-name{ font-family:var(--f-disp); font-weight:800; font-size:clamp(1.3rem,2.6vw,1.7rem); margin:14px 0 0; color:var(--brand); line-height:1.2; letter-spacing:-.01em; }
+.pv-name{ font-family:var(--f-disp); font-weight:600; font-size:clamp(1.6rem,3.2vw,2.1rem); margin:14px 0 0; color:var(--brand); line-height:1.22; letter-spacing:-.005em; }
 .pv-hook{ font-size:.98rem; color:var(--ink-soft); margin:10px 0 0; max-width:46ch; }
 .pv-price-row{ display:flex; align-items:baseline; gap:10px; margin:18px 0 0; }
-.pv-price{ font-family:var(--f-disp); font-weight:800; font-size:2rem; color:var(--accent); }
+.pv-price{ font-family:var(--f-body); font-weight:700; font-size:1.9rem; color:var(--accent); letter-spacing:-.01em; }
 .pv-price .cur{ font-size:.5em; font-weight:700; opacity:.75; margin-inline-start:3px; }
 .pv-was{ font-size:.92rem; color:var(--ink-faint); text-decoration:line-through; }
 .pv-save{ font-size:.72rem; font-weight:800; color:var(--sale); background:#FBE2D9; border-radius:var(--r-pill); padding:4px 10px; }
@@ -398,7 +460,10 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .pv-share:hover{ background:var(--page); border-color:var(--accent-pale); transform:translateY(-1px); }
 .pv-share svg{ width:17px; height:17px; }
 .pv-desc{ margin-top:30px; padding-top:26px; border-top:1px solid var(--line); font-size:.92rem; color:var(--ink-soft); max-width:60ch; }
-.pv-desc h3{ font-family:var(--f-disp); color:var(--brand); font-size:1rem; margin:0 0 8px; }
+.pv-speclist{ list-style:none; margin:0; padding:0; display:grid; gap:7px; }
+.pv-speclist li{ position:relative; padding-inline-start:16px; line-height:1.55; }
+.pv-speclist li::before{ content:''; position:absolute; inset-inline-start:0; top:.62em; width:5px; height:5px; border-radius:50%; background:var(--accent); }
+.pv-desc h3{ font-family:var(--f-disp); font-weight:600; color:var(--brand); font-size:1.2rem; margin:0 0 8px; }
 .pv-stock{ font-size:.76rem; font-weight:700; margin-top:14px; }
 .pv-stock.low{ color:var(--sale); } .pv-stock.ok{ color:var(--teal); }
 @media (max-width:820px){ .pv-grid{ grid-template-columns:1fr; gap:24px; } .pv-gallery{ position:static; max-width:340px; margin-inline:auto; width:100%; } }
@@ -426,6 +491,18 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 </style>
 </head>
 <body>
+<!-- Arch silhouette used by every product/category frame. A soft dome, not
+     a point: the control points sit at y=0 so the tangent at the apex is
+     horizontal. A pointed apex sliced the tops off real product photos —
+     shoulder kept high (0.26) so only the corners are shaped and the
+     photo's content survives. objectBoundingBox units = one path, any size. -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <clipPath id="souq-arch" clipPathUnits="objectBoundingBox">
+      <path d="M0,1 L0,0.20 C0,0.084 0.16,0 0.5,0 C0.84,0 1,0.084 1,0.20 L1,1 Z"/>
+    </clipPath>
+  </defs>
+</svg>
 
 <div class="ticker">
   <b data-i18n="tick1">Cash on delivery</b><span>·</span>
@@ -457,7 +534,7 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
     <div class="shell hero-in">
       <span class="eyebrow" data-i18n="heroEyebrow">A small souk, curated</span>
       <h1 data-i18n="heroTitle">A few categories, a few good finds in <em>each</em></h1>
-      <p data-i18n="heroSub">No endless scroll, no thousand tabs open. Step into a category, see what's there, and send your order straight to WhatsApp.</p>
+      <p data-i18n="heroSub">Small enough to walk in a minute, chosen slowly. Take what you like — and don't worry, we're always updating our catalogue to fit your quest.</p>
       <a class="cta" href="#shop" data-i18n="heroCta">
         <span>Browse the souk</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -476,6 +553,7 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
     <div class="cats" id="cats"></div>
   </section>
 
+  <div class="zellige-band" aria-hidden="true"></div>
   <section class="trust">
     <div class="shell trust-in">
       <div><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M2 11h20M7 15h4"/></svg></div><b data-i18n="trust1t">Cash on delivery</b><span data-i18n="trust1s">Pay when it's in your hands</span></div>
@@ -593,14 +671,34 @@ function archMedia(p){
     ? `<img src="${p.img}" alt="${(p.name && p.name[LANG]) || ''}" loading="lazy" />`
     : `<div class="icon">${iconSvg(p.icon)}</div>`;
 }
-/* The cover photo plus any gallery photos, deduped, cover first —
-   used for the product page's thumbnail strip and the lightbox. */
-function productImages(p){
-  const list = [];
-  if(p.img) list.push(p.img);
-  (p.gallery || []).forEach(u => { if(u && !list.includes(u)) list.push(u); });
-  return list;
+/* Every piece of media for a product, cover photo first, then gallery
+   photos, then the video clip last. Returned as tagged entries rather
+   than bare URLs because the gallery has to render a <video> and an
+   <img> differently — and the lightbox must skip the video entirely
+   (pinch-zooming a playing clip makes no sense). */
+function productMedia(p){
+  const out = [];
+  if(p.img) out.push({ type:'image', src:p.img });
+  (p.gallery || []).forEach(u => { if(u && !out.some(m => m.src === u)) out.push({ type:'image', src:u }); });
+  if(p.video) out.push({ type:'video', src:p.video });
+  return out;
 }
+/* Just the stills — what the lightbox is allowed to page through. */
+function productImages(p){ return productMedia(p).filter(m => m.type === 'image').map(m => m.src); }
+
+/* Descriptions get pasted in from supplier listings, which almost always
+   arrive as one long line separated by bullets or newlines. Rendering that
+   raw gave a wall of run-on text. Split it back into a real list when the
+   text is actually list-shaped; leave genuine prose as a paragraph. */
+function escHtml(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function descHtml(text){
+  const raw = String(text || '').trim();
+  if(!raw) return '';
+  const parts = raw.split(/\s*[•·▪●]\s*|\r?\n+/).map(s => s.trim()).filter(Boolean);
+  if(parts.length < 2) return `<p>${escHtml(raw)}</p>`;
+  return `<ul class="pv-speclist">${parts.map(x => `<li>${escHtml(x)}</li>`).join('')}</ul>`;
+}
+const PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
 const ZOOM_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>';
 const SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
 const GRADS = {
@@ -912,7 +1010,7 @@ const I18N = {
     tick1:'Cash on delivery', tick2:'Delivered nationwide', tick3:"A few finds, chosen on purpose",
     cart:'Cart', yourOrder:'Your order',
     heroEyebrow:'A small souk, curated', heroTitle:'A few categories, a few good finds in each',
-    heroSub:"No endless scroll, no thousand tabs open. Step into a category, see what's there, and send your order straight to WhatsApp.",
+    heroSub:"Small enough to walk in a minute, chosen slowly. Take what you like — and don't worry, we're always updating our catalogue to fit your quest.",
     heroCta:'Browse the souk',
     shopEyebrow:'Step inside', shopTitle:'A few chosen pieces for what you need', shopSub:"Each category is its own small alley — a handful of things, picked on purpose.", browseCat:'Browse',
     trust1t:'Cash on delivery', trust1s:"Pay when it's in your hands",
@@ -934,13 +1032,13 @@ const I18N = {
     toastAdded:'Added to your order', toastNeedInfo:'Add your name and phone first', toastSent:'Order ready — sending on WhatsApp',
     save:'Save {n}%', share:'Share', shareLinkCopied:'Link copied — paste it anywhere', shareVia:'Check this out on Souqlik',
     sms:'Messages', email:'Email', copyLink:'Copy link', copied:'Copied ✓', moreApps:'More',
-    zoom:'Zoom', tapToZoom:'Tap the photo to zoom in', selectOptions:'Select options', pickOption:'Pick an option first'
+    zoom:'Zoom', tapToZoom:'Tap the photo to zoom in', selectOptions:'Select options', pickOption:'Pick an option first', playVideo:'Play video'
   },
   fr:{ dir:'ltr',
     tick1:'Paiement à la livraison', tick2:'Livraison partout au Maroc', tick3:'Quelques trouvailles, choisies avec soin',
     cart:'Panier', yourOrder:'Votre commande',
     heroEyebrow:'Un petit souk, sélectionné', heroTitle:'Quelques catégories, quelques bonnes trouvailles dans chacune',
-    heroSub:"Pas de défilement sans fin, pas mille onglets. Entrez dans une catégorie, regardez, et envoyez votre commande sur WhatsApp.",
+    heroSub:"Assez petit pour en faire le tour en une minute, choisi lentement. Prenez ce qui vous plaît — et rassurez-vous, nous enrichissons sans cesse notre catalogue au fil de vos quêtes.",
     heroCta:'Voir le souk',
     shopEyebrow:'Entrez', shopTitle:'Quelques pièces choisies pour ce qu\'il vous faut', shopSub:"Chaque catégorie est sa propre petite allée — quelques pièces, choisies avec soin.", browseCat:'Parcourir',
     trust1t:'Paiement à la livraison', trust1s:'Payez en recevant',
@@ -962,13 +1060,13 @@ const I18N = {
     toastAdded:'Ajouté à votre commande', toastNeedInfo:"Ajoutez d'abord votre nom et téléphone", toastSent:'Commande prête — envoi sur WhatsApp',
     save:'Économisez {n}%', share:'Partager', shareLinkCopied:'Lien copié — collez-le où vous voulez', shareVia:'Regarde ça sur Souqlik',
     sms:'Messages', email:'E-mail', copyLink:'Copier le lien', copied:'Copié ✓', moreApps:'Plus',
-    zoom:'Zoom', tapToZoom:'Touchez la photo pour zoomer', selectOptions:'Choisir les options', pickOption:"Choisissez d'abord une option"
+    zoom:'Zoom', tapToZoom:'Touchez la photo pour zoomer', selectOptions:'Choisir les options', pickOption:"Choisissez d'abord une option", playVideo:'Lire la vidéo'
   },
   ar:{ dir:'rtl',
     tick1:'الدفع عند الاستلام', tick2:'توصيل لكل المدن', tick3:'قطع قليلة، اختيرت بعناية',
     cart:'السلة', yourOrder:'طلبك',
     heroEyebrow:'سوق صغير، منتقى بعناية', heroTitle:'فئات قليلة، وفي كل واحدة اختيارات جيدة',
-    heroSub:'بدون تصفح بلا نهاية، وبدون آلاف الصفحات. ادخل إلى فئة، شاهد ما فيها، وأرسل طلبك مباشرة عبر واتساب.',
+    heroSub:'سوق صغير تجوله في دقيقة، اختير على مهل. خذ ما يعجبك — ولا تقلق، نحدّث تشكيلتنا باستمرار لتواكب ما تبحث عنه.',
     heroCta:'تصفح السوق',
     shopEyebrow:'ادخل', shopTitle:'قطع مختارة لما تحتاجه', shopSub:'كل فئة هي زقاقها الصغير الخاص — قطع قليلة، اختيرت بعناية.', browseCat:'تصفح',
     trust1t:'الدفع عند الاستلام', trust1s:'تدفع عندما تصلك السلعة',
@@ -990,7 +1088,7 @@ const I18N = {
     toastAdded:'أُضيف إلى طلبك', toastNeedInfo:'أدخل الاسم والهاتف أولاً', toastSent:'الطلب جاهز — يُرسل عبر واتساب',
     save:'وفّر {n}%', share:'مشاركة', shareLinkCopied:'تم نسخ الرابط — الصقه في أي مكان', shareVia:'شاهد هذا في سوق ليك',
     sms:'رسائل', email:'البريد الإلكتروني', copyLink:'نسخ الرابط', copied:'تم النسخ ✓', moreApps:'المزيد',
-    zoom:'تكبير', tapToZoom:'اضغط على الصورة للتكبير', selectOptions:'اختر الخيارات', pickOption:'اختر خيارًا أولاً'
+    zoom:'تكبير', tapToZoom:'اضغط على الصورة للتكبير', selectOptions:'اختر الخيارات', pickOption:'اختر خيارًا أولاً', playVideo:'تشغيل الفيديو'
   }
 };
 let LANG = 'en';
@@ -1031,7 +1129,9 @@ function parseCartKey(key){
 let cart = {};
 function loadCart(){ try{ cart = JSON.parse(localStorage.getItem('souqlik_cart') || '{}'); }catch(e){ cart = {}; } }
 function saveCart(){ try{ localStorage.setItem('souqlik_cart', JSON.stringify(cart)); }catch(e){} }
-function cartCount(){ return Object.values(cart).reduce((s,q) => s+q, 0); }
+function cartCount(){
+  return Object.entries(cart).reduce((s,[key,q]) => s + (findItem(parseCartKey(key).id) ? q : 0), 0);
+}
 function cartTotal(){
   return Object.entries(cart).reduce((s,[key,q]) => {
     const p = findItem(parseCartKey(key).id);
@@ -1042,6 +1142,22 @@ function cartTotal(){
    goods-only subtotal everywhere else it's already used (grid "Added"
    counts, etc.); this is the one place the delivery fee gets added. */
 function grandTotal(){ return cartTotal() + (CONFIG.deliveryFee > 0 ? CONFIG.deliveryFee : 0); }
+/* A cart is remembered in localStorage across visits, but the catalogue
+   lives in the database and changes underneath it — rename or re-import a
+   product and its id can disappear. Those orphaned keys used to render as
+   empty rows: a blank drawer showing 0 DH with a live checkout form under
+   it. Drop them, but only once the REAL catalogue has loaded, never while
+   the built-in fallback is still standing in. */
+let catalogueReady = false;
+function pruneCart(){
+  if(!catalogueReady) return;
+  let changed = false;
+  Object.keys(cart).forEach(key => {
+    if(!findItem(parseCartKey(key).id)){ delete cart[key]; changed = true; }
+  });
+  if(changed) saveCart();
+  return changed;
+}
 function addToCart(id, qty, variant){
   qty = qty || 1; const p = findItem(id); if(!p || p.stock === 0) return;
   const key = cartKey(id, variant);
@@ -1072,7 +1188,7 @@ function categoryPreviewTiles(c, max){
 }
 function renderCategories(){
   document.getElementById('cats').innerHTML = CATEGORIES.map(c => {
-    const tiles = categoryPreviewTiles(c, 4);
+    const tiles = categoryPreviewTiles(c, 3); /* 1 lead + 2 stacked */
     return `
     <button class="cat-tile" data-open-cat="${c.id}">
       <div class="cat-head">
@@ -1148,16 +1264,61 @@ function renderCategoryGrid(catId){
    8. Product view — its own sales page
    ═══════════════════════════════════════════════════════════════ */
 let currentProduct = null;
-let pvImages = [];
-let pvImageIdx = 0;
+let pvMedia = [];
+let pvIdx = 0;
+let pvPoster = '';
 let selectedOptions = {};
-function setPvImage(idx){
-  if(!pvImages.length) return;
-  pvImageIdx = Math.max(0, Math.min(idx, pvImages.length - 1));
-  const main = document.getElementById('pvMain');
-  const img = main.querySelector('img');
-  if(img) img.src = pvImages[pvImageIdx];
-  document.querySelectorAll('#pvThumbs .pv-thumb').forEach((b,i) => b.classList.toggle('on', i === pvImageIdx));
+/* Swaps what the main stage shows. Rebuilds the stage rather than just
+   swapping an <img src>, because moving between a photo and a video
+   means swapping the element type, not just the source. Any playing
+   video is paused on the way out so audio can't keep running from a
+   slide you've navigated away from. */
+/* Builds the main stage for one slide.
+   Video is deliberately preload="none" with the product's own photo as the
+   poster: on a phone paying for data, a clip must cost nothing until the
+   customer actually asks for it, and it should look like a product photo
+   until then rather than a black rectangle. No autoplay — the research is
+   clear that autoplaying product video costs conversions. */
+function stageHtml(m, posterSrc){
+  if(!m) return '';
+  if(m.type !== 'video') return `<img src="${m.src}" alt="" />`;
+  return `<div class="pv-videowrap">
+      <video id="pvVideo" src="${m.src}" playsinline preload="none"${posterSrc ? ` poster="${posterSrc}"` : ''}></video>
+      <button type="button" class="pv-bigplay" id="pvBigPlay" aria-label="${t('playVideo')}">${PLAY_ICON}</button>
+    </div>`;
+}
+/* Anything playing must stop the moment it leaves the screen — switching
+   slide, leaving the product, or closing the page. Audio continuing from a
+   product you've navigated away from is the kind of thing people close a
+   tab over. */
+function stopPvVideo(){
+  const v = document.getElementById('pvVideo');
+  if(v && !v.paused) v.pause();
+}
+function wireStageVideo(){
+  const btn = document.getElementById('pvBigPlay');
+  const vid = document.getElementById('pvVideo');
+  if(!btn || !vid) return;
+  btn.addEventListener('click', () => {
+    vid.controls = true;            /* controls only appear once it's in use */
+    btn.classList.add('hide');
+    vid.play().catch(() => { btn.classList.remove('hide'); }); /* autoplay policy / bad file */
+  });
+  vid.addEventListener('pause', () => { if(vid.currentTime === 0) btn.classList.remove('hide'); });
+  vid.addEventListener('ended', () => { btn.classList.remove('hide'); vid.currentTime = 0; });
+}
+function setPvMedia(idx){
+  if(!pvMedia.length) return;
+  pvIdx = Math.max(0, Math.min(idx, pvMedia.length - 1));
+  const stage = document.getElementById('pvStage');
+  if(!stage) return;
+  stopPvVideo();
+  const m = pvMedia[pvIdx];
+  stage.innerHTML = stageHtml(m, pvPoster);
+  if(m.type === 'video') wireStageVideo();
+  document.querySelectorAll('#pvThumbs .pv-thumb').forEach((b,i) => b.classList.toggle('on', i === pvIdx));
+  const zoom = document.getElementById('pvZoomBtn');
+  if(zoom) zoom.classList.toggle('hide', m.type !== 'image');
 }
 function renderProductView(id){
   const p = findItem(id); if(!p) return;
@@ -1166,17 +1327,28 @@ function renderProductView(id){
   const stockLine = out ? `<p class="pv-stock low">${t('outOfStock')}</p>`
     : (p.stock != null && p.stock <= 8 ? `<p class="pv-stock low">${t('lowStock',{n:p.stock})}</p>` : `<p class="pv-stock ok">${t('inStock')}</p>`);
 
-  pvImages = productImages(p); pvImageIdx = 0; selectedOptions = {};
-  const hasPhotos = pvImages.length > 0;
+  pvMedia = productMedia(p); pvIdx = 0; selectedOptions = {};
+  const first = pvMedia[0];
+  const hasMedia = pvMedia.length > 0;
+  /* the product's own cover photo doubles as the video poster and as the
+     video thumbnail's image, so the strip costs zero video bytes */
+  pvPoster = (productImages(p)[0] || '');
 
   document.getElementById('pvBackLabel').textContent = cat ? t('backToCat',{cat:cat.name[LANG]}) : t('backToShop');
   document.getElementById('pvGrid').innerHTML = `
     <div class="pv-gallery">
-      <div class="pv-main arch" id="pvMain" style="background:${GRADS[p.icon]}">
-        ${archMedia({...p, img: pvImages[0] || ''})}
-        ${hasPhotos ? `<button class="pv-zoom" id="pvZoomBtn" aria-label="${t('zoom')}" title="${t('zoom')}">${ZOOM_ICON}</button>` : ''}
+      <div class="pv-main arch" style="background:${GRADS[p.icon]}">
+        <div class="pv-stage" id="pvStage">${
+          !hasMedia ? `<div class="icon">${iconSvg(p.icon)}</div>` : stageHtml(first, pvPoster)
+        }</div>
+        ${hasMedia ? `<button class="pv-zoom ${first.type === 'image' ? '' : 'hide'}" id="pvZoomBtn" aria-label="${t('zoom')}" title="${t('zoom')}">${ZOOM_ICON}</button>` : ''}
       </div>
-      ${pvImages.length > 1 ? `<div class="pv-thumbs" id="pvThumbs">${pvImages.map((u,i) => `<button type="button" class="pv-thumb ${i===0?'on':''}" data-idx="${i}"><img src="${u}" loading="lazy" alt="" /></button>`).join('')}</div>` : ''}
+      ${pvMedia.length > 1 ? `<div class="pv-thumbs" id="pvThumbs">${pvMedia.map((m,i) => `
+        <button type="button" class="pv-thumb ${i===0?'on':''} ${m.type==='video'?'is-video':''}" data-idx="${i}" aria-label="${m.type==='video'?t('playVideo'):''}">
+          ${m.type === 'video'
+            ? `${pvPoster ? `<img src="${pvPoster}" loading="lazy" alt="" />` : '<span class="pv-vidbg"></span>'}<span class="pv-play">${PLAY_ICON}</span>`
+            : `<img src="${m.src}" loading="lazy" alt="" />`}
+        </button>`).join('')}</div>` : ''}
     </div>
     <div>
       <span class="pv-tag">${p.tag[LANG]}</span>
@@ -1192,21 +1364,30 @@ function renderProductView(id){
         <label>${opt.name[LANG] || opt.name.en}</label>
         <div class="size-row" data-opt-group="${oi}">${opt.values.map(v => `<button type="button" class="size-opt" data-opt-value="${v}">${v}</button>`).join('')}</div>
       </div>`).join('')}
-      <h3 style="font-family:var(--f-disp);color:var(--brand);font-size:.86rem;margin:22px 0 0">${t('pvBenefitsTitle')}</h3>
+      <h3 style="font-family:var(--f-disp);font-weight:600;color:var(--brand);font-size:1.05rem;margin:22px 0 0">${t('pvBenefitsTitle')}</h3>
       <ul class="pv-benefits">${p.benefits[LANG].map(b => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>${b}</span></li>`).join('')}</ul>
       <div class="pv-buy">
         <button class="pv-add" id="pvAddBtn" ${out ? 'disabled' : ''}>${out ? t('outOfStock') : t('add')}</button>
         <button class="pv-share" id="pvShareBtn">${SHARE_ICON}<span>${t('share')}</span></button>
       </div>
       ${stockLine}
-      <div class="pv-desc"><h3>${t('pvDescTitle')}</h3><p>${p.desc[LANG]}</p></div>
+      <div class="pv-desc"><h3>${t('pvDescTitle')}</h3>${descHtml(p.desc[LANG])}</div>
     </div>`;
 
-  document.querySelectorAll('#pvThumbs .pv-thumb').forEach(b => b.addEventListener('click', () => setPvImage(+b.dataset.idx)));
+  if(first && first.type === 'video') wireStageVideo();
+  document.querySelectorAll('#pvThumbs .pv-thumb').forEach(b => b.addEventListener('click', () => setPvMedia(+b.dataset.idx)));
+  /* The lightbox indexes stills only, so a click has to be translated from
+     "position in the media strip" to "position among the photos" — otherwise
+     opening the 3rd item when item 2 is a video lands on the wrong photo. */
+  const stills = productImages(p);
+  const stillIndex = () => Math.max(0, stills.indexOf((pvMedia[pvIdx]||{}).src));
   const zoomBtn = document.getElementById('pvZoomBtn');
-  if(zoomBtn) zoomBtn.addEventListener('click', () => openLightbox(pvImages, pvImageIdx));
-  const mainImg = document.querySelector('#pvMain img');
-  if(mainImg) mainImg.addEventListener('click', () => { if(pvImages.length) openLightbox(pvImages, pvImageIdx); });
+  if(zoomBtn) zoomBtn.addEventListener('click', () => { if(stills.length) openLightbox(stills, stillIndex()); });
+  const stage = document.getElementById('pvStage');
+  if(stage) stage.addEventListener('click', (e) => {
+    if(e.target.tagName === 'VIDEO') return; /* let the player take its own clicks */
+    if(stills.length && (pvMedia[pvIdx]||{}).type === 'image') openLightbox(stills, stillIndex());
+  });
 
   document.querySelectorAll('[data-opt-group]').forEach(row => {
     const oi = row.dataset.optGroup;
@@ -1295,6 +1476,7 @@ window.addEventListener('keydown', (e) => {
    9. Routing — '', '#c-<id>', '#p-<id>'
    ═══════════════════════════════════════════════════════════════ */
 function hideOverlays(){
+  stopPvVideo(); /* leaving the product must never leave audio playing */
   document.getElementById('cview').classList.remove('on');
   document.getElementById('pview').classList.remove('on');
   document.body.style.overflow = ''; currentCat = null; currentProduct = null;
@@ -1333,6 +1515,7 @@ function route(){
   hideOverlays();
 }
 window.addEventListener('hashchange', route);
+document.addEventListener('visibilitychange', () => { if(document.hidden) stopPvVideo(); });
 document.getElementById('cvBack').addEventListener('click', () => { location.hash = ''; });
 document.getElementById('pvBack').addEventListener('click', () => {
   const cat = currentProduct ? categoryOf(currentProduct) : null;
@@ -1346,7 +1529,9 @@ document.querySelectorAll('[data-home]').forEach(a => a.addEventListener('click'
 function renderCart(){
   document.getElementById('pillCount').textContent = cartCount();
   const lines = document.getElementById('lines'); const foot = document.getElementById('drawerFoot');
-  const keys = Object.keys(cart);
+  /* only count lines we can actually render — an id with no product behind
+     it must not keep the checkout form alive */
+  const keys = Object.keys(cart).filter(k => findItem(parseCartKey(k).id));
   if(!keys.length){ lines.innerHTML = `<div class="cart-empty"><div class="glyph">✦</div><p><b>${t('emptyTitle')}</b><br>${t('emptyNote')}</p></div>`; foot.classList.add('hide'); return; }
   foot.classList.remove('hide');
   lines.innerHTML = keys.map(key => {
@@ -1462,6 +1647,8 @@ function toast(msg){
               product won't resolve yet since it isn't in this data */
 
   await Promise.all([loadCatalogue(), loadSettings()]);
+  catalogueReady = true;
+  pruneCart();
   /* the catalogue (and possibly the WhatsApp number) may have just
      changed from the built-in fallback to the live database — repaint
      everything, then re-run the router against the real data. This is
