@@ -319,7 +319,13 @@ const db = firebase.database();
 /* The shop owner's account — items created here are stamped with this
    uid. A second, cut-down admin (team/index.html) lets a collaborator
    sign in and manage only the items stamped with *their* uid. */
-const OWNER_UID = 'KR9JPV6I4GRudQtvSxKe7IJYsIB2';
+const OWNER_UID = 'tRdsZRSHYnTuZGso6BQTEHdv1Bu1';
+/* Accounts allowed into the team panel. The owner is included so he can
+   see exactly what his sellers see without swapping accounts. */
+const TEAM_UIDS = [
+  'KWJNhn3Bb6WwAK95kNwR0yGGfMi1', /* team seller */
+  OWNER_UID
+];
 
 const CLOUDINARY = { cloud: 'tlq6wzsg', preset: 'Packetss' };
 const VIDEO_MAX_BYTES = 5 * 1024 * 1024; /* 5MB — keeps product clips short and pages fast */
@@ -498,6 +504,15 @@ document.getElementById('signOutBtn').addEventListener('click', () => auth.signO
 
 auth.onAuthStateChanged(user => {
   if(user){
+    /* Only known team accounts get in here. Again a courtesy gate, not
+       the security boundary — the database rules are what actually stop
+       a stranger's account from writing anything, whichever page they
+       happen to load. Add a uid to TEAM_UIDS to onboard a new seller. */
+    if(!TEAM_UIDS.includes(user.uid)){
+      showGateErr('This account is not set up for the Souqlik team panel.');
+      auth.signOut();
+      return;
+    }
     myUid = user.uid;
     document.getElementById('gate').classList.add('hide');
     document.getElementById('appRoot').classList.remove('hide');
