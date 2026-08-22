@@ -872,6 +872,10 @@ function normItem(it){
     icon: ICONS[it.icon] ? it.icon : 'projector',
     img: it.img || '',
     gallery: normStringArray(it.gallery),
+    video: it.video || '',   /* was missing here: normItem rebuilds the object
+                                field by field, so anything not listed is
+                                silently dropped — the clip was in the database
+                                and in the admin, but never reached the gallery */
     options: normOptions(it.options),
     tag: normI18n(it.tag), name: normI18n(it.name), hook: normI18n(it.hook), desc: normI18n(it.desc),
     price: Number(it.price) || 0, was: it.was ? Number(it.was) : 0,
