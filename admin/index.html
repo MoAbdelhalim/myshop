@@ -365,7 +365,7 @@ const db = firebase.database();
 /* The shop owner's account — items created here are stamped with this
    uid. A second, cut-down admin (team/index.html) lets a collaborator
    sign in and manage only the items stamped with *their* uid. */
-const OWNER_UID = 'KR9JPV6I4GRudQtvSxKe7IJYsIB2';
+const OWNER_UID = 'tRdsZRSHYnTuZGso6BQTEHdv1Bu1';
 
 const CLOUDINARY = { cloud: 'tlq6wzsg', preset: 'Packetss' };
 const VIDEO_MAX_BYTES = 5 * 1024 * 1024; /* 5MB — keeps product clips short and pages fast */
@@ -547,6 +547,17 @@ document.getElementById('signOutBtn').addEventListener('click', () => auth.signO
 
 auth.onAuthStateChanged(user => {
   if(user){
+    /* This is the owner's panel — anyone else who signs in here is sent
+       straight back out with a pointer to their own. This is a courtesy
+       redirect, not the security boundary: what actually protects the
+       data is the database rules, which reject a non-owner's writes to
+       settings/suppliers/votes and to other people's items regardless
+       of which page they loaded. */
+    if(user.uid !== OWNER_UID){
+      showGateErr('This is the owner panel. Use the team panel instead — souqlik.shop/team/');
+      auth.signOut();
+      return;
+    }
     document.getElementById('gate').classList.add('hide');
     document.getElementById('appRoot').classList.remove('hide');
     document.getElementById('whoEmail').textContent = user.email || '';
