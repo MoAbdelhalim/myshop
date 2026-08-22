@@ -172,6 +172,23 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
 .savebar .row{ justify-content:space-between; }
 .state{ font-size:.7rem; color:var(--ink-faint); }
 .state.dirty{ color:var(--accent); font-weight:700; }
+
+/* ── catalogue builder tab ── */
+.bl-drop{ border:1.5px dashed var(--line); border-radius:var(--r); padding:20px; text-align:center; color:var(--ink-faint); background:var(--page); cursor:pointer; }
+.bl-drop.on{ border-color:var(--accent); background:var(--accent-pale); color:var(--ink); }
+.bl-shots{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.bl-shot{ position:relative; width:88px; height:88px; border-radius:10px; overflow:hidden; border:1px solid var(--line); background:var(--page); }
+.bl-shot img{ width:100%; height:100%; object-fit:cover; }
+.bl-shot .x{ position:absolute; top:3px; inset-inline-end:3px; width:20px; height:20px; border:0; border-radius:50%; background:rgba(36,25,52,.75); color:#fff; font-size:.7rem; line-height:1; display:grid; place-items:center; }
+.bl-shot .cov{ position:absolute; bottom:0; inset-inline:0; background:rgba(36,25,52,.75); color:#fff; font-size:.58rem; text-align:center; padding:2px; }
+.bl-lens{ display:flex; gap:8px; flex-wrap:wrap; }
+.bl-lens a{ text-decoration:none; }
+.bl-item{ display:flex; gap:12px; align-items:center; border:1px solid var(--line); border-radius:var(--r-sm); padding:9px; margin-top:8px; background:var(--page); }
+.bl-item img{ width:48px; height:48px; object-fit:cover; border-radius:8px; flex:none; }
+.bl-item .bi{ flex:1; min-width:0; }
+.bl-item b{ display:block; font-size:.84rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bl-item small{ color:var(--ink-faint); font-size:.7rem; }
+#blJson{ background:var(--brand); color:#EDE6F5; padding:12px; border-radius:var(--r-sm); overflow:auto; font-size:.7rem; max-height:280px; margin-top:12px; }
 .toast{ position:fixed; left:50%; bottom:20px; transform:translate(-50%,10px); background:var(--ink); color:#fff; border-radius:var(--r-pill); padding:10px 18px; font-size:.8rem; opacity:0; pointer-events:none; transition:.3s; z-index:80; max-width:88vw; text-align:center; }
 .toast.on{ opacity:1; transform:translate(-50%,0); }
 
@@ -257,6 +274,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
       <button data-tab="customers">Customers</button>
       <button data-tab="searches">Searches<span class="n" id="cSearches"></span></button>
       <button data-tab="catalogue">Catalogue</button>
+      <button data-tab="builder">Builder<span class="n" id="cBuilder"></span></button>
     </div>
     <div class="dbstate" id="dbState">Loading your data…</div>
   </div>
@@ -321,6 +339,79 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
       </table>
     </div>
     <div class="empty hide" id="searchEmpty">Nothing yet — searches will appear here once customers use the search bar.</div>
+  </section>
+
+
+  <!-- ═══ BUILDER ═══ -->
+  <section class="card hide" id="tab-builder">
+    <h2>Add products fast</h2>
+    <p class="note">Drop a supplier photo, find the original listing by image, paste what it says, and this fills in the three languages for you. Build a batch, then publish it into the catalogue in one go.</p>
+
+    <label>1 · Photos <span style="text-transform:none;letter-spacing:0;font-weight:400">— first one becomes the cover</span></label>
+    <div class="bl-drop" id="blDrop">
+      <b>Drop photos here</b><br><span style="font-size:.8rem">or tap to choose</span>
+      <input type="file" id="blFile" accept="image/*" multiple class="hide" />
+    </div>
+    <div class="bl-shots" id="blShots"></div>
+
+    <label>2 · Find the original listing</label>
+    <p class="note" style="margin-top:0">Searches the cover photo by image. Yandex is often better than Lens on Chinese marketplace photos.</p>
+    <div class="bl-lens" id="blLens"><span class="note">Upload a photo first.</span></div>
+
+    <label for="blTitle">3 · Paste what you found</label>
+    <input type="text" id="blTitle" placeholder="Product title, any language" />
+    <textarea id="blDesc" rows="5" style="margin-top:8px" placeholder="Description / spec list — bullets, dashes or line breaks all work."></textarea>
+    <div class="num-grid" style="margin-top:8px">
+      <div class="cell"><label>Price (DH)</label><input type="number" id="blPrice" min="0" /></div>
+      <div class="cell"><label>Was (DH)</label><input type="number" id="blWas" min="0" /></div>
+      <div class="cell"><label>Stock</label><input type="number" id="blStock" min="0" /></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn accent" id="blBuildBtn">Build &amp; translate →</button>
+      <span class="state" id="blState"></span>
+    </div>
+
+    <div id="blReview" class="hide">
+      <label>4 · Review — read the Arabic and French before queueing</label>
+      <label>Name</label>
+      <div class="lang-grid">
+        <input type="text" id="blNEn" placeholder="EN" /><input type="text" id="blNFr" placeholder="FR" /><input type="text" id="blNAr" dir="rtl" placeholder="AR" />
+      </div>
+      <label>Hook</label>
+      <div class="lang-grid">
+        <input type="text" id="blHEn" placeholder="EN" /><input type="text" id="blHFr" placeholder="FR" /><input type="text" id="blHAr" dir="rtl" placeholder="AR" />
+      </div>
+      <label>Benefits — one per line</label>
+      <div class="lang-grid">
+        <textarea id="blBEn" rows="4" placeholder="EN"></textarea><textarea id="blBFr" rows="4" placeholder="FR"></textarea><textarea id="blBAr" rows="4" dir="rtl" placeholder="AR"></textarea>
+      </div>
+      <label>Description</label>
+      <div class="lang-grid">
+        <textarea id="blDEn" rows="3" placeholder="EN"></textarea><textarea id="blDFr" rows="3" placeholder="FR"></textarea><textarea id="blDAr" rows="3" dir="rtl" placeholder="AR"></textarea>
+      </div>
+      <label>Badge tag</label>
+      <div class="lang-grid">
+        <input type="text" id="blTEn" placeholder="EN" /><input type="text" id="blTFr" placeholder="FR" /><input type="text" id="blTAr" dir="rtl" placeholder="AR" />
+      </div>
+      <label>Options (leave empty for a plain product)</label>
+      <div id="blOptWrap"></div>
+      <div class="row" style="margin-top:8px"><button class="btn sm" id="blAddOpt">+ Add option</button></div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn solid" id="blQueueBtn">Add to batch</button>
+        <button class="btn" id="blResetBtn">Clear form</button>
+      </div>
+    </div>
+
+    <label>5 · Batch <span style="text-transform:none;letter-spacing:0;font-weight:400">— kept if you close the tab</span></label>
+    <div id="blQueue"></div>
+    <label for="blCatSel">Publish into category</label>
+    <select class="field" id="blCatSel"></select>
+    <div class="row" style="margin-top:14px">
+      <button class="btn solid" id="blPublishBtn">Publish batch</button>
+      <button class="btn" id="blExportBtn">Export JSON</button>
+      <button class="btn danger" id="blClearBtn">Empty batch</button>
+    </div>
+    <pre id="blJson" class="hide"></pre>
   </section>
 
   <!-- ═══ CATALOGUE ═══ -->
@@ -676,6 +767,261 @@ function renderSearches(){
       <td>${r.lastAt ? new Date(r.lastAt).toLocaleDateString() : '—'}</td>
     </tr>`).join('');
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   CATALOGUE BUILDER
+   Bulk-fill helper. Everything here reuses what the panel already
+   has — the signed-in session, the Cloudinary uploader, the loaded
+   category list — which is the whole reason it lives inside the
+   admin rather than as a second app with a second login.
+   ═══════════════════════════════════════════════════════════════ */
+let blShots = [], blOpts = [], blQueue = [];
+const BL_QKEY = 'souqlik_builder_batch';
+const BL_ICONS = ['projector','fan','posture','earbuds','mount','blender','home','luggage','heart'];
+function blGet(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function blSet(id, v){ const el = document.getElementById(id); if(el) el.value = (v == null ? '' : v); }
+function blLines(id){ return blGet(id).split('\n').map(s => s.trim()).filter(Boolean); }
+
+function blRenderShots(){
+  const box = document.getElementById('blShots'); if(!box) return;
+  box.innerHTML = blShots.map((u,i) => `
+    <div class="bl-shot"><img src="${u}" alt="" />${i===0?'<span class="cov">cover</span>':''}
+      <button class="x" data-blrm="${i}" aria-label="Remove">×</button></div>`).join('');
+  box.querySelectorAll('[data-blrm]').forEach(b => b.addEventListener('click', () => {
+    blShots.splice(+b.dataset.blrm,1); blRenderShots(); blRenderLens();
+  }));
+}
+/* Reverse image search by URL — no API key needed anywhere here; these
+   services all accept a public image address as a query parameter, which
+   is exactly why the photo is uploaded before searching. */
+function blRenderLens(){
+  const box = document.getElementById('blLens'); if(!box) return;
+  if(!blShots.length){ box.innerHTML = '<span class="note">Upload a photo first.</span>'; return; }
+  const u = encodeURIComponent(blShots[0]);
+  const q = encodeURIComponent(blGet('blTitle'));
+  box.innerHTML = [
+    ['Google Lens', `https://lens.google.com/uploadbyurl?url=${u}`],
+    ['Yandex',      `https://yandex.com/images/search?rpt=imageview&url=${u}`],
+    ['Bing Visual', `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIVSP&q=imgurl:${u}`],
+    ['AliExpress',  `https://www.aliexpress.com/wholesale?SearchText=${q}`],
+    ['Amazon',      `https://www.amazon.com/s?k=${q}`]
+  ].map(([n,h]) => `<a class="btn sm" target="_blank" rel="noopener" href="${h}">${n} ↗</a>`).join('');
+}
+
+/* ── translation ──────────────────────────────────────────────
+   MyMemory needs no key and allows browser calls, so the panel stays
+   a single file with nothing running server-side. It's machine
+   translation: fine for specs, which is why step 4 makes you read it.
+   Chunked and sequential — hammering a free endpoint in parallel is
+   the fastest way to get cut off halfway through a catalogue. */
+function blChunk(str, size){
+  const out = []; let rest = String(str || '');
+  while(rest.length > size){
+    let cut = rest.lastIndexOf('. ', size);
+    if(cut < size*0.5) cut = rest.lastIndexOf(' ', size);
+    if(cut <= 0) cut = size;
+    out.push(rest.slice(0,cut)); rest = rest.slice(cut).trim();
+  }
+  if(rest) out.push(rest);
+  return out;
+}
+async function blTr(text, pair){
+  const t = String(text || '').trim();
+  if(!t) return '';
+  const done = [];
+  for(const part of blChunk(t, 480)){
+    try{
+      const r = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(part)}&langpair=${pair}`);
+      const j = await r.json();
+      const out = j && j.responseData && j.responseData.translatedText;
+      /* the free tier signals quota trouble with a warning STRING, not an
+         HTTP error — treat it as failure so English never gets silently
+         written into the Arabic field */
+      if(!out || /MYMEMORY WARNING|QUERY LENGTH LIMIT|INVALID/i.test(out)) throw new Error('quota');
+      done.push(out);
+    }catch(e){ return null; }
+    await new Promise(r => setTimeout(r, 220));
+  }
+  return done.join(' ');
+}
+async function blTrAll(en){ return { fr: await blTr(en,'en|fr'), ar: await blTr(en,'en|ar') }; }
+
+function blSplit(text){
+  return String(text || '')
+    .split(/\s*[•·▪●]\s*|\r?\n+|\s+[-–—]\s+/)
+    .map(s => s.trim().replace(/^[-–—•·▪●]\s*/, ''))
+    .filter(s => s.length > 1);
+}
+function blHook(title, bullets){
+  const first = bullets[0] || '';
+  if(first && first.length <= 90) return first;
+  const t = String(title || '');
+  return t.length <= 90 ? t : t.slice(0,87).replace(/\s+\S*$/,'') + '…';
+}
+
+function blRenderOpts(){
+  const box = document.getElementById('blOptWrap'); if(!box) return;
+  box.innerHTML = blOpts.map((o,i) => `
+    <div class="opt-group">
+      <div class="opt-group-head">
+        <input type="text" data-blo="${i}" data-blf="en" value="${esc(o.en)}" placeholder="Option name (EN) — e.g. Colour" />
+        <button class="btn sm danger" data-bldelo="${i}">Remove</button>
+      </div>
+      <div class="lang-grid" style="margin-top:8px">
+        <div class="cell"><label>FR</label><input type="text" data-blo="${i}" data-blf="fr" value="${esc(o.fr)}" /></div>
+        <div class="cell"><label>AR</label><input type="text" data-blo="${i}" data-blf="ar" dir="rtl" value="${esc(o.ar)}" /></div>
+      </div>
+      <div class="opt-values-row"><label>Choices, comma separated</label>
+        <input type="text" data-blo="${i}" data-blf="values" value="${esc(o.values)}" placeholder="S, M, L, XL" /></div>
+    </div>`).join('');
+  box.querySelectorAll('[data-bldelo]').forEach(b => b.addEventListener('click', () => { blOpts.splice(+b.dataset.bldelo,1); blRenderOpts(); }));
+  box.querySelectorAll('[data-blo]').forEach(inp => inp.addEventListener('input', () => { blOpts[+inp.dataset.blo][inp.dataset.blf] = inp.value; }));
+}
+
+function blLoadQueue(){ try{ blQueue = JSON.parse(localStorage.getItem(BL_QKEY) || '[]'); }catch(e){ blQueue = []; } }
+function blSaveQueue(){ try{ localStorage.setItem(BL_QKEY, JSON.stringify(blQueue)); }catch(e){} }
+function blBuildItem(){
+  return {
+    id: 'item-' + Math.random().toString(36).slice(2,8),
+    icon: BL_ICONS[Math.floor(Math.random()*BL_ICONS.length)],
+    img: blShots[0] || '', gallery: blShots.slice(1), video: '',
+    options: blOpts.map(o => ({ name:{en:o.en.trim(),fr:o.fr.trim(),ar:o.ar.trim()},
+                                values:o.values.split(',').map(v => v.trim()).filter(Boolean) }))
+                   .filter(o => o.values.length && (o.name.en || o.name.fr || o.name.ar)),
+    tag:{en:blGet('blTEn'),fr:blGet('blTFr'),ar:blGet('blTAr')},
+    name:{en:blGet('blNEn'),fr:blGet('blNFr'),ar:blGet('blNAr')},
+    hook:{en:blGet('blHEn'),fr:blGet('blHFr'),ar:blGet('blHAr')},
+    desc:{en:blGet('blDEn'),fr:blGet('blDFr'),ar:blGet('blDAr')},
+    benefits:{en:blLines('blBEn'),fr:blLines('blBFr'),ar:blLines('blBAr')},
+    price:Number(blGet('blPrice'))||0, was:Number(blGet('blWas'))||0,
+    stock: blGet('blStock')==='' ? 0 : Number(blGet('blStock'))
+  };
+}
+function blRenderQueue(){
+  const box = document.getElementById('blQueue'); if(!box) return;
+  const badge = document.getElementById('cBuilder');
+  if(badge) badge.textContent = blQueue.length || '';
+  if(!blQueue.length){ box.innerHTML = '<p class="note">Nothing in the batch yet.</p>'; return; }
+  box.innerHTML = blQueue.map((it,i) => {
+    const miss = [];
+    if(!it.img) miss.push('no photo');
+    if(!it.price) miss.push('no price');
+    if(!it.name.ar || !it.name.fr) miss.push('missing translation');
+    return `<div class="bl-item">
+      ${it.img ? `<img src="${it.img}" alt="" />` : '<div style="width:48px;height:48px;border-radius:8px;background:var(--line)"></div>'}
+      <div class="bi"><b>${esc(it.name.en || '(untitled)')}</b>
+        <small>${it.price} DH${it.was ? ' (was '+it.was+')' : ''} · stock ${it.stock} · ${it.gallery.length + (it.img?1:0)} photo(s)</small></div>
+      ${miss.length ? `<span class="pill cancelled">${miss.join(' · ')}</span>` : '<span class="pill confirmed">ready</span>'}
+      <button class="btn sm danger" data-bldelq="${i}">Remove</button>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-bldelq]').forEach(b => b.addEventListener('click', () => { blQueue.splice(+b.dataset.bldelq,1); blSaveQueue(); blRenderQueue(); }));
+}
+function blResetForm(){
+  ['blTitle','blDesc','blPrice','blWas','blStock','blNEn','blNFr','blNAr','blHEn','blHFr','blHAr',
+   'blBEn','blBFr','blBAr','blDEn','blDFr','blDAr','blTEn','blTFr','blTAr'].forEach(id => blSet(id,''));
+  blShots = []; blOpts = [];
+  blRenderShots(); blRenderLens(); blRenderOpts();
+  const r = document.getElementById('blReview'); if(r) r.classList.add('hide');
+  const st = document.getElementById('blState'); if(st) st.textContent = '';
+}
+/* Categories come from what the panel already loaded, so the builder can
+   never offer a category that isn't really there. */
+function blRenderCats(){
+  const sel = document.getElementById('blCatSel'); if(!sel) return;
+  const keep = sel.value;
+  sel.innerHTML = CATEGORIES.length
+    ? CATEGORIES.map(c => `<option value="${c.id}">${esc(c.name.en || c.name.fr || c.name.ar || c.id)}</option>`).join('')
+    : '<option value="">— no categories yet —</option>';
+  if(keep) sel.value = keep;
+}
+function renderBuilder(){ blRenderShots(); blRenderLens(); blRenderOpts(); blRenderQueue(); blRenderCats(); }
+
+(function wireBuilder(){
+  const drop = document.getElementById('blDrop'); if(!drop) return;
+  const file = document.getElementById('blFile');
+  drop.addEventListener('click', () => file.click());
+  ['dragenter','dragover'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.add('on'); }));
+  ['dragleave','drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.remove('on'); }));
+  drop.addEventListener('drop', ev => blHandle(ev.dataTransfer.files));
+  file.addEventListener('change', () => blHandle(file.files));
+  async function blHandle(list){
+    const files = Array.from(list || []).filter(f => f.type.startsWith('image/'));
+    if(!files.length) return;
+    const original = drop.innerHTML;
+    drop.innerHTML = '<b>Uploading…</b>';
+    for(const f of files){
+      try{ blShots.push(await uploadToCloudinary(f)); blRenderShots(); blRenderLens(); }
+      catch(e){ toast('Upload failed: ' + e.message); }
+    }
+    drop.innerHTML = original; file.value = '';
+  }
+
+  document.getElementById('blTitle').addEventListener('input', blRenderLens);
+  document.getElementById('blAddOpt').addEventListener('click', () => { blOpts.push({en:'',fr:'',ar:'',values:''}); blRenderOpts(); });
+  document.getElementById('blResetBtn').addEventListener('click', blResetForm);
+
+  document.getElementById('blBuildBtn').addEventListener('click', async () => {
+    const title = blGet('blTitle');
+    if(!title){ toast('Paste a product title first'); return; }
+    const btn = document.getElementById('blBuildBtn'), st = document.getElementById('blState');
+    btn.disabled = true; st.textContent = 'Translating…';
+    const bullets = blSplit(blGet('blDesc')).slice(0,8);
+    const hook = blHook(title, bullets);
+    const descEn = bullets.length ? bullets.join(' • ') : blGet('blDesc');
+    blSet('blNEn',title); blSet('blHEn',hook); blSet('blBEn',bullets.join('\n')); blSet('blDEn',descEn); blSet('blTEn','New');
+    const n = await blTrAll(title), h = await blTrAll(hook), b = await blTrAll(bullets.join('\n')),
+          d = await blTrAll(descEn), g = await blTrAll('New');
+    const failed = [n,h,b,d,g].some(x => x.fr === null || x.ar === null);
+    blSet('blNFr',n.fr); blSet('blNAr',n.ar);
+    blSet('blHFr',h.fr); blSet('blHAr',h.ar);
+    blSet('blBFr',b.fr); blSet('blBAr',b.ar);
+    blSet('blDFr',d.fr); blSet('blDAr',d.ar);
+    blSet('blTFr',g.fr || 'Nouveau'); blSet('blTAr',g.ar || 'جديد');
+    document.getElementById('blReview').classList.remove('hide');
+    st.textContent = failed ? 'Some translations did not come back — fill those in by hand.' : 'Translated — read it over before queueing.';
+    if(failed) toast('Free translation quota hit. English is filled in; add FR/AR yourself.');
+    btn.disabled = false;
+  });
+
+  document.getElementById('blQueueBtn').addEventListener('click', () => {
+    if(!blGet('blNEn')){ toast('The product needs at least an English name'); return; }
+    blQueue.push(blBuildItem()); blSaveQueue(); blRenderQueue(); blResetForm(); toast('Added to batch');
+  });
+  document.getElementById('blClearBtn').addEventListener('click', () => {
+    if(!blQueue.length) return;
+    if(!confirm('Empty the whole batch? This cannot be undone.')) return;
+    blQueue = []; blSaveQueue(); blRenderQueue();
+  });
+  document.getElementById('blExportBtn').addEventListener('click', () => {
+    const out = {}; blQueue.forEach(it => { out[it.id] = it; });
+    const el = document.getElementById('blJson');
+    el.textContent = JSON.stringify(out, null, 2); el.classList.remove('hide');
+    if(navigator.clipboard) navigator.clipboard.writeText(el.textContent).then(() => toast('JSON copied')).catch(()=>{});
+  });
+  document.getElementById('blPublishBtn').addEventListener('click', async () => {
+    const catId = document.getElementById('blCatSel').value;
+    if(!catId){ toast('Pick a category first'); return; }
+    if(!blQueue.length){ toast('The batch is empty'); return; }
+    const uid = auth.currentUser ? auth.currentUser.uid : null;
+    if(!uid){ toast('Signed out — sign in again'); return; }
+    const btn = document.getElementById('blPublishBtn');
+    btn.disabled = true; btn.textContent = 'Publishing…';
+    try{
+      /* per-item paths only — this can never overwrite a category or
+         another seller's products, same rule the catalogue tab follows */
+      const updates = {};
+      blQueue.forEach(it => { updates[`categories/${catId}/items/${it.id}`] = { ...it, ownerUid: uid }; });
+      await db.ref().update(updates);
+      toast(`Published ${blQueue.length} product(s)`);
+      blQueue = []; blSaveQueue(); blRenderQueue();
+      await loadAllData();   /* pull them back so the Catalogue tab shows them */
+    }catch(e){ toast('Publish failed: ' + e.message); }
+    finally{ btn.disabled = false; btn.textContent = 'Publish batch'; }
+  });
+  blLoadQueue();
+})();
 
 function statusPillHtml(s){ return `<span class="pill ${s}">${s}</span>`; }
 
@@ -1282,6 +1628,7 @@ function renderAll(){
   safeRender(renderCustomers, 'Customers');
   safeRender(renderSearches, 'Searches');
   safeRender(renderCatalogue, 'Catalogue');
+  safeRender(renderBuilder, 'Builder');
 }
 </script>
 </body>
