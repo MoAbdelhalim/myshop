@@ -281,6 +281,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
       <button data-tab="catalogue">Catalogue</button>
       <button data-tab="builder">Builder<span class="n" id="cBuilder"></span></button>
       <button data-tab="votes">Votes</button>
+      <button data-tab="reviews">Reviews<span class="n" id="cReviews"></span></button>
       <button data-tab="baskets">Baskets</button>
       <button data-tab="settings">Settings</button>
     </div>
@@ -358,7 +359,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
     </div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th>Search term</th><th>Times</th><th>Results</th><th>Last searched</th></tr></thead>
+        <thead><tr><th>Search term</th><th>Times</th><th>Results</th><th>Last searched</th><th></th></tr></thead>
         <tbody id="searchBody"></tbody>
       </table>
     </div>
@@ -458,6 +459,30 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
     </div>
   </section>
 
+
+
+  <!-- ═══ REVIEWS ═══ -->
+  <section class="card hide" id="tab-reviews">
+    <h2>Reviews</h2>
+    <p class="note">Customers can leave a review from any product page, but <b>nothing appears on the shop until you approve it here</b> — the shop has no customer accounts, so an open review form would otherwise be easy for anyone to abuse. You can also add a review yourself for feedback that arrived on WhatsApp.</p>
+
+    <h3 style="font-family:var(--f-disp);font-weight:600;color:var(--brand);margin:18px 0 0">Waiting for you</h3>
+    <div id="rvPending"></div>
+
+    <h3 style="font-family:var(--f-disp);font-weight:600;color:var(--brand);margin:22px 0 0">Add one yourself</h3>
+    <p class="note">For feedback a customer sent you on WhatsApp. Only add words a real customer actually said.</p>
+    <div class="lang-grid" style="margin-top:10px">
+      <div class="cell"><label>Product</label><select class="field" id="rvAddItem"></select></div>
+      <div class="cell"><label>Customer name</label><input type="text" id="rvAddName" maxlength="60" /></div>
+      <div class="cell"><label>Stars (1–5)</label><input type="number" id="rvAddStars" min="1" max="5" value="5" /></div>
+    </div>
+    <label>What they said</label>
+    <textarea id="rvAddText" rows="2" maxlength="600"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn accent" id="rvAddBtn">Add review</button></div>
+
+    <h3 style="font-family:var(--f-disp);font-weight:600;color:var(--brand);margin:22px 0 0">Published</h3>
+    <div id="rvLive"></div>
+  </section>
 
   <!-- ═══ BASKETS (El Guffa) ═══ -->
   <section class="card hide" id="tab-baskets">
@@ -593,6 +618,8 @@ let SETTINGS = { whatsapp:'212600000000', deliveryFee:0 };
 let ITEM_INDEX = {};   // itemId -> item, unfiltered; used for order-document photos
 let SEARCHES = [];     // raw storefront search log
 let GUFFA = null;      // El Guffa config: { enabled, name{}, note{}, boxes:[…] }
+let RV_QUEUE = [];     // submitted, awaiting approval
+let RV_LIVE = {};      // itemId -> [{_id,name,rating,text,at}] already published
 let gfDirty = false;
 let LANG = 'en';
 let catalogueDirty = false;
@@ -675,7 +702,7 @@ function categoriesFromFirebase(raw){
 }
 function searchesFromFirebase(raw){
   if(!raw || typeof raw !== 'object') return [];
-  return Object.values(raw).filter(r => r && r.q).map(r => ({ q:String(r.q), raw:String(r.raw || r.q), hits:Number(r.hits)||0, at:Number(r.at)||0 }));
+  return Object.entries(raw).filter(([,r]) => r && r.q).map(([id,r]) => ({ _id:id, q:String(r.q), raw:String(r.raw || r.q), hits:Number(r.hits)||0, at:Number(r.at)||0 }));
 }
 function ordersFromFirebase(raw){
   if(!raw || typeof raw !== 'object') return [];
@@ -754,13 +781,15 @@ function setDbState(msg, isErr){
 }
 async function loadAllData(){
   setDbState('Loading your data…');
-  let catSnap, ordSnap, srchSnap, gfSnap, suppSnap, voteSnap, setSnap;
+  let catSnap, ordSnap, srchSnap, gfSnap, rvqSnap, rvlSnap, suppSnap, voteSnap, setSnap;
   try{
-    [catSnap, ordSnap, srchSnap, gfSnap, suppSnap, voteSnap, setSnap] = await Promise.all([
+    [catSnap, ordSnap, srchSnap, gfSnap, rvqSnap, rvlSnap, suppSnap, voteSnap, setSnap] = await Promise.all([
       db.ref('categories').once('value'),
       db.ref('orders').once('value'),
       db.ref('searches').once('value'),
       db.ref('guffa').once('value'),
+      db.ref('reviewQueue').once('value'),
+      db.ref('reviews').once('value'),
       db.ref('suppliers').once('value'),
       db.ref('votes').once('value'),
       db.ref('settings').once('value')
@@ -785,6 +814,8 @@ async function loadAllData(){
   try{ SEARCHES = searchesFromFirebase(srchSnap.val()); }catch(e){ console.error('searches', e); SEARCHES = []; }
   try{ GUFFA = guffaFromFirebase(gfSnap.val()); }catch(e){ console.error('guffa', e); GUFFA = guffaBlank(); }
   gfDirty = false;
+  try{ RV_QUEUE = Object.entries(rvqSnap.val() || {}).map(([k,v]) => ({ ...v, _id:k })).sort((a,b)=>(b.at||0)-(a.at||0)); }catch(e){ RV_QUEUE = []; }
+  try{ RV_LIVE = {}; Object.entries(rvlSnap.val() || {}).forEach(([itemId, byId]) => { RV_LIVE[itemId] = Object.entries(byId||{}).map(([k,v]) => ({ ...v, _id:k })).sort((a,b)=>(b.at||0)-(a.at||0)); }); }catch(e){ RV_LIVE = {}; }
   try{ SUPPLIERS = suppSnap.val() || {}; }catch(e){ SUPPLIERS = {}; }
   try{ VOTES = voteSnap.val() || {}; }catch(e){ VOTES = {}; }
   try{ SETTINGS = setSnap.val() || { whatsapp:'212600000000', deliveryFee:0 }; }catch(e){ SETTINGS = { whatsapp:'212600000000', deliveryFee:0 }; }
@@ -845,7 +876,26 @@ function renderSearches(){
       <td>${r.times}</td>
       <td>${r.maxHits === 0 ? '<span class="pill cancelled">none</span>' : r.maxHits}</td>
       <td>${r.lastAt ? new Date(r.lastAt).toLocaleDateString() : '—'}</td>
+      <td><button class="btn sm danger" data-srdel="${esc(r.q)}">Remove</button></td>
     </tr>`).join('');
+
+  /* One term can have many raw rows behind it, so removing means deleting
+     every entry that normalised to the same words — otherwise it would
+     reappear on the next refresh. */
+  body.querySelectorAll('[data-srdel]').forEach(btn => btn.addEventListener('click', async () => {
+    const term = btn.dataset.srdel;
+    const ids = SEARCHES.filter(x => x.q === term).map(x => x._id).filter(Boolean);
+    if(!ids.length){ SEARCHES = SEARCHES.filter(x => x.q !== term); renderSearches(); return; }
+    if(!confirm(`Remove "${term}" and its ${ids.length} record(s)?`)) return;
+    try{
+      const updates = {};
+      ids.forEach(id => { updates['searches/' + id] = null; });
+      await db.ref().update(updates);
+      SEARCHES = SEARCHES.filter(x => x.q !== term);
+      renderSearches();
+      toast('Removed');
+    }catch(e){ toast('Could not remove: ' + e.message); }
+  }));
 }
 
 
@@ -1233,6 +1283,117 @@ function renderGuffaAdmin(){
       const snap = await db.ref('guffa').once('value');
       GUFFA = guffaFromFirebase(snap.val()); gfDirty = false; renderGuffaAdmin(); toast('Reloaded');
     }catch(e){ toast('Could not reload: ' + e.message); }
+  });
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════
+   REVIEWS — moderation.
+   Submissions land in `reviewQueue` (public write, staff read only).
+   Approving copies the review into `reviews/<itemId>` — the only node
+   the storefront reads — and removes it from the queue. Nothing a
+   customer types is ever visible on the shop before that step.
+   ═══════════════════════════════════════════════════════════════ */
+function rvStars(n){ return '★★★★★'.slice(0, Math.max(1,Math.min(5,n||0))).padEnd(5,'☆'); }
+function rvItemName(id){ const it = ITEM_INDEX[id]; return (it && (it.name.en || it.name.fr || it.name.ar)) || id; }
+
+function renderReviews(){
+  const badge = document.getElementById('cReviews');
+  if(badge) badge.textContent = RV_QUEUE.length || '';
+
+  const pend = document.getElementById('rvPending');
+  if(pend){
+    pend.innerHTML = RV_QUEUE.length ? RV_QUEUE.map(r => `
+      <div class="order">
+        <div class="order-top">
+          <span class="order-ref">${rvStars(r.rating)}</span>
+          <span class="order-when">${r.at ? new Date(r.at).toLocaleString() : ''}</span>
+        </div>
+        <div class="order-cust"><b>${esc(r.name || 'A customer')}</b> · ${esc(rvItemName(r.itemId))}</div>
+        ${r.text ? `<div class="order-items"><div><span>${esc(r.text)}</span></div></div>` : ''}
+        <div class="order-acts">
+          <button class="btn sm solid" data-rvok="${r._id}">Approve &amp; publish</button>
+          <button class="btn sm danger" data-rvno="${r._id}">Delete</button>
+        </div>
+      </div>`).join('') : '<p class="note">Nothing waiting.</p>';
+
+    pend.querySelectorAll('[data-rvok]').forEach(b => b.addEventListener('click', () => rvApprove(b.dataset.rvok)));
+    pend.querySelectorAll('[data-rvno]').forEach(b => b.addEventListener('click', async () => {
+      if(!confirm('Delete this review?')) return;
+      try{ await db.ref('reviewQueue/' + b.dataset.rvno).remove();
+           RV_QUEUE = RV_QUEUE.filter(x => x._id !== b.dataset.rvno); renderReviews(); }
+      catch(e){ toast('Could not delete: ' + e.message); }
+    }));
+  }
+
+  const sel = document.getElementById('rvAddItem');
+  if(sel){
+    const keep = sel.value;
+    const items = Object.values(ITEM_INDEX);
+    sel.innerHTML = items.length
+      ? items.map(it => `<option value="${it.id}">${esc(it.name.en || it.id)}</option>`).join('')
+      : '<option value="">— no products yet —</option>';
+    if(keep) sel.value = keep;
+  }
+
+  const live = document.getElementById('rvLive');
+  if(live){
+    const rows = [];
+    Object.entries(RV_LIVE).forEach(([itemId, list]) => list.forEach(r => rows.push({ ...r, itemId })));
+    rows.sort((a,b) => (b.at||0) - (a.at||0));
+    live.innerHTML = rows.length ? `<div class="tbl-wrap"><table>
+      <thead><tr><th>Stars</th><th>Customer</th><th>Product</th><th>Words</th><th></th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td>${rvStars(r.rating)}</td><td>${esc(r.name || '—')}</td><td>${esc(rvItemName(r.itemId))}</td>
+        <td>${esc((r.text || '').slice(0,80))}</td>
+        <td><button class="btn sm danger" data-rvdel="${r.itemId}:${r._id}">Remove</button></td>
+      </tr>`).join('')}</tbody></table></div>` : '<p class="note">Nothing published yet.</p>';
+    live.querySelectorAll('[data-rvdel]').forEach(b => b.addEventListener('click', async () => {
+      if(!confirm('Remove this review from the shop?')) return;
+      const [itemId, id] = b.dataset.rvdel.split(':');
+      try{
+        await db.ref(`reviews/${itemId}/${id}`).remove();
+        RV_LIVE[itemId] = (RV_LIVE[itemId] || []).filter(x => x._id !== id);
+        renderReviews();
+      }catch(e){ toast('Could not remove: ' + e.message); }
+    }));
+  }
+}
+async function rvApprove(queueId){
+  const r = RV_QUEUE.find(x => x._id === queueId);
+  if(!r) return;
+  if(!r.itemId){ toast('This review has no product attached'); return; }
+  try{
+    const ref = db.ref('reviews/' + r.itemId).push();
+    await ref.set({ name:r.name || '', rating:Number(r.rating) || 5, text:r.text || '', at:r.at || Date.now() });
+    await db.ref('reviewQueue/' + queueId).remove();
+    RV_QUEUE = RV_QUEUE.filter(x => x._id !== queueId);
+    RV_LIVE[r.itemId] = RV_LIVE[r.itemId] || [];
+    RV_LIVE[r.itemId].unshift({ _id:ref.key, name:r.name, rating:r.rating, text:r.text, at:r.at });
+    renderReviews();
+    toast('Published');
+  }catch(e){ toast('Could not publish: ' + e.message); }
+}
+(function wireReviewsAdmin(){
+  const add = document.getElementById('rvAddBtn');
+  if(!add) return;
+  add.addEventListener('click', async () => {
+    const itemId = document.getElementById('rvAddItem').value;
+    const name = document.getElementById('rvAddName').value.trim();
+    const stars = Math.max(1, Math.min(5, Number(document.getElementById('rvAddStars').value) || 5));
+    const text = document.getElementById('rvAddText').value.trim();
+    if(!itemId){ toast('Pick a product'); return; }
+    add.disabled = true;
+    try{
+      const ref = db.ref('reviews/' + itemId).push();
+      await ref.set({ name, rating:stars, text, at:Date.now() });
+      RV_LIVE[itemId] = RV_LIVE[itemId] || [];
+      RV_LIVE[itemId].unshift({ _id:ref.key, name, rating:stars, text, at:Date.now() });
+      document.getElementById('rvAddName').value = '';
+      document.getElementById('rvAddText').value = '';
+      renderReviews(); toast('Review added');
+    }catch(e){ toast('Could not add: ' + e.message); }
+    finally{ add.disabled = false; }
   });
 })();
 
@@ -1927,6 +2088,7 @@ function renderAll(){
   safeRender(renderCatalogue, 'Catalogue');
   safeRender(renderBuilder, 'Builder');
   safeRender(renderGuffaAdmin, 'Baskets');
+  safeRender(renderReviews, 'Reviews');
   safeRender(renderVotes, 'Votes');
   safeRender(renderSettings, 'Settings');
 }
