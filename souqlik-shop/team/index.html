@@ -334,7 +334,7 @@ td input, td select{ padding:6px 7px; font-size:.78rem; }
     </div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th>Search term</th><th>Times</th><th>Results</th><th>Last searched</th></tr></thead>
+        <thead><tr><th>Search term</th><th>Times</th><th>Results</th><th>Last searched</th><th></th></tr></thead>
         <tbody id="searchBody"></tbody>
       </table>
     </div>
@@ -589,7 +589,7 @@ function categoriesFromFirebase(raw){
 }
 function searchesFromFirebase(raw){
   if(!raw || typeof raw !== 'object') return [];
-  return Object.values(raw).filter(r => r && r.q).map(r => ({ q:String(r.q), raw:String(r.raw || r.q), hits:Number(r.hits)||0, at:Number(r.at)||0 }));
+  return Object.entries(raw).filter(([,r]) => r && r.q).map(([id,r]) => ({ _id:id, q:String(r.q), raw:String(r.raw || r.q), hits:Number(r.hits)||0, at:Number(r.at)||0 }));
 }
 function ordersFromFirebase(raw){
   if(!raw || typeof raw !== 'object') return [];
@@ -765,7 +765,26 @@ function renderSearches(){
       <td>${r.times}</td>
       <td>${r.maxHits === 0 ? '<span class="pill cancelled">none</span>' : r.maxHits}</td>
       <td>${r.lastAt ? new Date(r.lastAt).toLocaleDateString() : '—'}</td>
+      <td><button class="btn sm danger" data-srdel="${esc(r.q)}">Remove</button></td>
     </tr>`).join('');
+
+  /* One term can have many raw rows behind it, so removing means deleting
+     every entry that normalised to the same words — otherwise it would
+     reappear on the next refresh. */
+  body.querySelectorAll('[data-srdel]').forEach(btn => btn.addEventListener('click', async () => {
+    const term = btn.dataset.srdel;
+    const ids = SEARCHES.filter(x => x.q === term).map(x => x._id).filter(Boolean);
+    if(!ids.length){ SEARCHES = SEARCHES.filter(x => x.q !== term); renderSearches(); return; }
+    if(!confirm(`Remove "${term}" and its ${ids.length} record(s)?`)) return;
+    try{
+      const updates = {};
+      ids.forEach(id => { updates['searches/' + id] = null; });
+      await db.ref().update(updates);
+      SEARCHES = SEARCHES.filter(x => x.q !== term);
+      renderSearches();
+      toast('Removed');
+    }catch(e){ toast('Could not remove: ' + e.message); }
+  }));
 }
 
 
