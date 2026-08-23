@@ -372,6 +372,51 @@ html[lang="ar"] .price, html[lang="ar"] .totals b, html[lang="ar"] .line-amt{
 .send svg{ width:17px; height:17px; flex:none; }
 .mini-note{ font-size:.68rem; color:var(--ink-faint); text-align:center; margin:9px 0 0; line-height:1.5; }
 
+/* ── ratings & reviews ────────────────────────────────────────── */
+.stars{ display:inline-flex; gap:1px; color:var(--line); font-size:.86rem; letter-spacing:1px; }
+.stars .on{ color:var(--accent); }
+.stars.big{ font-size:1.2rem; }
+.card-rating{ display:flex; align-items:center; gap:6px; margin-top:4px; }
+.card-rating span{ font-size:.72rem; color:var(--ink-faint); }
+.pv-rating{ all:unset; cursor:pointer; display:inline-flex; align-items:center; gap:8px; margin-top:12px; }
+.pv-rating b{ font-weight:700; font-size:.9rem; color:var(--ink); }
+.pv-rating span{ font-size:.8rem; color:var(--ink-soft); text-decoration:underline; text-underline-offset:3px; }
+.pv-reviews{ margin-top:30px; padding-top:26px; border-top:1px solid var(--line); }
+.pv-reviews h3{ font-family:var(--f-disp); font-weight:600; color:var(--brand); font-size:1.2rem; margin:0 0 10px; }
+.rv-summary{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.rv-summary b{ font-size:1.1rem; }
+.rv-summary span{ font-size:.82rem; color:var(--ink-soft); }
+.rv-bars{ display:grid; gap:5px; margin:0 0 18px; max-width:280px; }
+.rv-bar{ display:flex; align-items:center; gap:8px; }
+.rv-bar-n{ font-size:.72rem; color:var(--ink-faint); width:26px; flex:none; }
+.rv-bar-track{ flex:1; height:7px; border-radius:var(--r-pill); background:var(--line-soft); overflow:hidden; }
+.rv-bar-fill{ display:block; height:100%; background:var(--accent); border-radius:var(--r-pill); }
+.rv-bar-c{ font-size:.72rem; color:var(--ink-faint); width:18px; text-align:end; flex:none; }
+.rv-list{ display:grid; gap:14px; }
+.rv{ border:1px solid var(--line); border-radius:var(--r-sm); padding:12px 14px; background:var(--panel); }
+.rv-top{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.rv-top b{ font-size:.86rem; }
+.rv-top span{ font-size:.72rem; color:var(--ink-faint); margin-inline-start:auto; }
+.rv p{ margin:8px 0 0; font-size:.88rem; color:var(--ink-soft); line-height:1.6; }
+.rv-none{ font-size:.88rem; color:var(--ink-faint); margin:0 0 4px; }
+.rv-open{ margin-top:16px; border:1px solid var(--line); background:var(--panel); color:var(--brand);
+  border-radius:var(--r-pill); padding:10px 20px; font-size:.8rem; font-weight:700; }
+.rv-open:hover{ background:var(--page); border-color:var(--accent-pale); }
+.rv-form{ margin-top:16px; border:1px solid var(--line); border-radius:var(--r); padding:16px; background:var(--panel); }
+.rv-form label{ display:block; font-size:.66rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); margin:12px 0 5px; }
+.rv-form label:first-child{ margin-top:0; }
+.rv-form input, .rv-form textarea{ width:100%; font:inherit; font-size:.9rem; color:var(--ink); padding:10px 12px;
+  border:1px solid var(--line); border-radius:var(--r-sm); background:var(--page); }
+.rv-form input:focus, .rv-form textarea:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(224,137,28,.16); }
+.rv-pick{ display:flex; gap:4px; }
+.rv-pick button{ border:0; background:transparent; color:var(--line); font-size:1.7rem; line-height:1; padding:0 2px; }
+.rv-pick button.on{ color:var(--accent); }
+.rv-send{ width:100%; margin-top:14px; border:0; border-radius:var(--r-pill); padding:12px;
+  background:var(--brand); color:#fff; font-size:.8rem; font-weight:800; }
+.rv-send:disabled{ background:var(--line); color:var(--ink-faint); }
+.rv-note{ font-size:.7rem; color:var(--ink-faint); text-align:center; margin:10px 0 0; }
+.rv-thanks{ text-align:center; font-size:.9rem; color:var(--teal); margin:0; padding:10px; }
+
 /* ── El Guffa ─────────────────────────────────────────────────── */
 .guffa-tile{ all:unset; cursor:pointer; display:flex; align-items:center; gap:16px; width:100%; margin-top:22px;
   padding:20px 22px; border-radius:var(--r); border:1px solid var(--accent-pale);
@@ -779,7 +824,7 @@ function iconSvg(key){ return '<svg data-icon viewBox="0 0 24 24" fill="none" st
    placeholder otherwise — same arch frame either way. */
 function archMedia(p){
   return p.img
-    ? `<img src="${p.img}" alt="${(p.name && p.name[LANG]) || ''}" loading="lazy" />`
+    ? `<img src="${p.img}" alt="${(p.name && L(p.name)) || ''}" loading="lazy" />`
     : `<div class="icon">${iconSvg(p.icon)}</div>`;
 }
 /* Every piece of media for a product, cover photo first, then gallery
@@ -1040,6 +1085,67 @@ async function loadGuffa(){
   }catch(e){ GUFFA = null; }   /* silently absent = feature simply off */
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   Reviews.
+   Two nodes on purpose: `reviews` holds only what the shop has
+   approved and is world-readable; `reviewQueue` is write-only for
+   the public and readable only by the shop. That way a customer can
+   leave feedback without a login, and nothing appears on the site
+   until a human has looked at it — which is the only honest way to
+   run reviews on a shop with no customer accounts, where an open
+   form would otherwise be trivially fakeable by anyone, including
+   a competitor.
+   ═══════════════════════════════════════════════════════════════ */
+let REVIEWS = {};   // itemId -> [{name, rating, text, at}]
+function normReview(r){
+  if(!r) return null;
+  /* A missing or junk rating must be DISCARDED, not clamped up to 1 star —
+     clamping would turn a malformed record into a bad review the product
+     never earned. Only a real 1–5 value counts. */
+  const raw = Number(r.rating);
+  if(!isFinite(raw) || raw < 1) return null;
+  const rating = Math.min(5, Math.round(raw));
+  return { name: String(r.name || '').slice(0,60), rating,
+           text: String(r.text || '').slice(0,600), at: Number(r.at) || 0 };
+}
+async function loadReviews(){
+  try{
+    const res = await fetch(FIREBASE_DB + '/reviews.json', { cache:'no-store' });
+    if(!res.ok) return;
+    const raw = await res.json();
+    const out = {};
+    Object.entries(raw || {}).forEach(([itemId, byId]) => {
+      const list = Object.values(byId || {}).map(normReview).filter(Boolean)
+                    .sort((a,b) => b.at - a.at);
+      if(list.length) out[itemId] = list;
+    });
+    REVIEWS = out;
+  }catch(e){ /* reviews are a bonus, never a blocker */ }
+}
+function reviewStats(itemId){
+  const list = REVIEWS[itemId] || [];
+  if(!list.length) return null;
+  const sum = list.reduce((s,r) => s + r.rating, 0);
+  return { count: list.length, avg: Math.round((sum / list.length) * 10) / 10 };
+}
+/* Half-star rendering would need a second glyph set for one decimal of
+   precision; rounding to the nearest whole star is honest enough and
+   the numeric average is shown right beside it. */
+function starsHtml(avg, cls){
+  const full = Math.round(avg);
+  return `<span class="stars ${cls || ''}" aria-label="${avg} / 5">${
+    [1,2,3,4,5].map(i => `<span class="${i <= full ? 'on' : ''}">★</span>`).join('')}</span>`;
+}
+async function submitReview(itemId, name, rating, text){
+  const payload = { itemId, name: String(name||'').slice(0,60), rating: Number(rating),
+                    text: String(text||'').slice(0,600), at: Date.now(), lang: LANG };
+  const res = await fetch(FIREBASE_DB + '/reviewQueue.json', {
+    method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload)
+  });
+  if(!res.ok) throw new Error('rejected');
+}
+
 async function loadSettings(){
   try{
     const res = await fetch(FIREBASE_DB + '/settings.json', { cache:'no-store' });
@@ -1090,11 +1196,11 @@ function openShareSheet(id, evt){
   const p = findItem(id); if(!p) return;
   shareItem = id;
   const url = productShareUrl(id);
-  const msg = t('shareVia') + ': ' + p.name[LANG] + ' — ' + p.price + ' DH';
+  const msg = t('shareVia') + ': ' + L(p.name) + ' — ' + p.price + ' DH';
 
   document.getElementById('shareThumb').style.background = GRADS[p.icon];
   document.getElementById('shareThumb').innerHTML = archMedia(p);
-  document.getElementById('sharePName').textContent = p.name[LANG];
+  document.getElementById('sharePName').textContent = L(p.name);
   document.getElementById('sharePPrice').textContent = p.price + ' DH';
 
   const tiles = [
@@ -1126,10 +1232,10 @@ async function runShare(platform, p, url, msg, btn){
     case 'facebook': window.open('https://www.facebook.com/sharer/sharer.php?u=' + enc(url), '_blank', 'noopener'); closeShareSheet(); break;
     case 'x': window.open('https://twitter.com/intent/tweet?text=' + enc(msg) + '&url=' + enc(url), '_blank', 'noopener'); closeShareSheet(); break;
     case 'telegram': window.open('https://t.me/share/url?url=' + enc(url) + '&text=' + enc(msg), '_blank', 'noopener'); closeShareSheet(); break;
-    case 'email': window.location.href = 'mailto:?subject=' + enc(p.name[LANG] + ' — Souqlik') + '&body=' + enc(msg + '\\n\\n' + url); closeShareSheet(); break;
+    case 'email': window.location.href = 'mailto:?subject=' + enc(L(p.name) + ' — Souqlik') + '&body=' + enc(msg + '\\n\\n' + url); closeShareSheet(); break;
     case 'sms': window.location.href = (/iPhone|iPad|iPod/.test(navigator.userAgent) ? 'sms:&body=' : 'sms:?body=') + enc(msg + ' ' + url); closeShareSheet(); break;
     case 'more':
-      try{ await navigator.share({ title: p.name[LANG] + ' — Souqlik', text: msg, url }); }catch(e){}
+      try{ await navigator.share({ title: L(p.name) + ' — Souqlik', text: msg, url }); }catch(e){}
       closeShareSheet();
       break;
     case 'copy':
@@ -1164,6 +1270,12 @@ const I18N = {
     searchNoneNote:"It may still be on its way in — tell us what you're after and we'll look for it.",
     searchAskWa:'Ask us on WhatsApp', searchWaMsg:'Hello! Do you have: {q}?',
     editLine:'Open to change your choice', updateLine:'Update my choice', lineUpdated:'Your choice was updated',
+    reviewsTitle:'What buyers said', reviewCount:'{n} review(s)', reviewNone:'No reviews yet — be the first to say something.',
+    reviewWrite:'Write a review', reviewYourRating:'Your rating', reviewYourWords:'Anything you want to add (optional)',
+    reviewSend:'Send review', reviewSending:'Sending…', reviewAnon:'A customer',
+    reviewModerated:'We read every review before it appears, so it may take a day.',
+    reviewThanks:'Thank you — we\'ll read it and put it up shortly.', reviewNeedStars:'Tap a star first',
+    reviewFailed:'Could not send that — try again in a moment.',
     guffaTitle:'El Guffa', guffaSub:'Build your own basket', guffaNote:'Pick a basket, then fill it with whatever you like from the trays. One price, whatever you choose.',
     guffaPickN:'Choose any {n}', guffaFill:'Choose {n} pieces from the trays below', guffaMore:'{n} more to go',
     guffaFullMsg:'Your basket is full', guffaFullWarn:'This basket holds {n} — remove one first', guffaAdd:'Add basket to order',
@@ -1200,6 +1312,12 @@ const I18N = {
     searchNoneNote:"C'est peut-être en route — dites-nous ce que vous cherchez et on ira le trouver.",
     searchAskWa:'Demandez-nous sur WhatsApp', searchWaMsg:'Bonjour ! Avez-vous : {q} ?',
     editLine:'Ouvrir pour changer votre choix', updateLine:'Mettre à jour mon choix', lineUpdated:'Votre choix a été mis à jour',
+    reviewsTitle:'Ce qu\'en disent les acheteurs', reviewCount:'{n} avis', reviewNone:"Pas encore d'avis — soyez le premier.",
+    reviewWrite:'Laisser un avis', reviewYourRating:'Votre note', reviewYourWords:'Ce que vous voulez ajouter (facultatif)',
+    reviewSend:'Envoyer', reviewSending:'Envoi…', reviewAnon:'Un client',
+    reviewModerated:'Nous lisons chaque avis avant publication, cela peut prendre un jour.',
+    reviewThanks:'Merci — nous le lirons et le publierons bientôt.', reviewNeedStars:'Touchez une étoile',
+    reviewFailed:"Envoi impossible — réessayez dans un instant.",
     guffaTitle:'El Guffa', guffaSub:'Composez votre panier', guffaNote:"Choisissez un panier, puis remplissez-le comme vous voulez. Un seul prix, quel que soit votre choix.",
     guffaPickN:'Choisissez {n} pièces', guffaFill:'Choisissez {n} pièces parmi les plateaux', guffaMore:'encore {n}',
     guffaFullMsg:'Votre panier est complet', guffaFullWarn:'Ce panier contient {n} pièces — retirez-en une', guffaAdd:'Ajouter le panier',
@@ -1236,6 +1354,12 @@ const I18N = {
     searchNoneNote:'قد يكون في طريقه إلينا — أخبرنا بما تبحث عنه وسنبحث عنه لك.',
     searchAskWa:'اسألنا عبر واتساب', searchWaMsg:'مرحبًا! هل لديكم: {q}؟',
     editLine:'افتح لتغيير اختيارك', updateLine:'حدّث اختياري', lineUpdated:'تم تحديث اختيارك',
+    reviewsTitle:'ماذا قال المشترون', reviewCount:'{n} تقييم', reviewNone:'لا توجد تقييمات بعد — كن أول من يكتب.',
+    reviewWrite:'اكتب تقييمًا', reviewYourRating:'تقييمك', reviewYourWords:'أضف ما تشاء (اختياري)',
+    reviewSend:'أرسل التقييم', reviewSending:'جارٍ الإرسال…', reviewAnon:'أحد الزبائن',
+    reviewModerated:'نقرأ كل تقييم قبل نشره، وقد يستغرق ذلك يومًا.',
+    reviewThanks:'شكرًا لك — سنقرأه وننشره قريبًا.', reviewNeedStars:'اختر نجمة أولاً',
+    reviewFailed:'تعذّر الإرسال — حاول بعد قليل.',
     guffaTitle:'الݣفة', guffaSub:'كوّن ݣفتك بنفسك', guffaNote:'اختر ݣفة، ثم املأها بما يعجبك من الصواني. ثمن واحد مهما اخترت.',
     guffaPickN:'اختر {n} قطع', guffaFill:'اختر {n} قطع من الصواني أسفله', guffaMore:'بقيت {n}',
     guffaFullMsg:'ݣفتك ممتلئة', guffaFullWarn:'هذه الݣفة تسع {n} قطع — أزل واحدة أولاً', guffaAdd:'أضف الݣفة للطلب',
@@ -1265,6 +1389,22 @@ const I18N = {
 };
 let LANG = 'en';
 function t(key, vars){ let s = (I18N[LANG] && I18N[LANG][key]) || I18N.en[key] || key; if(vars) for(const k in vars) s = s.replace('{'+k+'}', vars[k]); return s; }
+/* One place decides which language a piece of PRODUCT data shows in.
+   Interface strings are complete in all three languages, but catalogue
+   text is typed by hand and a field can legitimately be blank — an
+   Arabic shopper should then see the English name rather than an empty
+   space where the product name should be. Order of preference is the
+   current language first, then whatever else exists. */
+function L(obj){
+  if(!obj) return '';
+  return obj[LANG] || obj.en || obj.fr || obj.ar || '';
+}
+/* Same idea for the benefit lists, which are per-language arrays. */
+function LA(obj){
+  if(!obj) return [];
+  const pick = [obj[LANG], obj.en, obj.fr, obj.ar].find(a => Array.isArray(a) && a.length);
+  return pick || [];
+}
 function detectLang(){
   try{ const saved = localStorage.getItem('souqlik_lang'); if(saved && I18N[saved]) return saved; }catch(e){}
   const nav = (navigator.language || 'en').slice(0,2); return I18N[nav] ? nav : 'en';
@@ -1380,7 +1520,7 @@ function renderCategories(){
     return `
     <button class="cat-tile" data-open-cat="${c.id}">
       <div class="cat-head">
-        <div class="cat-name">${c.name[LANG]}</div>
+        <div class="cat-name">${L(c.name)}</div>
         <div class="cat-count">${t('itemCount',{n:c.items.length})}</div>
       </div>
       <div class="cat-preview">
@@ -1550,8 +1690,8 @@ function renderGuffaTile(){
   if(!tile) return;
   tile.classList.toggle('hide', !GUFFA);
   if(!GUFFA) return;
-  document.getElementById('guffaTileName').textContent = GUFFA.name[LANG] || t('guffaTitle');
-  document.getElementById('guffaTileSub').textContent  = GUFFA.note[LANG] || t('guffaSub');
+  document.getElementById('guffaTileName').textContent = L(GUFFA.name) || t('guffaTitle');
+  document.getElementById('guffaTileSub').textContent  = L(GUFFA.note) || t('guffaSub');
 }
 
 function renderPeek(){
@@ -1562,7 +1702,7 @@ function renderPeek(){
 /* ── shared stall card builder (used by category view) ───────── */
 function stallCard(p){
   const inCart = cart[p.id] > 0, out = p.stock === 0, low = p.stock != null && p.stock > 0 && p.stock <= 8;
-  const badgeText = low ? t('lowStock',{n:p.stock}) : (p.tag && p.tag[LANG] ? p.tag[LANG] : '');
+  const badgeText = low ? t('lowStock',{n:p.stock}) : (p.tag && L(p.tag) ? L(p.tag) : '');
   const needsOptions = (p.options || []).some(o => (o.values || []).length);
   return `
     <article class="stall">
@@ -1573,9 +1713,10 @@ function stallCard(p){
           ${out ? `<div class="badge-out">${t('outOfStock')}</div>` : ''}
         </div>
         <div class="stall-body">
-          <div class="stall-name">${p.name[LANG]}</div>
-          <div class="stall-hook">${p.hook[LANG]}</div>
+          <div class="stall-name">${L(p.name)}</div>
+          <div class="stall-hook">${L(p.hook)}</div>
           <div class="price-row"><span class="price">${p.price}<span class="cur">DH</span></span>${p.was ? `<span class="was">${p.was} DH</span>` : ''}</div>
+          ${(() => { const st = reviewStats(p.id); return st ? `<div class="card-rating">${starsHtml(st.avg)}<span>${st.count}</span></div>` : ''; })()}
         </div>
       </button>
       <div class="stall-body" style="padding-top:0">
@@ -1598,8 +1739,8 @@ function renderCategoryGrid(catId){
   const cvArch = document.getElementById('cvArch');
   cvArch.style.background = GRADS[c.icon];
   cvArch.innerHTML = archMedia(c);
-  document.getElementById('cvName').textContent = c.name[LANG];
-  document.getElementById('cvNote').textContent = c.note ? c.note[LANG] : '';
+  document.getElementById('cvName').textContent = L(c.name);
+  document.getElementById('cvNote').textContent = c.note ? L(c.note) : '';
   const grid = document.getElementById('cvGrid');
   grid.innerHTML = c.items.map(stallCard).join('');
   grid.querySelectorAll('[data-open-item]').forEach(b => b.addEventListener('click', () => { location.hash = 'p-' + b.dataset.openItem; }));
@@ -1695,7 +1836,7 @@ function renderProductView(id){
      video thumbnail's image, so the strip costs zero video bytes */
   pvPoster = (productImages(p)[0] || '');
 
-  document.getElementById('pvBackLabel').textContent = cat ? t('backToCat',{cat:cat.name[LANG]}) : t('backToShop');
+  document.getElementById('pvBackLabel').textContent = cat ? t('backToCat',{cat:L(cat.name)}) : t('backToShop');
   document.getElementById('pvGrid').innerHTML = `
     <div class="pv-gallery">
       <div class="pv-main arch" style="background:${GRADS[p.icon]}">
@@ -1712,28 +1853,32 @@ function renderProductView(id){
         </button>`).join('')}</div>` : ''}
     </div>
     <div>
-      <span class="pv-tag">${p.tag[LANG]}</span>
-      <h1 class="pv-name">${p.name[LANG]}</h1>
-      <p class="pv-hook">${p.hook[LANG]}</p>
+      <span class="pv-tag">${L(p.tag)}</span>
+      <h1 class="pv-name">${L(p.name)}</h1>
+      <p class="pv-hook">${L(p.hook)}</p>
       <div class="pv-price-row">
         <span class="pv-price">${p.price}<span class="cur">DH</span></span>
         ${p.was ? `<span class="pv-was">${p.was} DH</span>` : ''}
         ${save ? `<span class="pv-save">${t('save',{n:save})}</span>` : ''}
       </div>
+      ${(() => { const st = reviewStats(p.id); return st
+          ? `<button class="pv-rating" id="pvRatingBtn">${starsHtml(st.avg)}<b>${st.avg}</b><span>${t('reviewCount',{n:st.count})}</span></button>`
+          : ''; })()}
       ${pickable.map((opt, oi) => `
       <div class="pv-sizes">
-        <label>${opt.name[LANG] || opt.name.en}</label>
+        <label>${L(opt.name)}</label>
         <div class="size-row" data-opt-group="${oi}">${opt.values.map(v => `<button type="button" class="size-opt" data-opt-value="${v}">${v}</button>`).join('')}</div>
       </div>`).join('')}
-      ${(p.benefits[LANG] || []).length ? `
+      ${(LA(p.benefits) || []).length ? `
       <h3 style="font-family:var(--f-disp);font-weight:600;color:var(--brand);font-size:1.05rem;margin:22px 0 0">${t('pvBenefitsTitle')}</h3>
-      <ul class="pv-benefits">${p.benefits[LANG].map(b => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>${b}</span></li>`).join('')}</ul>` : ''}
+      <ul class="pv-benefits">${LA(p.benefits).map(b => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>${b}</span></li>`).join('')}</ul>` : ''}
       <div class="pv-buy">
         <button class="pv-add" id="pvAddBtn" ${out ? 'disabled' : ''}>${out ? t('outOfStock') : t('add')}</button>
         <button class="pv-share" id="pvShareBtn">${SHARE_ICON}<span>${t('share')}</span></button>
       </div>
       ${stockLine}
-      ${String(p.desc[LANG] || '').trim() ? `<div class="pv-desc"><h3>${t('pvDescTitle')}</h3>${descHtml(p.desc[LANG])}</div>` : ''}
+      ${String(L(p.desc) || '').trim() ? `<div class="pv-desc"><h3>${t('pvDescTitle')}</h3>${descHtml(L(p.desc))}</div>` : ''}
+      ${reviewsBlockHtml(p)}
     </div>`;
 
   if(first && first.type === 'video') wireStageVideo();
@@ -1794,6 +1939,9 @@ function renderProductView(id){
     openCartDrawer();
   });
   document.getElementById('pvShareBtn').addEventListener('click', () => openShareSheet(p.id));
+  wireReviews(p);
+  const rb = document.getElementById('pvRatingBtn');
+  if(rb) rb.addEventListener('click', () => { const el = document.getElementById('pvReviews'); if(el) el.scrollIntoView({ behavior:'smooth', block:'start' }); });
 }
 
 function openCartLineForEdit(key){
@@ -1932,15 +2080,15 @@ function renderGuffa(){
   if(!gBox){
     body.innerHTML = `
       <div class="g-intro">
-        <h1>${GUFFA.name[LANG] || t('guffaTitle')}</h1>
-        <p>${GUFFA.note[LANG] || t('guffaNote')}</p>
+        <h1>${L(GUFFA.name) || t('guffaTitle')}</h1>
+        <p>${L(GUFFA.note) || t('guffaNote')}</p>
       </div>
       <div class="g-boxes">${GUFFA.boxes.map(b => `
         <button class="g-box" data-box="${b.id}">
-          <span class="g-box-name">${b.name[LANG] || b.id}</span>
+          <span class="g-box-name">${L(b.name) || b.id}</span>
           <span class="g-box-price">${b.price}<span class="cur">DH</span></span>
           <span class="g-box-picks">${t('guffaPickN',{n:b.picks})}</span>
-          ${b.note[LANG] ? `<span class="g-box-note">${b.note[LANG]}</span>` : ''}
+          ${L(b.note) ? `<span class="g-box-note">${L(b.note)}</span>` : ''}
         </button>`).join('')}
       </div>`;
     body.querySelectorAll('[data-box]').forEach(btn => btn.addEventListener('click', () => {
@@ -1958,13 +2106,13 @@ function renderGuffa(){
     return `
       <div class="g-tray ${chosenHere ? 'on' : ''}">
         <div class="g-tray-head">
-          <span class="g-tray-cat">${cat.name[LANG]}</span>
+          <span class="g-tray-cat">${L(cat.name)}</span>
           ${chosenHere ? `<span class="g-tray-count">${chosenHere}</span>` : ''}
         </div>
         <div class="g-strip">${items.map(it => `
-          <button class="g-thumb ${gPicked.includes(it.id) ? 'on' : ''}" data-pick="${it.id}" title="${it.name[LANG]}">
+          <button class="g-thumb ${gPicked.includes(it.id) ? 'on' : ''}" data-pick="${it.id}" title="${L(it.name)}">
             <span class="g-thumb-media" style="background:${GRADS[it.icon]}">${archMedia(it)}</span>
-            <span class="g-thumb-name">${it.name[LANG]}</span>
+            <span class="g-thumb-name">${L(it.name)}</span>
             <span class="g-tick">✓</span>
           </button>`).join('')}</div>
       </div>`;
@@ -1974,7 +2122,7 @@ function renderGuffa(){
   body.innerHTML = `
     <div class="g-intro">
       <button class="g-back" id="gBackBox">← ${t('guffaChangeBox')}</button>
-      <h1>${gBox.name[LANG] || gBox.id}</h1>
+      <h1>${L(gBox.name) || gBox.id}</h1>
       <p>${t('guffaFill',{n:gBox.picks})}</p>
     </div>
     <div class="g-trays">${trays}</div>
@@ -2016,6 +2164,81 @@ function addGuffaToCart(){
 function removeGuffaLine(lineId){
   guffaCart = guffaCart.filter(l => l.lineId !== lineId);
   saveCart(); renderCart();
+}
+
+
+
+/* A 5-to-1 breakdown, because an average alone hides shape: "4.0 from
+   two 5s and two 3s" is a different product from "4.0 from four 4s". */
+function ratingBarsHtml(itemId){
+  const list = REVIEWS[itemId] || [];
+  if(list.length < 2) return '';   /* a bar chart of one review says nothing */
+  const buckets = [0,0,0,0,0];
+  list.forEach(r => { buckets[r.rating - 1]++; });
+  const max = Math.max(...buckets) || 1;
+  return `<div class="rv-bars">${[5,4,3,2,1].map(n => {
+    const c = buckets[n-1];
+    return `<div class="rv-bar">
+      <span class="rv-bar-n">${n}★</span>
+      <span class="rv-bar-track"><span class="rv-bar-fill" style="width:${Math.round(c / max * 100)}%"></span></span>
+      <span class="rv-bar-c">${c}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+/* ── the reviews block on a product page ───────────────────── */
+function reviewsBlockHtml(p){
+  const list = REVIEWS[p.id] || [];
+  const st = reviewStats(p.id);
+  const when = (ms) => ms ? new Date(ms).toLocaleDateString(LANG === 'ar' ? 'ar-MA' : (LANG === 'fr' ? 'fr-MA' : 'en-GB')) : '';
+  return `
+  <div class="pv-reviews" id="pvReviews">
+    <h3>${t('reviewsTitle')}</h3>
+    ${st ? `<div class="rv-summary">${starsHtml(st.avg,'big')}<b>${st.avg}</b><span>${t('reviewCount',{n:st.count})}</span></div>
+      ${ratingBarsHtml(p.id)}` : ''}
+    ${list.length
+      ? `<div class="rv-list">${list.slice(0,6).map(r => `
+          <div class="rv">
+            <div class="rv-top">${starsHtml(r.rating)}<b>${escHtml(r.name) || t('reviewAnon')}</b><span>${when(r.at)}</span></div>
+            ${r.text ? `<p>${escHtml(r.text)}</p>` : ''}
+          </div>`).join('')}</div>`
+      : `<p class="rv-none">${t('reviewNone')}</p>`}
+
+    <button class="rv-open" id="rvOpenBtn">${t('reviewWrite')}</button>
+    <form class="rv-form hide" id="rvForm" novalidate>
+      <label>${t('reviewYourRating')}</label>
+      <div class="rv-pick" id="rvPick">${[1,2,3,4,5].map(i => `<button type="button" data-star="${i}" aria-label="${i}">★</button>`).join('')}</div>
+      <label for="rvName">${t('fName')}</label>
+      <input type="text" id="rvName" maxlength="60" autocomplete="name" />
+      <label for="rvText">${t('reviewYourWords')}</label>
+      <textarea id="rvText" rows="3" maxlength="600"></textarea>
+      <button type="submit" class="rv-send" id="rvSend">${t('reviewSend')}</button>
+      <p class="rv-note">${t('reviewModerated')}</p>
+    </form>
+  </div>`;
+}
+function wireReviews(p){
+  const openBtn = document.getElementById('rvOpenBtn');
+  const form = document.getElementById('rvForm');
+  if(!openBtn || !form) return;
+  let picked = 0;
+  openBtn.addEventListener('click', () => { form.classList.toggle('hide'); openBtn.classList.toggle('hide'); });
+  document.querySelectorAll('#rvPick [data-star]').forEach(b => b.addEventListener('click', () => {
+    picked = +b.dataset.star;
+    document.querySelectorAll('#rvPick [data-star]').forEach(x => x.classList.toggle('on', +x.dataset.star <= picked));
+  }));
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(!picked){ toast(t('reviewNeedStars')); return; }
+    const send = document.getElementById('rvSend');
+    send.disabled = true; send.textContent = t('reviewSending');
+    try{
+      await submitReview(p.id, document.getElementById('rvName').value, picked, document.getElementById('rvText').value);
+      form.innerHTML = `<p class="rv-thanks">${t('reviewThanks')}</p>`;
+    }catch(err){
+      toast(t('reviewFailed'));
+      send.disabled = false; send.textContent = t('reviewSend');
+    }
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2086,13 +2309,13 @@ function renderCart(){
   lines.innerHTML = keys.map(key => {
     const { id, variant } = parseCartKey(key);
     const p = findItem(id); if(!p) return ''; const q = cart[key]; const cat = categoryOf(id);
-    const catLabel = [cat ? cat.name[LANG] : '', variant ? variant.join(' · ') : ''].filter(Boolean).join(' · ');
+    const catLabel = [cat ? L(cat.name) : '', variant ? variant.join(' · ') : ''].filter(Boolean).join(' · ');
     const editable = (p.options || []).some(o => (o.values || []).length) ? ` title="${t('editLine')}"` : '';
     return `
     <div class="line">
       <button class="line-open thumb" style="background:${GRADS[p.icon]}" data-edit="${key}"${editable}>${archMedia(p)}</button>
       <div>
-        <button class="nm line-open-txt" data-edit="${key}"${editable}>${p.name[LANG]}</button>
+        <button class="nm line-open-txt" data-edit="${key}"${editable}>${L(p.name)}</button>
         <div class="cat">${catLabel}</div>
         <div class="stepper"><button data-dec="${key}">−</button><input type="text" value="${q}" data-qty="${key}" readonly /><button data-inc="${key}">+</button></div>
       </div>
@@ -2149,7 +2372,7 @@ function sendOrder(){
   });
   const lines = keys.map(key => {
     const { id, variant } = parseCartKey(key); const p = findItem(id); const q = cart[key];
-    return `• ${p.name[LANG]}${variant ? ' ('+variant.join(', ')+')' : ''} × ${q} — ${p.price*q} DH`;
+    return `• ${L(p.name)}${variant ? ' ('+variant.join(', ')+')' : ''} × ${q} — ${p.price*q} DH`;
   }).join('\\n');
   const ref = makeRef();
   const subtotal = cartTotal();
@@ -2198,7 +2421,7 @@ function toast(msg){
               usable instantly, but a shared #p-/#c- link to a real
               product won't resolve yet since it isn't in this data */
 
-  await Promise.all([loadCatalogue(), loadSettings(), loadGuffa()]);
+  await Promise.all([loadCatalogue(), loadSettings(), loadGuffa(), loadReviews()]);
   catalogueReady = true;
   pruneCart();
   /* the catalogue (and possibly the WhatsApp number) may have just
