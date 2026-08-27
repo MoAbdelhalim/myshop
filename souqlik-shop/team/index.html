@@ -986,9 +986,15 @@ function renderBuilder(){ blRenderShots(); blRenderLens(); blRenderOpts(); blRen
     if(!title){ toast('Paste a product title first'); return; }
     const btn = document.getElementById('blBuildBtn'), st = document.getElementById('blState');
     btn.disabled = true; st.textContent = 'Translating…';
-    const bullets = blSplit(blGet('blDesc')).slice(0,8);
+    /* Split the spec list rather than copying it into both fields — the
+       product page renders benefits AND description, so reusing the same
+       bullets printed everything twice. The first few become the benefit
+       ticks; whatever is left becomes the description. */
+    const allBullets = blSplit(blGet('blDesc'));
+    const bullets = allBullets.slice(0, 4);              /* benefit ticks */
+    const rest = allBullets.slice(4);                    /* the long tail */
     const hook = blHook(title, bullets);
-    const descEn = bullets.length ? bullets.join(' • ') : blGet('blDesc');
+    const descEn = rest.length ? rest.join(' • ') : (allBullets.length ? '' : blGet('blDesc'));
     blSet('blNEn',title); blSet('blHEn',hook); blSet('blBEn',bullets.join('\n')); blSet('blDEn',descEn); blSet('blTEn','New');
     const n = await blTrAll(title), h = await blTrAll(hook), b = await blTrAll(bullets.join('\n')),
           d = await blTrAll(descEn), g = await blTrAll('New');
